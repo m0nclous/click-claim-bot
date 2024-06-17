@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      context: .
+      target: '${NODE_ENV:-production}'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${PORT:-80}:80'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - sail
+    environment:
+      - SERVER_APP_HOST=server_app
+      - SERVER_APP_PORT=80
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sail-postgres:
+    driver: local
