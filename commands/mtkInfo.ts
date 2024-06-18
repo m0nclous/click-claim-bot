@@ -2,7 +2,7 @@ import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import MtkService from '#services/mtk_service';
 import { inject } from '@adonisjs/core';
-import telegram, { client } from '#config/telegram';
+import telegram from '#config/telegram';
 
 export default class MtkInfo extends BaseCommand {
     static commandName = 'mtk:info';
@@ -39,9 +39,5 @@ export default class MtkInfo extends BaseCommand {
                 parse_mode: 'HTML',
             });
         }
-    }
-
-    async completed() {
-        await client.disconnect();
     }
 }

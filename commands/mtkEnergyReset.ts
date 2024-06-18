@@ -2,7 +2,7 @@ import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import MtkService from '#services/mtk_service';
 import { inject } from '@adonisjs/core';
-import telegram, { client } from '#config/telegram';
+import telegram from '#config/telegram';
 import ace from '@adonisjs/core/services/ace';
 
 export default class MtkEnergyReset extends BaseCommand {
@@ -50,9 +50,5 @@ export default class MtkEnergyReset extends BaseCommand {
 
             await ace.exec('mtk:claim', claimCommandArgs);
         }
-    }
-
-    async completed() {
-        await client.disconnect();
     }
 }
