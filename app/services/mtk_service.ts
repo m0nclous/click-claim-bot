@@ -3,6 +3,7 @@ import telegramWebView from '#config/telegram-web-view';
 import telegramConfig, { client } from '#config/telegram';
 import { Api } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
+import telegram from '#config/telegram';
 
 interface GetUserInfo {
     lang: string,
@@ -180,6 +181,32 @@ export default class MtkService {
         await this.click(this.getCurrentEnergy());
 
         return true;
+    }
+
+    public async collectDaily() {
+        if (!this.token) {
+            throw new Error('Clicker token not found');
+        }
+
+        const searchParams = new URLSearchParams();
+        searchParams.set('userId', `${telegram.api.userId}`);
+
+        return await this.httpClient.post('api/user/collectDaily', {
+            searchParams,
+        }).json();
+    }
+
+    public async energyReset() {
+        if (!this.token) {
+            throw new Error('Clicker token not found');
+        }
+
+        const searchParams = new URLSearchParams();
+        searchParams.set('userId', `${telegram.api.userId}`);
+
+        return await this.httpClient.post('api/user/resetEnergy', {
+            searchParams,
+        }).json();
     }
 
     public getMaxEnergy() {
