@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:experimental
+
 FROM node:21.0.0-alpine as base
 ENV PORT=80
 ENV HOST=0.0.0.0
