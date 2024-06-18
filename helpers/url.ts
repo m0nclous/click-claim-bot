@@ -1,3 +1,11 @@
+export function parseUrlHashParams(url: string) {
+    const urlHash = (new URL(url)).hash;
+    const urlParams = new URLSearchParams(urlHash.substring(1));
+
+    return Object.fromEntries(urlParams.entries());
+}
+
+/** @deprecated */
 export function urlParseHashParams(url: string): {
     [key: string]: string
 } {
@@ -31,6 +39,7 @@ export function urlParseHashParams(url: string): {
     return params;
 }
 
+/** @deprecated */
 export function urlParseQueryString(queryString: string): {
     [key: string]: string
 } {
@@ -52,6 +61,7 @@ export function urlParseQueryString(queryString: string): {
     return params;
 }
 
+/** @deprecated */
 export function urlSafeDecode(urlencoded: string): string {
     try {
         urlencoded = urlencoded.replace(/\+/g, '%20');
