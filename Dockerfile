@@ -30,7 +30,7 @@ COPY .env /app/build
 FROM base as development
 COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
-CMD ["node", "ace", "serve", "--watch"]
+CMD ["node", "ace", "scheduler:run"]
 
 # Production stage
 FROM base as production
