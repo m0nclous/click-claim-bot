@@ -54,6 +54,9 @@ interface UserClick {
     mtkBalance: number,
 }
 
+/**
+ * @deprecated
+ */
 export default class MtkService {
     public baseUrl: string = 'https://clicker-api.fanschain.io';
 

@@ -1,14 +1,22 @@
 import { client } from '#config/telegram';
 import { Api as TelegramApi } from 'telegram';
 import { parseUrlHashParams } from '../../helpers/url.js';
+import ky, { HTTPError, KyInstance } from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
-import ky, { KyInstance } from 'ky';
+import { NormalizedOptions } from '../../types/ky.js';
+import logger from '@adonisjs/core/services/logger';
 
-export default abstract class GameService {
+export interface HasTap {
+    tap(quantity: number): Promise<void>;
+}
+
+export default abstract class BaseGameService {
     protected token: string | null = null;
 
     protected httpClient: KyInstance = this.makeHttpClient();
+
+    public abstract getGameName(): string;
 
     protected abstract getBotName(): string;
 
@@ -37,6 +45,33 @@ export default abstract class GameService {
                 'sec-fetch-dest': 'empty',
                 'priority': 'u=1, i',
             },
+
+            hooks: {
+                beforeRequest: [
+                    (request: Request): void => {
+                        const { url, method } = request;
+
+                        logger.trace(`Запрос -> [${method}] ${url}`);
+                    },
+                ],
+
+                afterResponse: [
+                    async (_request: Request, _options: NormalizedOptions, response: Response): Promise<void> => {
+                        const { url, status } = response;
+                        const json = await response.json().catch(() => null);
+
+                        logger.trace(json, `Ответ <- [${status}] ${url}`);
+                    },
+                ],
+
+                beforeError: [
+                    (error: HTTPError): HTTPError => {
+                        logger.error(error);
+
+                        return error;
+                    },
+                ],
+            },
         });
     }
 
@@ -57,7 +92,7 @@ export default abstract class GameService {
         );
     }
 
-    public async getWebViewParams(): Promise<{[key: string]: string}> {
+    public async getWebViewParams(): Promise<{ [key: string]: string }> {
         const webView: WebViewResultUrl = await this.requestWebView();
 
         return parseUrlHashParams(webView.url);
@@ -67,6 +102,10 @@ export default abstract class GameService {
         const webViewParams = await this.getWebViewParams();
 
         return webViewParams.tgWebAppData;
+    }
+
+    protected async getInitDataKey(): Promise<string> {
+        return await this.getWebAppData();
     }
 
     public isAuthenticated(): boolean {

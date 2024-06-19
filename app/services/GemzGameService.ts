@@ -1,9 +1,9 @@
-import GameService from '#services/GameService';
+import BaseGameService, { HasTap } from '#services/BaseGameService';
 import telegram from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 
-export default class GemzGameService extends GameService {
+export default class GemzGameService extends BaseGameService implements HasTap {
     protected rev: number | null = null;
 
     protected sid: string = randomString(9).toLowerCase();
@@ -81,18 +81,6 @@ export default class GemzGameService extends GameService {
         clientRandomSeed: 0,
     };
 
-    protected getBotName(): string {
-        return 'gemzcoin_bot';
-    }
-
-    protected getWebViewUrl(): string {
-        return 'https://ff.notgemz.gemz.fun';
-    }
-
-    protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.18.0';
-    }
-
     public constructor() {
         super();
 
@@ -133,11 +121,23 @@ export default class GemzGameService extends GameService {
         });
     }
 
-    protected async getAuthKey(): Promise<string> {
-        if (this.isAuthenticated()) {
-            return this.token ?? '';
-        }
+    public getGameName(): string {
+        return 'Gemz';
+    }
 
+    protected getBotName(): string {
+        return 'gemzcoin_bot';
+    }
+
+    protected getWebViewUrl(): string {
+        return 'https://ff.notgemz.gemz.fun';
+    }
+
+    protected getBaseUrl(): string {
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.18.0';
+    }
+
+    protected async getInitDataKey(): Promise<string> {
         const webAppData = await this.getWebAppData();
 
         const webAppDataParams = new URLSearchParams(webAppData);
@@ -146,28 +146,12 @@ export default class GemzGameService extends GameService {
         return webAppDataParams.toString().replaceAll('&', '\n');
     }
 
+    protected async getAuthKey(): Promise<string> {
+        return this.isAuthenticated() ? this.token as string : this.getInitDataKey();
+    }
+
     public async login(): Promise<void> {
         await this.httpClient.post('loginOrCreate').json();
-    }
-
-    protected async replicate(queue: object[]): Promise<any> {
-        return this.httpClient.post('replicate', {
-            json: {
-                ...this.defaultReplicateBody,
-                crqid: randomString(9).toLowerCase(),
-                queue,
-            },
-        }).json<any>();
-    }
-
-    public async heartbeat(): Promise<any> {
-        return this.replicate([
-            {
-                fn: '_heartbeat',
-                async: false,
-                args: [],
-            },
-        ]);
     }
 
     public async tap(quantity: number = 1): Promise<any> {
@@ -194,5 +178,15 @@ export default class GemzGameService extends GameService {
         }
 
         return taps;
+    }
+
+    protected async replicate(queue: object[]): Promise<any> {
+        return this.httpClient.post('replicate', {
+            json: {
+                ...this.defaultReplicateBody,
+                crqid: randomString(9).toLowerCase(),
+                queue,
+            },
+        }).json<any>();
     }
 }
