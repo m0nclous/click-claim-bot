@@ -2,9 +2,3 @@ services:
   app:
     build:
       context: .
-      target: '${NODE_ENV:-production}'
-    ports:
-      - '${PORT:-80}:80'
-    volumes:
-      - .:/app
-      - /app/node_modules

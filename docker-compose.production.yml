@@ -1,0 +1,8 @@
+services:
+  app:
+    build:
+      target: 'production'
+    ports:
+      - '${PORT:-80}:80'
+    environment:
+        NODE_ENV: 'production'
