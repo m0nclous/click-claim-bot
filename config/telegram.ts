@@ -1,7 +1,7 @@
-import { StringSession } from 'telegram/sessions/index.js';
 import env from '#start/env';
 import { TelegramClient } from 'telegram';
 import { Telegraf } from 'telegraf';
+import { StoreSession } from 'telegram/sessions/index.js';
 
 const botToken = env.get('TELEGRAM_BOT_TOKEN');
 
@@ -10,7 +10,7 @@ const telegramConfig = {
         id: env.get('TELEGRAM_API_ID'),
         userId: env.get('TELEGRAM_API_USER_ID'),
         hash: env.get('TELEGRAM_API_HASH'),
-        session: new StringSession(env.get('TELEGRAM_API_SESSION')),
+        session: new StoreSession('my_session'),
     },
 
     bot: (new Telegraf(botToken)).telegram,

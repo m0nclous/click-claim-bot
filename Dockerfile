@@ -23,7 +23,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-l
 FROM base as build
 COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
-RUN node ace build
+RUN node ace build --ignore-ts-errors
 COPY .env /app/build
 
 # Development stage

@@ -1,9 +1,6 @@
 import { BaseCommand } from '@adonisjs/core/ace';
 import { inject } from '@adonisjs/core';
-import telegram from '#config/telegram';
-import { TelegramClient } from 'telegram';
-import { StringSession } from 'telegram/sessions/index.js';
-import setEnvValueToFile from '../helpers/setEnvValueToFile.js';
+import { client } from '#config/telegram';
 
 // noinspection JSUnusedGlobalSymbols
 export default class GemzClaim extends BaseCommand {
@@ -12,8 +9,6 @@ export default class GemzClaim extends BaseCommand {
 
     @inject()
     async run() {
-        const client = new TelegramClient(new StringSession(''), telegram.api.id, telegram.api.hash, {});
-
         await client.start({
             phoneNumber: async () => await this.prompt.ask('Номер телефона'),
             password: async () => await this.prompt.secure('Пароль'),
@@ -23,8 +18,6 @@ export default class GemzClaim extends BaseCommand {
                 process.exit(1);
             },
         });
-
-        setEnvValueToFile('TELEGRAM_API_SESSION', client.session.save() as unknown as string);
 
         this.logger.info('Успешно');
     }
