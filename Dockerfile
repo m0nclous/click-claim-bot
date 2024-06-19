@@ -37,3 +37,7 @@ FROM base as production
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app
 CMD ["node", "./bin/server.js"]
+
+# Production scheduler stage
+FROM production as production-scheduler
+CMD ["node", "ace", "scheduler:run"]

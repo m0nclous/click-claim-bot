@@ -6,3 +6,9 @@ services:
       - '${PORT:-80}:80'
     environment:
         NODE_ENV: 'production'
+  scheduler:
+      build:
+          context: .
+          target: 'production-scheduler'
+      environment:
+          NODE_ENV: 'production'

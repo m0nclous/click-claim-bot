@@ -2,3 +2,6 @@ services:
   app:
     build:
       context: .
+  scheduler:
+    build:
+      context: .
