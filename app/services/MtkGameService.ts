@@ -1,9 +1,7 @@
-import BaseGameService, {HasTap, HasDailyReward, HasEnergyRecharge} from '#services/BaseGameService';
+import BaseGameService, { HasTap } from '#services/BaseGameService';
 import telegramConfig from '#config/telegram';
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
-
-interface IMtkGameService extends HasTap, HasDailyReward, HasEnergyRecharge {}
 
 export default class MtkGameService extends BaseGameService implements HasTap {
     public constructor() {
