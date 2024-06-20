@@ -11,11 +11,11 @@ export interface HasTap {
     tap(quantity: number): Promise<void>;
 }
 
-export interface ICollectDaily {
+export interface HasDailyReward {
     collectDaily(): Promise<void>
 }
 
-export interface IEnergyReset {
+export interface HasEnergyRecharge {
     energyReset(): Promise<void>
 }
 
