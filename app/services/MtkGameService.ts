@@ -72,6 +72,8 @@ export default class MtkGameService extends BaseGameService implements HasTap {
         const searchParams = new URLSearchParams();
         searchParams.set('amount', quantity.toString());
 
-        await this.httpClient.post('api/user/click');
+        await this.httpClient.post('api/user/click', {
+            searchParams
+        });
     }
 };
