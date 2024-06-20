@@ -5,7 +5,7 @@ import { URLSearchParams } from 'node:url';
 
 interface IMtkGameService extends HasTap, HasDailyReward, HasEnergyRecharge {}
 
-export default class MtkGameService extends BaseGameService implements IMtkGameService {
+export default class MtkGameService extends BaseGameService implements HasTap {
     public constructor() {
         super();
 
