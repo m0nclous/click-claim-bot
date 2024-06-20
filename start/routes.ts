@@ -48,14 +48,7 @@ let phone;
 // define a route handler for the default home page
 router.get("/", async ({ response }) => {
     if (await client.isUserAuthorized()) {
-        const dialog = (await client.getDialogs({ limit: 1 }))[0];
-
-        let result = `<h1>${dialog.title}</h1>.`;
-        for (const m of await client.getMessages(dialog.entity, { limit: 10 })) {
-            result += formatMessage(m);
-        }
-
-        return response.send(BASE_TEMPLATE.replace("{{0}}", result));
+        return response.send(BASE_TEMPLATE.replace("{{0}}", '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'));
     } else {
         client.start({
             phoneNumber: async () => {
