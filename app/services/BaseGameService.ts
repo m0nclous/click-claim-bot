@@ -19,6 +19,10 @@ export interface HasEnergyRecharge {
     energyReset(): Promise<void>
 }
 
+export interface HasClaim {
+    claim(): Promise<void>
+}
+
 export default abstract class BaseGameService {
     protected token: string | null = null;
 
