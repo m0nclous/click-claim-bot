@@ -30,7 +30,12 @@ export default class MtkEnergyReset extends BaseCommand {
         // }
 
         await service.login();
-        await service.energyReset();
+
+        try {
+            await service.energyReset();
+        } catch (e) {
+            this.logger.info(`[MTK] Недостаточно energyResets`);
+        }
 
         this.logger.info(`[MTK] Энергия восстановлена`);
 

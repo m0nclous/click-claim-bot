@@ -22,6 +22,7 @@ export default class MtkGameService extends BaseGameService
                         const url: URL = new URL(request.url);
 
                         searchParams.set('telegramId', telegramConfig.api.userId.toString());
+                        searchParams.set('userId', telegramConfig.api.userId.toString());
                         searchParams.set('initData', await this.getInitDataKey());
 
                         url.search = searchParams.toString();
@@ -79,21 +80,10 @@ export default class MtkGameService extends BaseGameService
     }
 
     public async collectDaily(): Promise<void> {
-        const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegramConfig.api.userId}`);
-
-        await this.httpClient.post('api/user/collectDaily', {
-            searchParams,
-        });
+        await this.httpClient.post('api/user/collectDaily');
     }
 
     public async energyReset(): Promise<void> {
-        const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegramConfig.api.userId}`);
-
-        await this.httpClient.post('api/user/resetEnergy', {
-            searchParams,
-        });
+        await this.httpClient.post('api/user/resetEnergy');
     }
-
 };
