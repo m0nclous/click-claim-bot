@@ -1,9 +1,9 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
-import MtkService from '#services/mtk_service';
 import { inject } from '@adonisjs/core';
 import telegram from '#config/telegram';
 import ace from '@adonisjs/core/services/ace';
+import MtkGameService from "#services/MtkGameService";
 
 export default class MtkEnergyReset extends BaseCommand {
     static commandName = 'mtk:energy-reset';
@@ -21,14 +21,15 @@ export default class MtkEnergyReset extends BaseCommand {
     };
 
     @inject()
-    async run(service: MtkService) {
-        const userInfo = await service.getUserInfo();
+    async run(service: MtkGameService) {
+        // const userInfo = await service.getUserInfo();
+        //
+        // if (!userInfo.energyResets) {
+        //     this.logger.info(`[MTK] Недостаточно energyResets`);
+        //     return;
+        // }
 
-        if (!userInfo.energyResets) {
-            this.logger.info(`[MTK] Недостаточно energyResets`);
-            return;
-        }
-
+        await service.login();
         await service.energyReset();
 
         this.logger.info(`[MTK] Энергия восстановлена`);
