@@ -11,6 +11,14 @@ export interface HasTap {
     tap(quantity: number): Promise<void>;
 }
 
+export interface ICollectDaily {
+    collectDaily(): Promise<void>
+}
+
+export interface IEnergyReset {
+    energyReset(): Promise<void>
+}
+
 export default abstract class BaseGameService {
     protected token: string | null = null;
 

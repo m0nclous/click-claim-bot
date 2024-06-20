@@ -1,9 +1,12 @@
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService, {HasTap, ICollectDaily, IEnergyReset} from '#services/BaseGameService';
 import telegramConfig from '#config/telegram';
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
+import telegram from "#config/telegram";
 
-export default class MtkGameService extends BaseGameService implements HasTap {
+interface IMtkGameService extends HasTap, ICollectDaily, IEnergyReset {}
+
+export default class MtkGameService extends BaseGameService implements IMtkGameService {
     public constructor() {
         super();
 
@@ -73,5 +76,31 @@ export default class MtkGameService extends BaseGameService implements HasTap {
         searchParams.set('amount', quantity.toString());
 
         await this.httpClient.post('api/user/click');
+    }
+
+    async energyReset(): Promise<void> {
+        if (!this.token) {
+            throw new Error('Clicker token not found');
+        }
+
+        const searchParams = new URLSearchParams();
+        searchParams.set('userId', `${telegram.api.userId}`);
+
+        return await this.httpClient.post('api/user/resetEnergy', {
+            searchParams,
+        }).json();
+    }
+
+    async collectDaily(): Promise<void> {
+        if (!this.token) {
+            throw new Error('Clicker token not found');
+        }
+
+        const searchParams = new URLSearchParams();
+        searchParams.set('userId', `${telegram.api.userId}`);
+
+        return await this.httpClient.post('api/user/collectDaily', {
+            searchParams,
+        }).json();
     }
 };
