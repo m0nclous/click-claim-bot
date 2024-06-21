@@ -27,7 +27,7 @@ export default abstract class BaseGameDailyRewardCommand extends BaseCommand {
         } catch (error) {
             this.logger.error(error);
 
-            return this.notify('Ошибка при отправке запроса на получение ежедневной награды');
+            return this.notify('Ошибка при отправке запроса на получение ежедневной награды', 'error');
         }
 
         await this.notify('Получена награда за ежедневный вход');
