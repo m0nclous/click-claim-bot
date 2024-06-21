@@ -34,6 +34,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     .tap((app) => {
         app.booting(async () => {
             await import('#start/env');
+            client.session.setDC(2, '149.154.167.50', 443);
             await client.connect();
         });
         app.listen('SIGTERM', () => app.terminate());
