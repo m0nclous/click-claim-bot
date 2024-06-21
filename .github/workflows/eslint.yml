@@ -18,25 +18,25 @@ jobs:
               with:
                   node-version: 21.6.2
 
-            - uses: pnpm/action-setup@v4
-              name: Install pnpm
+            - name: Cache node_modules
+              id: cache-node-modules
+              uses: actions/cache@v4
               with:
-                  version: latest
+                  key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+                  path: node_modules
 
-            - name: Get pnpm store directory
+            - if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+                  cache: 'npm'
+                  cache-dependency-path: 'package-lock.json'
+
+            - if: steps.cache-node-modules.outputs.cache-hit != 'true'
+              name: Установка зависимостей npm
               shell: bash
-              run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-            - uses: actions/cache@v4
-              name: Setup pnpm cache
-              with:
-                  path: ${{ env.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: ${{ runner.os }}-pnpm-store-
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
 
             - name: Run ESLint
               shell: bash
-              run: pnpm run check:eslint
+              run: npm run check:eslint
