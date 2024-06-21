@@ -6,9 +6,15 @@ services:
             - '${PORT:-80}:80'
         environment:
             NODE_ENV: 'production'
+        volumes:
+            - session:/app/my_session
     scheduler:
         build:
             context: .
             target: 'production-scheduler'
         environment:
             NODE_ENV: 'production'
+        volumes:
+            - session:/app/my_session
+volumes:
+    session:
