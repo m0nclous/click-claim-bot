@@ -2,6 +2,12 @@ services:
     app:
         build:
             context: .
+        volumes:
+            - session:/app/my_session
     scheduler:
         build:
             context: .
+        volumes:
+            - session:/app/my_session
+volumes:
+    session:
