@@ -27,6 +27,14 @@ export interface HasEnergyRecharge {
     energyReset(): Promise<void>
 }
 
+export interface EnergyUpgradable extends HasEnergyRecharge {
+    getEnergyUpgradeCurrentLevel(): Promise<number>;
+
+    getEnergyUpgradePrice(): Promise<number>;
+
+    energyUpgrade(): Promise<void>;
+}
+
 export interface HasClaim {
     claim(): Promise<void>
 }
