@@ -7,9 +7,8 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
+import router from '@adonisjs/core/services/router';
 import { client } from '#config/telegram';
-import { utils } from 'telegram';
 
 const BASE_TEMPLATE = `
 <!DOCTYPE html>
@@ -44,53 +43,15 @@ const PASSWORD_FORM = `
 `;
 
 let phone;
-
-// define a route handler for the default home page
-router.get("/", async ({ response }) => {
-    if (await client.isUserAuthorized()) {
-        return response.send(BASE_TEMPLATE.replace("{{0}}", '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'));
-    } else {
-        client.start({
-            phoneNumber: async () => {
-                return phoneCallback.promise;
-            },
-            phoneCode: async () => {
-                return codeCallback.promise;
-            },
-            password: async () => {
-                return passwordCallback.promise;
-            },
-            onError: (err) => console.log(err),
-        });
-
-        return response.send(BASE_TEMPLATE.replace("{{0}}", PHONE_FORM));
-    }
-});
-
-router.post("/", async ({ request, response }) => {
-    //To access POST variable use req.body()methods.
-    if ("phone" in request.body()) {
-        phone = request.body().phone;
-        phoneCallback.resolve(phone);
-        return response.send(BASE_TEMPLATE.replace("{{0}}", CODE_FORM));
-    }
-
-    if ("code" in request.body()) {
-        codeCallback.resolve(request.body().code);
-        return response.send(BASE_TEMPLATE.replace("{{0}}", PASSWORD_FORM));
-    }
-    if ("password" in request.body()) {
-        passwordCallback.resolve(request.body().password);
-        response.redirect("/");
-    }
-    console.log(request.body());
-});
+const phoneCallback = callbackPromise();
+const codeCallback = callbackPromise();
+const passwordCallback = callbackPromise();
 
 function callbackPromise() {
-    // helper method for promises
-    let resolve, reject;
+    let resolve: any;
+    let reject: any;
 
-    const promise = new Promise((res, rej) => {
+    const promise: Promise<unknown> = new Promise((res, rej) => {
         resolve = res;
         reject = rej;
     });
@@ -98,16 +59,47 @@ function callbackPromise() {
     return { promise, resolve, reject };
 }
 
-function formatMessage(message) {
-    let content = (message.text || "(action message or media)").replace(
-        "\n",
-        "<br>"
-    );
-    return `<p><strong>${utils.getDisplayName(
-        message.sender
-    )}</strong>: ${content}<sub>${message.date}</sub></p>`;
-}
+// define a route handler for the default home page
+router.get('/', async ({ response }) => {
+    if (await client.isUserAuthorized()) {
+        return response.send(
+            BASE_TEMPLATE.replace('{{0}}', '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'),
+        );
+    } else {
+        client
+            .start({
+                phoneNumber: async () => {
+                    return phoneCallback.promise as unknown as string;
+                },
+                phoneCode: async () => {
+                    return codeCallback.promise as unknown as string;
+                },
+                password: async () => {
+                    return passwordCallback.promise as unknown as string;
+                },
+                onError: (err) => console.log(err),
+            })
+            .then();
 
-const phoneCallback = callbackPromise();
-const codeCallback = callbackPromise();
-const passwordCallback = callbackPromise();
+        return response.send(BASE_TEMPLATE.replace('{{0}}', PHONE_FORM));
+    }
+});
+
+router.post('/', async ({ request, response }) => {
+    //To access POST variable use req.body()methods.
+    if ('phone' in request.body()) {
+        phone = request.body().phone;
+        phoneCallback.resolve(phone);
+        return response.send(BASE_TEMPLATE.replace('{{0}}', CODE_FORM));
+    }
+
+    if ('code' in request.body()) {
+        codeCallback.resolve(request.body().code);
+        return response.send(BASE_TEMPLATE.replace('{{0}}', PASSWORD_FORM));
+    }
+    if ('password' in request.body()) {
+        passwordCallback.resolve(request.body().password);
+        response.redirect('/');
+    }
+    console.log(request.body());
+});

@@ -19,16 +19,32 @@ export interface TapUpgradable extends HasTap {
     tapUpgrade(): Promise<void>;
 }
 
+export interface TapMultiplierUpgradable extends HasTap {
+    getTapMultiplierUpgradeCurrentLevel(): Promise<number>;
+
+    getTapMultiplierUpgradePrice(): Promise<number>;
+
+    tapMultiplierUpgrade(): Promise<void>;
+}
+
 export interface HasDailyReward {
-    collectDaily(): Promise<void>
+    collectDaily(): Promise<void>;
 }
 
 export interface HasEnergyRecharge {
-    energyReset(): Promise<void>
+    energyReset(): Promise<void>;
+}
+
+export interface EnergyUpgradable extends HasEnergyRecharge {
+    getEnergyUpgradeCurrentLevel(): Promise<number>;
+
+    getEnergyUpgradePrice(): Promise<number>;
+
+    energyUpgrade(): Promise<void>;
 }
 
 export interface HasClaim {
-    claim(): Promise<void>
+    claim(): Promise<void>;
 }
 
 export default abstract class BaseGameService {
@@ -55,7 +71,8 @@ export default abstract class BaseGameService {
                 'referer': this.getWebViewUrl() + '/',
 
                 'x-requested-with': 'org.telegram.messenger',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2107113SG Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.148 Mobile Safari/537.36',
+                'user-agent':
+                    'Mozilla/5.0 (Linux; Android 13; 2107113SG Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.148 Mobile Safari/537.36',
                 'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
                 'sec-ch-ua': '"Android WebView";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
                 'sec-ch-ua-platform': '"Android"',
@@ -76,7 +93,11 @@ export default abstract class BaseGameService {
                 ],
 
                 afterResponse: [
-                    async (_request: Request, _options: NormalizedOptions, response: Response): Promise<void> => {
+                    async (
+                        _request: Request,
+                        _options: NormalizedOptions,
+                        response: Response,
+                    ): Promise<void> => {
                         const { url, status } = response;
                         const json = await response.json().catch(() => null);
 

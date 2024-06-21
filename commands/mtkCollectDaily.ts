@@ -20,20 +20,22 @@ export default class MtkCollectDaily extends BaseCommand {
         const userInfo = await service.getUserInfo();
 
         if (!userInfo.dailyPrizeCollectAvailable) {
-            this.logger.info(`[MTK] Награда за ежедневный вход недоступна`);
+            this.logger.info('[MTK] Награда за ежедневный вход недоступна');
             return;
         }
 
         await service.collectDaily();
 
-        this.logger.info(`[MTK] Получена награда за ежедневный вход`);
+        this.logger.info('[MTK] Получена награда за ежедневный вход');
 
         if (this.notify) {
-            await telegram.bot.sendMessage(telegram.api.userId, [
-                `[MTK] Получена награда за ежедневный вход`,
-            ].join('\n'), {
-                parse_mode: 'HTML',
-            });
+            await telegram.bot.sendMessage(
+                telegram.api.userId,
+                ['[MTK] Получена награда за ежедневный вход'].join('\n'),
+                {
+                    parse_mode: 'HTML',
+                },
+            );
         }
     }
 }

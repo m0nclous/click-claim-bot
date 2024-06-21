@@ -1,9 +1,12 @@
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import telegramConfig from '#config/telegram';
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
 
-export default class MtkGameService extends BaseGameService implements HasTap {
+export default class MtkGameService
+    extends BaseGameService
+    implements HasTap, HasDailyReward, HasEnergyRecharge
+{
     public constructor() {
         super();
 
@@ -21,6 +24,7 @@ export default class MtkGameService extends BaseGameService implements HasTap {
                         const url: URL = new URL(request.url);
 
                         searchParams.set('telegramId', telegramConfig.api.userId.toString());
+                        searchParams.set('userId', telegramConfig.api.userId.toString());
                         searchParams.set('initData', await this.getInitDataKey());
 
                         url.search = searchParams.toString();
@@ -36,8 +40,8 @@ export default class MtkGameService extends BaseGameService implements HasTap {
                         if ('token' in json) {
                             this.token = json.token;
                         }
-                    }
-                ]
+                    },
+                ],
             },
         });
     }
@@ -73,7 +77,15 @@ export default class MtkGameService extends BaseGameService implements HasTap {
         searchParams.set('amount', quantity.toString());
 
         await this.httpClient.post('api/user/click', {
-            searchParams
+            searchParams,
         });
     }
-};
+
+    public async collectDaily(): Promise<void> {
+        await this.httpClient.post('api/user/collectDaily');
+    }
+
+    public async energyReset(): Promise<void> {
+        await this.httpClient.post('api/user/resetEnergy');
+    }
+}

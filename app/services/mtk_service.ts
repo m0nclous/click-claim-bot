@@ -6,52 +6,52 @@ import { urlParseHashParams } from '../../helpers/url.js';
 import telegram from '#config/telegram';
 
 interface GetUserInfo {
-    lang: string,
-    lastCollectionTime: number,
-    totalEnergyLevel: number,
-    leagueLevel: number,
-    clickUpgradePrice: number,
-    username: string,
-    mtkBalance: number,
-    totalClickPower: number,
-    clickLevel: number,
-    country: string,
-    lastDailyCollectionTime: number,
-    energyResets: number,
-    name: string,
-    mtkPerHour: number,
-    referralId: number,
-    dailyPrizeCollectAvailable: boolean,
-    ipAddress: string,
-    created_at: string,
-    isReferralsSynced: boolean,
-    _id: number,
-    lastEnergyResetCollectionTime: number,
-    showTutorial: boolean,
-    totalClicks: number,
-    dailyPrizeDay: number,
-    energyLevel: number,
-    lastUpgradePrice: number,
-    isDatabaseSynced: boolean,
-    telegramId: number,
-    clickMultiplierLevel: number,
-    tasks: string,
-    energyUpgradePrice: number,
-    isPremium: boolean,
-    isTutorialPassed: boolean,
-    userAgent: string,
-    lastEnergyCollectionTime: number,
-    updated_at: number,
-    lastCollectedProfit: number,
-    currentEnergy: number,
-    mtkBalanceBeforeUpdate: number,
-    businessLevels: string,
-    token: string,
-    timeToDailyReset: number,
+    lang: string;
+    lastCollectionTime: number;
+    totalEnergyLevel: number;
+    leagueLevel: number;
+    clickUpgradePrice: number;
+    username: string;
+    mtkBalance: number;
+    totalClickPower: number;
+    clickLevel: number;
+    country: string;
+    lastDailyCollectionTime: number;
+    energyResets: number;
+    name: string;
+    mtkPerHour: number;
+    referralId: number;
+    dailyPrizeCollectAvailable: boolean;
+    ipAddress: string;
+    created_at: string;
+    isReferralsSynced: boolean;
+    _id: number;
+    lastEnergyResetCollectionTime: number;
+    showTutorial: boolean;
+    totalClicks: number;
+    dailyPrizeDay: number;
+    energyLevel: number;
+    lastUpgradePrice: number;
+    isDatabaseSynced: boolean;
+    telegramId: number;
+    clickMultiplierLevel: number;
+    tasks: string;
+    energyUpgradePrice: number;
+    isPremium: boolean;
+    isTutorialPassed: boolean;
+    userAgent: string;
+    lastEnergyCollectionTime: number;
+    updated_at: number;
+    lastCollectedProfit: number;
+    currentEnergy: number;
+    mtkBalanceBeforeUpdate: number;
+    businessLevels: string;
+    token: string;
+    timeToDailyReset: number;
 }
 
 interface UserClick {
-    mtkBalance: number,
+    mtkBalance: number;
 }
 
 /**
@@ -65,10 +65,11 @@ export default class MtkService {
     public userInfo: GetUserInfo | undefined;
 
     public defaultHeaders: {
-        [key: string]: string
+        [key: string]: string;
     } = {
         'x-requested-with': 'org.telegram.messenger',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2107113SG Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.148 Mobile Safari/537.36',
+        'user-agent':
+            'Mozilla/5.0 (Linux; Android 13; 2107113SG Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.148 Mobile Safari/537.36',
         'origin': 'https://clicker.fanschain.io',
         'referer': 'https://clicker.fanschain.io/',
         'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -81,9 +82,11 @@ export default class MtkService {
         'priority': 'u=1, i',
     };
 
-    protected telegramWebViewParams: {
-        [key: string]: string
-    } | undefined;
+    protected telegramWebViewParams:
+        | {
+              [key: string]: string;
+          }
+        | undefined;
 
     protected config;
 
@@ -111,8 +114,8 @@ export default class MtkService {
                             request.headers.set('Authorization', this.token);
                         }
                     },
-                ]
-            }
+                ],
+            },
         });
     }
 
@@ -150,9 +153,11 @@ export default class MtkService {
         searchParams.set('telegramId', `${telegramConfig.api.userId}`);
         searchParams.set('initData', this.getTelegramInitData());
 
-        this.userInfo = await this.httpClient.get('api/user/info', {
-            searchParams,
-        }).json() as GetUserInfo;
+        this.userInfo = (await this.httpClient
+            .get('api/user/info', {
+                searchParams,
+            })
+            .json()) as GetUserInfo;
 
         this.token = this.userInfo.token;
 
@@ -167,9 +172,11 @@ export default class MtkService {
         const searchParams = new URLSearchParams();
         searchParams.set('amount', `${amount}`);
 
-        return await this.httpClient.post('api/user/click', {
-            searchParams,
-        }).json();
+        return await this.httpClient
+            .post('api/user/click', {
+                searchParams,
+            })
+            .json();
     }
 
     public async claim() {
@@ -194,9 +201,11 @@ export default class MtkService {
         const searchParams = new URLSearchParams();
         searchParams.set('userId', `${telegram.api.userId}`);
 
-        return await this.httpClient.post('api/user/collectDaily', {
-            searchParams,
-        }).json();
+        return await this.httpClient
+            .post('api/user/collectDaily', {
+                searchParams,
+            })
+            .json();
     }
 
     public async energyReset() {
@@ -207,9 +216,11 @@ export default class MtkService {
         const searchParams = new URLSearchParams();
         searchParams.set('userId', `${telegram.api.userId}`);
 
-        return await this.httpClient.post('api/user/resetEnergy', {
-            searchParams,
-        }).json();
+        return await this.httpClient
+            .post('api/user/resetEnergy', {
+                searchParams,
+            })
+            .json();
     }
 
     public getMaxEnergy() {
@@ -217,7 +228,7 @@ export default class MtkService {
             throw new Error('User info not found');
         }
 
-        return (this.userInfo.energyLevel * 250 + 2500);
+        return this.userInfo.energyLevel * 250 + 2500;
     }
 
     public getCurrentEnergy() {

@@ -13,9 +13,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
     @flags.boolean({
         description: 'Отправить уведомление в Telegram',
         default: false,
-        alias: [
-            'notify'
-        ]
+        alias: ['notify'],
     })
     declare notifyTelegram: boolean;
 
@@ -45,7 +43,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
 
     async notify(text: string, type: 'info' | 'error' = 'info'): Promise<void> {
         this.logger[type](text, {
-            prefix: this.notifyPrefix
+            prefix: this.notifyPrefix,
         });
 
         if (this.notifyTelegram) {
