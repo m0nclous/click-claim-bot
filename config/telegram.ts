@@ -23,6 +23,6 @@ export const client = new TelegramClient(
     telegramConfig.api.id,
     telegramConfig.api.hash,
     {
-        connectionRetries: 5,
+        connectionRetries: 5, useWSS: true
     },
 );
