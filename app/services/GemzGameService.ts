@@ -1,9 +1,9 @@
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService, {HasDailyReward, HasTap} from '#services/BaseGameService';
 import telegram from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 
-export default class GemzGameService extends BaseGameService implements HasTap {
+export default class GemzGameService extends BaseGameService implements HasTap, HasDailyReward {
     protected rev: number | null = null;
 
     protected sid: string = randomString(9).toLowerCase();
@@ -156,6 +156,10 @@ export default class GemzGameService extends BaseGameService implements HasTap {
 
     public async tap(quantity: number = 1): Promise<any> {
         return this.replicate(this.generateTaps(quantity));
+    }
+
+    public collectDaily(): Promise<void> {
+        throw new Error('Method not implemented.');
     }
 
     public generateTaps(quantity: number = 1) {
