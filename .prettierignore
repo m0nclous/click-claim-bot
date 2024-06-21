@@ -3,3 +3,4 @@ build
 
 pnpm-lock.yaml
 README.md
+.pnpm-store
