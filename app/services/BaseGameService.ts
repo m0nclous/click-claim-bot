@@ -145,7 +145,7 @@ export default abstract class BaseGameService {
 
     public async getWebAppData(asObject?: false): Promise<string>;
     public async getWebAppData(asObject: true): Promise<TgWebAppDataJson>;
-    public async getWebAppData(asObject = false): Promise<string | TgWebAppDataJson> {
+    public async getWebAppData(asObject: boolean = false): Promise<string | TgWebAppDataJson> {
         const webViewParams = await this.getWebViewParams();
 
         if (!asObject) {
