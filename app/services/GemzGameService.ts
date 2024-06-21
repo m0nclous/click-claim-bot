@@ -1,4 +1,4 @@
-import BaseGameService, {HasDailyReward, HasTap} from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward, HasTap } from '#services/BaseGameService';
 import telegram from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
