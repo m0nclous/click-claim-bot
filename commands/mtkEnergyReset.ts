@@ -3,7 +3,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
 import { inject } from '@adonisjs/core';
 import telegram from '#config/telegram';
 import ace from '@adonisjs/core/services/ace';
-import MtkGameService from "#services/MtkGameService";
+import MtkGameService from '#services/MtkGameService';
 
 export default class MtkEnergyReset extends BaseCommand {
     static commandName = 'mtk:energy-reset';
@@ -40,9 +40,7 @@ export default class MtkEnergyReset extends BaseCommand {
         this.logger.info(`[MTK] Энергия восстановлена`);
 
         if (this.notify) {
-            await telegram.bot.sendMessage(telegram.api.userId, [
-                `[MTK] Энергия восстановлена`,
-            ].join('\n'), {
+            await telegram.bot.sendMessage(telegram.api.userId, [`[MTK] Энергия восстановлена`].join('\n'), {
                 parse_mode: 'HTML',
             });
         }

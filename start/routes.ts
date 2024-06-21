@@ -7,7 +7,7 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
+import router from '@adonisjs/core/services/router';
 import { client } from '#config/telegram';
 
 const BASE_TEMPLATE = `
@@ -60,42 +60,46 @@ function callbackPromise() {
 }
 
 // define a route handler for the default home page
-router.get("/", async ({ response }) => {
+router.get('/', async ({ response }) => {
     if (await client.isUserAuthorized()) {
-        return response.send(BASE_TEMPLATE.replace("{{0}}", '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'));
+        return response.send(
+            BASE_TEMPLATE.replace('{{0}}', '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'),
+        );
     } else {
-        client.start({
-            phoneNumber: async () => {
-                return phoneCallback.promise as unknown as string;
-            },
-            phoneCode: async () => {
-                return codeCallback.promise as unknown as string;
-            },
-            password: async () => {
-                return passwordCallback.promise as unknown as string;
-            },
-            onError: (err) => console.log(err),
-        }).then();
+        client
+            .start({
+                phoneNumber: async () => {
+                    return phoneCallback.promise as unknown as string;
+                },
+                phoneCode: async () => {
+                    return codeCallback.promise as unknown as string;
+                },
+                password: async () => {
+                    return passwordCallback.promise as unknown as string;
+                },
+                onError: (err) => console.log(err),
+            })
+            .then();
 
-        return response.send(BASE_TEMPLATE.replace("{{0}}", PHONE_FORM));
+        return response.send(BASE_TEMPLATE.replace('{{0}}', PHONE_FORM));
     }
 });
 
-router.post("/", async ({ request, response }) => {
+router.post('/', async ({ request, response }) => {
     //To access POST variable use req.body()methods.
-    if ("phone" in request.body()) {
+    if ('phone' in request.body()) {
         phone = request.body().phone;
         phoneCallback.resolve(phone);
-        return response.send(BASE_TEMPLATE.replace("{{0}}", CODE_FORM));
+        return response.send(BASE_TEMPLATE.replace('{{0}}', CODE_FORM));
     }
 
-    if ("code" in request.body()) {
+    if ('code' in request.body()) {
         codeCallback.resolve(request.body().code);
-        return response.send(BASE_TEMPLATE.replace("{{0}}", PASSWORD_FORM));
+        return response.send(BASE_TEMPLATE.replace('{{0}}', PASSWORD_FORM));
     }
-    if ("password" in request.body()) {
+    if ('password' in request.body()) {
         passwordCallback.resolve(request.body().password);
-        response.redirect("/");
+        response.redirect('/');
     }
     console.log(request.body());
 });

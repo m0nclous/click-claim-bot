@@ -1,7 +1,7 @@
 services:
-  app:
-    build:
-      context: .
-  scheduler:
-    build:
-      context: .
+    app:
+        build:
+            context: .
+    scheduler:
+        build:
+            context: .

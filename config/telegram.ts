@@ -13,7 +13,7 @@ const telegramConfig = {
         session: new StoreSession('my_session'),
     },
 
-    bot: (new Telegraf(botToken)).telegram,
+    bot: new Telegraf(botToken).telegram,
 };
 
 export default telegramConfig;
@@ -24,5 +24,5 @@ export const client = new TelegramClient(
     telegramConfig.api.hash,
     {
         connectionRetries: 5,
-    }
+    },
 );

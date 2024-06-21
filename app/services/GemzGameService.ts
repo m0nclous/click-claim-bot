@@ -88,7 +88,10 @@ export default class GemzGameService extends BaseGameService implements HasTap {
             hooks: {
                 beforeRequest: [
                     async (request: Request) => {
-                        const json: any = await request.clone().json().catch(() => ({}));
+                        const json: any = await request
+                            .clone()
+                            .json()
+                            .catch(() => ({}));
 
                         json.sid = this.sid;
                         json.id = telegram.api.userId.toString();
@@ -147,7 +150,7 @@ export default class GemzGameService extends BaseGameService implements HasTap {
     }
 
     protected async getAuthKey(): Promise<string> {
-        return this.isAuthenticated() ? this.token as string : this.getInitDataKey();
+        return this.isAuthenticated() ? (this.token as string) : this.getInitDataKey();
     }
 
     public async login(): Promise<void> {
@@ -160,11 +163,11 @@ export default class GemzGameService extends BaseGameService implements HasTap {
 
     public generateTaps(quantity: number = 1) {
         const taps: {
-            fn: 'tap',
-            async: false,
+            fn: 'tap';
+            async: false;
             meta: {
-                now: number,
-            },
+                now: number;
+            };
         }[] = [];
 
         for (let i = 0; i < quantity; i++) {
@@ -181,12 +184,14 @@ export default class GemzGameService extends BaseGameService implements HasTap {
     }
 
     protected async replicate(queue: object[]): Promise<any> {
-        return this.httpClient.post('replicate', {
-            json: {
-                ...this.defaultReplicateBody,
-                crqid: randomString(9).toLowerCase(),
-                queue,
-            },
-        }).json<any>();
+        return this.httpClient
+            .post('replicate', {
+                json: {
+                    ...this.defaultReplicateBody,
+                    crqid: randomString(9).toLowerCase(),
+                    queue,
+                },
+            })
+            .json<any>();
     }
 }

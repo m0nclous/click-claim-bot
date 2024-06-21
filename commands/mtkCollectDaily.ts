@@ -29,11 +29,13 @@ export default class MtkCollectDaily extends BaseCommand {
         this.logger.info(`[MTK] Получена награда за ежедневный вход`);
 
         if (this.notify) {
-            await telegram.bot.sendMessage(telegram.api.userId, [
-                `[MTK] Получена награда за ежедневный вход`,
-            ].join('\n'), {
-                parse_mode: 'HTML',
-            });
+            await telegram.bot.sendMessage(
+                telegram.api.userId,
+                [`[MTK] Получена награда за ежедневный вход`].join('\n'),
+                {
+                    parse_mode: 'HTML',
+                },
+            );
         }
     }
 }

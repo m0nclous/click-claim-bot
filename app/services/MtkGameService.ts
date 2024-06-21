@@ -1,10 +1,12 @@
-import BaseGameService, {HasDailyReward, HasEnergyRecharge, HasTap} from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import telegramConfig from '#config/telegram';
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
 
-export default class MtkGameService extends BaseGameService
-    implements HasTap, HasDailyReward, HasEnergyRecharge {
+export default class MtkGameService
+    extends BaseGameService
+    implements HasTap, HasDailyReward, HasEnergyRecharge
+{
     public constructor() {
         super();
 
@@ -38,8 +40,8 @@ export default class MtkGameService extends BaseGameService
                         if ('token' in json) {
                             this.token = json.token;
                         }
-                    }
-                ]
+                    },
+                ],
             },
         });
     }
@@ -75,7 +77,7 @@ export default class MtkGameService extends BaseGameService
         searchParams.set('amount', quantity.toString());
 
         await this.httpClient.post('api/user/click', {
-            searchParams
+            searchParams,
         });
     }
 
@@ -86,4 +88,4 @@ export default class MtkGameService extends BaseGameService
     public async energyReset(): Promise<void> {
         await this.httpClient.post('api/user/resetEnergy');
     }
-};
+}

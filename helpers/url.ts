@@ -1,5 +1,5 @@
 export function parseUrlHashParams(url: string) {
-    const urlHash = (new URL(url)).hash;
+    const urlHash = new URL(url).hash;
     const urlParams = new URLSearchParams(urlHash.substring(1));
 
     return Object.fromEntries(urlParams.entries());
@@ -7,7 +7,7 @@ export function parseUrlHashParams(url: string) {
 
 /** @deprecated */
 export function urlParseHashParams(url: string): {
-    [key: string]: string
+    [key: string]: string;
 } {
     let locationHash = new URL(url).hash.replace(/^#/, '');
     const params = {};
@@ -41,7 +41,7 @@ export function urlParseHashParams(url: string): {
 
 /** @deprecated */
 export function urlParseQueryString(queryString: string): {
-    [key: string]: string
+    [key: string]: string;
 } {
     const params = {};
     if (!queryString.length) {
