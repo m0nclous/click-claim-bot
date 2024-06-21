@@ -6,6 +6,7 @@ import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
 import { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
+import { TgWebAppDataJson } from '../../types/telegram.js';
 
 export interface HasTap {
     tap(quantity: number): Promise<void>;
@@ -71,9 +72,12 @@ export default abstract class BaseGameService {
                 'referer': this.getWebViewUrl() + '/',
 
                 'x-requested-with': 'org.telegram.messenger',
-                'user-agent':
-                    'Mozilla/5.0 (Linux; Android 13; 2107113SG Build/TKQ1.220829.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/125.0.6422.148 Mobile Safari/537.36',
+
+                'accept': '*/*',
+                'cache-control': 'no-cache',
+                'pragma': 'no-cache',
                 'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+
                 'sec-ch-ua': '"Android WebView";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
                 'sec-ch-ua-platform': '"Android"',
                 'sec-ch-ua-mobile': '?1',
@@ -139,10 +143,22 @@ export default abstract class BaseGameService {
         return parseUrlHashParams(webView.url);
     }
 
-    public async getWebAppData(): Promise<string> {
+    public async getWebAppData(asObject?: false): Promise<string>;
+    public async getWebAppData(asObject: true): Promise<TgWebAppDataJson>;
+    public async getWebAppData(asObject: boolean = false): Promise<string | TgWebAppDataJson> {
         const webViewParams = await this.getWebViewParams();
 
-        return webViewParams.tgWebAppData;
+        if (!asObject) {
+            return webViewParams.tgWebAppData;
+        }
+
+        const tgWebAppDataUrlSearch = new URLSearchParams(webViewParams.tgWebAppData);
+        const tgWebAppDataJson = Object.fromEntries(
+            tgWebAppDataUrlSearch.entries(),
+        ) as unknown as TgWebAppDataJson;
+        tgWebAppDataJson.user = JSON.parse(tgWebAppDataJson.user as unknown as string);
+
+        return tgWebAppDataJson;
     }
 
     protected async getInitDataKey(): Promise<string> {
