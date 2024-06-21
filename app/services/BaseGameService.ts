@@ -143,8 +143,8 @@ export default abstract class BaseGameService {
         return parseUrlHashParams(webView.url);
     }
 
-    public async getWebAppData(asObject?: false): Promise<string>
-    public async getWebAppData(asObject: true): Promise<TgWebAppDataJson>
+    public async getWebAppData(asObject?: false): Promise<string>;
+    public async getWebAppData(asObject: true): Promise<TgWebAppDataJson>;
     public async getWebAppData(asObject = false): Promise<string | TgWebAppDataJson> {
         const webViewParams = await this.getWebViewParams();
 
@@ -153,7 +153,9 @@ export default abstract class BaseGameService {
         }
 
         const tgWebAppDataUrlSearch = new URLSearchParams(webViewParams.tgWebAppData);
-        const tgWebAppDataJson = Object.fromEntries(tgWebAppDataUrlSearch.entries()) as unknown as TgWebAppDataJson;
+        const tgWebAppDataJson = Object.fromEntries(
+            tgWebAppDataUrlSearch.entries(),
+        ) as unknown as TgWebAppDataJson;
         tgWebAppDataJson.user = JSON.parse(tgWebAppDataJson.user as unknown as string);
 
         return tgWebAppDataJson;

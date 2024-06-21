@@ -44,13 +44,15 @@ export default class MemeFiGameService extends BaseGameService {
     }
 
     protected async graphql(operationName: string, variables: any, query: string): Promise<any> {
-        return this.httpClient.post('graphql', {
-            json: {
-                operationName,
-                variables,
-                query,
-            },
-        }).json();
+        return this.httpClient
+            .post('graphql', {
+                json: {
+                    operationName,
+                    variables,
+                    query,
+                },
+            })
+            .json();
     }
 
     async login(): Promise<void> {
@@ -68,21 +70,24 @@ export default class MemeFiGameService extends BaseGameService {
 
         const variables: object = {
             webAppData: {
-                'auth_date': parseInt(params.auth_date),
-                'hash': params.hash,
-                'query_id': params.query_id,
-                'checkDataString': Object.keys(params)
-                    .filter(key => key !== 'hash')
-                    // @ts-expect-error ошибка из-за неизвестных ключей key
-                    .map((key) => `${key}=${typeof params[key] === 'object' ? JSON.stringify(params[key]) : params[key]}`)
+                auth_date: parseInt(params.auth_date),
+                hash: params.hash,
+                query_id: params.query_id,
+                checkDataString: Object.keys(params)
+                    .filter((key) => key !== 'hash')
+                    .map(
+                        (key) =>
+                            // @ts-expect-error ошибка из-за неизвестных ключей key
+                            `${key}=${typeof params[key] === 'object' ? JSON.stringify(params[key]) : params[key]}`,
+                    )
                     .sort()
                     .join('\n'),
-                'user': {
+                user: {
                     ...params.user,
                     version: web.tgWebAppVersion,
                     platform: web.tgWebAppPlatform,
                 },
-            }
+            },
         };
 
         await this.graphql(operationName, variables, query);
