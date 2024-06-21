@@ -1,10 +1,10 @@
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward, HasTap } from '#services/BaseGameService';
 import telegram from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
 
-export default class GemzGameService extends BaseGameService implements HasTap {
+export default class GemzGameService extends BaseGameService implements HasTap, HasDailyReward {
     protected rev: number | null = null;
 
     protected sid: string = randomString(9).toLowerCase();
@@ -164,6 +164,10 @@ export default class GemzGameService extends BaseGameService implements HasTap {
 
     public async tap(quantity: number = 1): Promise<any> {
         return this.replicate(this.generateTaps(quantity));
+    }
+
+    public async collectDaily(): Promise<void> {
+        return this.replicate([{ fn: 'claimDailyReward', async: false }]);
     }
 
     public generateTaps(quantity: number = 1) {
