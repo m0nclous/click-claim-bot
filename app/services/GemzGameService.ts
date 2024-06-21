@@ -166,8 +166,8 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
         return this.replicate(this.generateTaps(quantity));
     }
 
-    public collectDaily(): Promise<void> {
-        throw new Error('Method not implemented.');
+    public async collectDaily(): Promise<void> {
+        return this.replicate([{ fn: 'claimDailyReward', async: false }]);
     }
 
     public generateTaps(quantity: number = 1) {
