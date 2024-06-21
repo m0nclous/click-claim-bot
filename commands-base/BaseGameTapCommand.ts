@@ -35,7 +35,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
         } catch (error) {
             this.logger.error(error);
 
-            return this.notify(`Ошибка во время отправки тапов: ${this.quantity}`);
+            return this.notify(`Ошибка во время отправки тапов: ${this.quantity}`, 'error');
         }
 
         await this.notify(`Успешно отправлено тапов: ${this.quantity}`);
