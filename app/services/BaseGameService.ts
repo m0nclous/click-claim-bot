@@ -19,6 +19,14 @@ export interface TapUpgradable extends HasTap {
     tapUpgrade(): Promise<void>;
 }
 
+export interface TapMultiplierUpgradable extends HasTap {
+    getTapMultiplierUpgradeCurrentLevel(): Promise<number>;
+
+    getTapMultiplierUpgradePrice(): Promise<number>;
+
+    tapMultiplierUpgrade(): Promise<void>;
+}
+
 export interface HasDailyReward {
     collectDaily(): Promise<void>
 }
