@@ -9,7 +9,6 @@
 
 import router from '@adonisjs/core/services/router'
 import { client } from '#config/telegram';
-import { utils } from 'telegram';
 
 const BASE_TEMPLATE = `
 <!DOCTYPE html>
@@ -44,6 +43,21 @@ const PASSWORD_FORM = `
 `;
 
 let phone;
+const phoneCallback = callbackPromise();
+const codeCallback = callbackPromise();
+const passwordCallback = callbackPromise();
+
+function callbackPromise() {
+    let resolve: any;
+    let reject: any;
+
+    const promise: Promise<unknown> = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+
+    return { promise, resolve, reject };
+}
 
 // define a route handler for the default home page
 router.get("/", async ({ response }) => {
@@ -52,16 +66,16 @@ router.get("/", async ({ response }) => {
     } else {
         client.start({
             phoneNumber: async () => {
-                return phoneCallback.promise;
+                return phoneCallback.promise as unknown as string;
             },
             phoneCode: async () => {
-                return codeCallback.promise;
+                return codeCallback.promise as unknown as string;
             },
             password: async () => {
-                return passwordCallback.promise;
+                return passwordCallback.promise as unknown as string;
             },
             onError: (err) => console.log(err),
-        });
+        }).then();
 
         return response.send(BASE_TEMPLATE.replace("{{0}}", PHONE_FORM));
     }
@@ -85,29 +99,3 @@ router.post("/", async ({ request, response }) => {
     }
     console.log(request.body());
 });
-
-function callbackPromise() {
-    // helper method for promises
-    let resolve, reject;
-
-    const promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-    });
-
-    return { promise, resolve, reject };
-}
-
-function formatMessage(message) {
-    let content = (message.text || "(action message or media)").replace(
-        "\n",
-        "<br>"
-    );
-    return `<p><strong>${utils.getDisplayName(
-        message.sender
-    )}</strong>: ${content}<sub>${message.date}</sub></p>`;
-}
-
-const phoneCallback = callbackPromise();
-const codeCallback = callbackPromise();
-const passwordCallback = callbackPromise();
