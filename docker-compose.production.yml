@@ -1,14 +1,14 @@
 services:
-  app:
-    build:
-      target: 'production'
-    ports:
-      - '${PORT:-80}:80'
-    environment:
-        NODE_ENV: 'production'
-  scheduler:
-      build:
-          context: .
-          target: 'production-scheduler'
-      environment:
-          NODE_ENV: 'production'
+    app:
+        build:
+            target: 'production'
+        ports:
+            - '${PORT:-80}:80'
+        environment:
+            NODE_ENV: 'production'
+    scheduler:
+        build:
+            context: .
+            target: 'production-scheduler'
+        environment:
+            NODE_ENV: 'production'

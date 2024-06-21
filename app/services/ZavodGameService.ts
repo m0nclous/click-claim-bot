@@ -34,4 +34,4 @@ export default class ZavodGameService extends BaseGameService {
     async login(): Promise<void> {
         await this.httpClient.get('user/profile');
     }
-};
+}
