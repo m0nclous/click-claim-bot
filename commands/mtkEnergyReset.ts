@@ -34,13 +34,13 @@ export default class MtkEnergyReset extends BaseCommand {
         try {
             await service.energyReset();
         } catch (e) {
-            this.logger.info(`[MTK] Недостаточно energyResets`);
+            this.logger.info('[MTK] Недостаточно energyResets');
         }
 
-        this.logger.info(`[MTK] Энергия восстановлена`);
+        this.logger.info('[MTK] Энергия восстановлена');
 
         if (this.notify) {
-            await telegram.bot.sendMessage(telegram.api.userId, [`[MTK] Энергия восстановлена`].join('\n'), {
+            await telegram.bot.sendMessage(telegram.api.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
                 parse_mode: 'HTML',
             });
         }

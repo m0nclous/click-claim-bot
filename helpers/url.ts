@@ -17,7 +17,7 @@ export function urlParseHashParams(url: string): {
     }
 
     if (locationHash.indexOf('=') < 0 && locationHash.indexOf('?') < 0) {
-        // @ts-ignore
+        // @ts-expect-error будет удалено
         params._path = urlSafeDecode(locationHash);
         return params;
     }
@@ -25,14 +25,14 @@ export function urlParseHashParams(url: string): {
     const qIndex = locationHash.indexOf('?');
     if (qIndex >= 0) {
         const pathParam = locationHash.substr(0, qIndex);
-        // @ts-ignore
+        // @ts-expect-error будет удалено
         params._path = urlSafeDecode(pathParam);
         locationHash = locationHash.substr(qIndex + 1);
     }
 
     const query_params = urlParseQueryString(locationHash);
     for (const k in query_params) {
-        // @ts-ignore
+        // @ts-expect-error будет удалено
         params[k] = query_params[k];
     }
 
@@ -55,7 +55,7 @@ export function urlParseQueryString(queryString: string): {
         param = queryStringParams[i].split('=');
         paramName = urlSafeDecode(param[0]);
         paramValue = param[1] == null ? null : urlSafeDecode(param[1]);
-        // @ts-ignore
+        // @ts-expect-error будет удалено
         params[paramName] = paramValue;
     }
     return params;

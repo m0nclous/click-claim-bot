@@ -2,6 +2,7 @@ import BaseGameService, { HasTap } from '#services/BaseGameService';
 import telegram from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
+import logger from '@adonisjs/core/services/logger';
 
 export default class GemzGameService extends BaseGameService implements HasTap {
     protected rev: number | null = null;
@@ -109,7 +110,11 @@ export default class GemzGameService extends BaseGameService implements HasTap {
 
                 afterResponse: [
                     async (_request: Request, _options: NormalizedOptions, response: Response) => {
-                        const json: any = await new Response(response.clone().body).json();
+                        const json: any = await new Response(response.clone().body).json().catch((error) => {
+                            logger.error(error);
+
+                            return {};
+                        });
 
                         if (json?.data.token) {
                             this.token = json.data.token;
