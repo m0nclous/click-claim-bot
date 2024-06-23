@@ -10,7 +10,7 @@
 import router from '@adonisjs/core/services/router';
 import { client } from '#config/telegram';
 
-const BASE_TEMPLATE= (error?: string) => {
+const BASE_TEMPLATE = (error?: string) => {
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +21,8 @@ const BASE_TEMPLATE= (error?: string) => {
     <body>{{0}}</body>
     ${error ? `<p style="color: red">${error}</p>` : '<p></p>'}
 </html>
-`;};
+`;
+};
 
 const PHONE_FORM = `
 <form action='/' method='post'>
@@ -71,7 +72,10 @@ function callbackPromise() {
 router.get('/', async ({ response }) => {
     if (await client.isUserAuthorized()) {
         return response.send(
-            BASE_TEMPLATE().replace('{{0}}', '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'),
+            BASE_TEMPLATE().replace(
+                '{{0}}',
+                '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>',
+            ),
         );
     } else {
         client
@@ -89,7 +93,8 @@ router.get('/', async ({ response }) => {
                     errMSG = `Name: ${error.name}; Error message: ${error.errorMessage}; Message: ${error.message}`;
                     return Promise.resolve(true);
                 },
-            }).catch(console.error);
+            })
+            .catch(console.error);
 
         if (!nextStep) return response.send(BASE_TEMPLATE(errMSG).replace('{{0}}', steps[nextStep]));
         return response;
