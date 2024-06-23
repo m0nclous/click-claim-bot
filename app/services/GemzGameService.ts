@@ -4,7 +4,10 @@ import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
 
-export default class GemzGameService extends BaseGameService implements HasTap, HasDailyReward, HasEnergyRecharge {
+export default class GemzGameService
+    extends BaseGameService
+    implements HasTap, HasDailyReward, HasEnergyRecharge
+{
     protected rev: number | null = null;
 
     protected sid: string = randomString(9).toLowerCase();
@@ -167,20 +170,24 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
     }
 
     public async collectDaily(): Promise<void> {
-        return this.replicate([{
-            fn: 'claimDailyReward',
-            async: false,
-        }]);
+        return this.replicate([
+            {
+                fn: 'claimDailyReward',
+                async: false,
+            },
+        ]);
     }
 
     public async energyReset(): Promise<void> {
-        return this.replicate([{
-            fn: 'buyBuff',
-            async: false,
-            args: {
-                buff: 'FullEnergy',
+        return this.replicate([
+            {
+                fn: 'buyBuff',
+                async: false,
+                args: {
+                    buff: 'FullEnergy',
+                },
             },
-        }]);
+        ]);
     }
 
     public generateTaps(quantity: number = 1) {
@@ -205,7 +212,7 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
                 json: {
                     ...this.defaultReplicateBody,
                     crqid: randomString(9).toLowerCase(),
-                    queue: queue.map(i => ({ ...i, meta: Date.now() })),
+                    queue: queue.map((i) => ({ ...i, meta: Date.now() })),
                 },
             })
             .json<any>();
