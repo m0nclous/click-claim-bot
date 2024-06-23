@@ -12,6 +12,7 @@
 import 'reflect-metadata';
 import { Ignitor, prettyPrintError } from '@adonisjs/core';
 import { client } from '#config/telegram';
+import botInit from '#config/botInit';
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -36,6 +37,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
             await import('#start/env');
             client.session.setDC(2, '149.154.167.50', 443);
             await client.connect();
+            await botInit();
         });
         app.listen('SIGTERM', () => app.terminate());
         app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate());

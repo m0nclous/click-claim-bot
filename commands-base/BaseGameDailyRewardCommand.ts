@@ -45,7 +45,7 @@ export default abstract class BaseGameDailyRewardCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegram.bot.sendMessage(telegram.api.userId, telegramText);
+            await telegram.bot.telegram.sendMessage(telegram.api.userId, telegramText);
         }
     }
 }

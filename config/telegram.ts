@@ -12,8 +12,7 @@ const telegramConfig = {
         hash: env.get('TELEGRAM_API_HASH'),
         session: new StoreSession('my_session'),
     },
-
-    bot: new Telegraf(botToken).telegram,
+    bot: new Telegraf(botToken),
 };
 
 export default telegramConfig;

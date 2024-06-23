@@ -40,7 +40,7 @@ export default class MtkEnergyReset extends BaseCommand {
         this.logger.info('[MTK] Энергия восстановлена');
 
         if (this.notify) {
-            await telegram.bot.sendMessage(telegram.api.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
+            await telegram.bot.telegram.sendMessage(telegram.api.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
                 parse_mode: 'HTML',
             });
         }
