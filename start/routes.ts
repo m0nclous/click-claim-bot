@@ -8,7 +8,9 @@
 */
 
 import router from '@adonisjs/core/services/router';
-import { client } from '#config/telegram';
+import telegramConfig, { client } from '#config/telegram';
+import { getSession, saveSession } from '../helpers/redis/index.js';
+import { StringSession } from 'telegram/sessions/index.js';
 
 const BASE_TEMPLATE = `
 <!DOCTYPE html>
@@ -62,6 +64,11 @@ function callbackPromise() {
 // define a route handler for the default home page
 router.get('/', async ({ response }) => {
     if (await client.isUserAuthorized()) {
+        const session = await getSession(telegramConfig.api.userId.toString());
+        const sessionToken = (client.session as StringSession).save();
+
+        if (!session) await saveSession(telegramConfig.api.userId.toString(), sessionToken);
+
         return response.send(
             BASE_TEMPLATE.replace('{{0}}', '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'),
         );

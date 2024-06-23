@@ -6,15 +6,22 @@ services:
             - '${PORT:-80}:80'
         environment:
             NODE_ENV: 'production'
-        volumes:
-            - session:/app/my_session
+        depends_on:
+            - redis
     scheduler:
         build:
             context: .
             target: 'production-scheduler'
         environment:
             NODE_ENV: 'production'
-        volumes:
-            - session:/app/my_session
-volumes:
-    session:
+        depends_on:
+            - app
+            - redis
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - '6379:6379'
+        environment:
+            - REDIS_PORT_NUMBER=6379
+            - ALLOW_EMPTY_PASSWORD=yes

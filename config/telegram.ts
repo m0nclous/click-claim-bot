@@ -1,16 +1,22 @@
 import env from '#start/env';
 import { TelegramClient } from 'telegram';
 import { Telegraf } from 'telegraf';
-import { StoreSession } from 'telegram/sessions/index.js';
+import { StringSession } from 'telegram/sessions/index.js';
+import { getSession } from '../helpers/redis/index.js';
 
 const botToken = env.get('TELEGRAM_BOT_TOKEN');
+const userId = env.get('TELEGRAM_API_USER_ID');
+
+const sessionToken = await getSession(userId.toString());
+
+const stringSession = new StringSession(sessionToken || undefined);
 
 const telegramConfig = {
     api: {
         id: env.get('TELEGRAM_API_ID'),
-        userId: env.get('TELEGRAM_API_USER_ID'),
+        userId,
         hash: env.get('TELEGRAM_API_HASH'),
-        session: new StoreSession('my_session'),
+        session: stringSession,
     },
 
     bot: new Telegraf(botToken).telegram,
