@@ -1,7 +1,7 @@
-import { createClient } from 'redis';
+import { createClient, ErrorReply } from 'redis';
 
 const client = await createClient({ url: 'redis://redis:6379' })
-    .on('error', (err) => console.log('Redis Client Error', err))
+    .on('error', (err: ErrorReply) => console.log('Redis Client Error', err))
     .connect();
 
 export const saveSession = (key: string, value: string): Promise<string | null> => {
