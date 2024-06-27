@@ -1,9 +1,10 @@
 import ky, { KyInstance } from 'ky';
 import telegramWebView from '#config/telegram-web-view';
-import telegramConfig, { client } from '#config/telegram';
-import { Api } from 'telegram';
+import telegramConfig from '#config/telegram';
+import { Api, TelegramClient } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
 import telegram from '#config/telegram';
+import app from '@adonisjs/core/services/app';
 
 interface GetUserInfo {
     lang: string;
@@ -120,9 +121,7 @@ export default class MtkService {
     }
 
     protected async getTelegramWebViewParams() {
-        if (!client.connected) {
-            await client.connect();
-        }
+        const client: TelegramClient = await app.container.make('telegramClient');
 
         const result = await client.invoke(
             new Api.messages.RequestWebView({

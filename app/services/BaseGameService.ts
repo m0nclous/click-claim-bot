@@ -1,5 +1,4 @@
-import { client } from '#config/telegram';
-import { Api as TelegramApi } from 'telegram';
+import { Api as TelegramApi, TelegramClient } from 'telegram';
 import { parseUrlHashParams } from '../../helpers/url.js';
 import ky, { HTTPError, KyInstance } from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
@@ -7,6 +6,7 @@ import TypeInputPeer = TelegramApi.TypeInputPeer;
 import { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
 import { TgWebAppDataJson } from '../../types/telegram.js';
+import app from '@adonisjs/core/services/app';
 
 export interface HasTap {
     tap(quantity: number): Promise<void>;
@@ -121,9 +121,7 @@ export default abstract class BaseGameService {
     }
 
     protected async requestWebView(): Promise<WebViewResultUrl> {
-        if (!client.connected) {
-            await client.connect();
-        }
+        const client: TelegramClient = await app.container.make('telegramClient');
 
         const botEntity: TypeInputPeer = await client.getInputEntity(this.getBotName());
 

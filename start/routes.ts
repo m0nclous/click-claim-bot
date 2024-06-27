@@ -8,7 +8,11 @@
 */
 
 import router from '@adonisjs/core/services/router';
-import { client } from '#config/telegram';
+import app from '@adonisjs/core/services/app';
+import type { TelegramClient } from 'telegram';
+import { saveSessionAuthKey } from '../helpers/telegram.js';
+
+const client: TelegramClient = await app.container.make('telegramClient');
 
 const BASE_TEMPLATE = `
 <!DOCTYPE html>
@@ -79,7 +83,11 @@ router.get('/', async ({ response }) => {
                 },
                 onError: (err) => console.log(err),
             })
-            .then();
+            .then(async () => {
+                const authToken: string = client.session.save() as unknown as string;
+
+                await saveSessionAuthKey(authToken);
+            });
 
         return response.send(BASE_TEMPLATE.replace('{{0}}', PHONE_FORM));
     }

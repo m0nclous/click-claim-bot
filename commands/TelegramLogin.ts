@@ -1,6 +1,6 @@
 import { BaseCommand } from '@adonisjs/core/ace';
 import { inject } from '@adonisjs/core';
-import { client } from '#config/telegram';
+import { saveSessionAuthKey } from '../helpers/telegram.js';
 
 // noinspection JSUnusedGlobalSymbols
 export default class GemzClaim extends BaseCommand {
@@ -9,6 +9,8 @@ export default class GemzClaim extends BaseCommand {
 
     @inject()
     async run() {
+        const client = await this.app.container.make('telegramClient');
+
         await client.start({
             phoneNumber: async () => await this.prompt.ask('Номер телефона'),
             password: async () => await this.prompt.secure('Пароль'),
@@ -18,6 +20,9 @@ export default class GemzClaim extends BaseCommand {
                 process.exit(1);
             },
         });
+
+        const authToken: string = client.session.save() as unknown as string;
+        await saveSessionAuthKey(authToken);
 
         this.logger.info('Успешно');
     }
