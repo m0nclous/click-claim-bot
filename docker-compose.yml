@@ -2,12 +2,25 @@ services:
     app:
         build:
             context: .
-        volumes:
-            - session:/app/my_session
+        depends_on:
+            - redis
     scheduler:
         build:
             context: .
+        depends_on:
+            - redis
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
-            - session:/app/my_session
+            - 'redis:/data'
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
 volumes:
-    session:
+    redis:
