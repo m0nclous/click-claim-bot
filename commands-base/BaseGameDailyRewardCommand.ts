@@ -1,7 +1,7 @@
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
-import BaseCommandExtended from './BaseCommandExtended.js';
 
+import BaseCommandExtended from './BaseCommandExtended.js';
 export default abstract class BaseGameDailyRewardCommand extends BaseCommandExtended {
     static options: CommandOptions = {
         startApp: true,

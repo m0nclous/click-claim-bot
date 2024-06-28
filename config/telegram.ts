@@ -1,28 +1,19 @@
 import env from '#start/env';
-import { TelegramClient } from 'telegram';
 import { Telegraf } from 'telegraf';
-import { StoreSession } from 'telegram/sessions/index.js';
+import { defineConfig } from '#services/TelegramService';
 
-const botToken = env.get('TELEGRAM_BOT_TOKEN');
-
-const telegramConfig = {
-    api: {
-        id: env.get('TELEGRAM_API_ID'),
-        userId: env.get('TELEGRAM_API_USER_ID'),
-        hash: env.get('TELEGRAM_API_HASH'),
-        session: new StoreSession('my_session'),
+const telegramConfig = defineConfig({
+    id: env.get('TELEGRAM_API_ID'),
+    userId: env.get('TELEGRAM_API_USER_ID'),
+    hash: env.get('TELEGRAM_API_HASH'),
+    sessionName: 'telegram-session',
+    dc: {
+        id: 2,
+        ip: '149.154.167.50',
+        port: 443,
     },
-
-    bot: new Telegraf(botToken).telegram,
-};
+});
 
 export default telegramConfig;
 
-export const client = new TelegramClient(
-    telegramConfig.api.session,
-    telegramConfig.api.id,
-    telegramConfig.api.hash,
-    {
-        connectionRetries: 5,
-    },
-);
+export const bot = new Telegraf(env.get('TELEGRAM_BOT_TOKEN')).telegram;

@@ -52,6 +52,7 @@
     },
     "dependencies": {
         "@adonisjs/core": "^6.9.0",
+        "@adonisjs/redis": "^9.1.0",
         "@eslint/eslintrc": "^3.1.0",
         "@eslint/js": "^9.5.0",
         "adonisjs-scheduler": "^1.0.5",
