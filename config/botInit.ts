@@ -1,30 +1,28 @@
-import telegramConfig from '#config/telegram';
+import { telegraf } from '#config/telegram';
 import { updateSession } from '../helpers/redis/index.js';
 
-const bot =  telegramConfig.bot;
-
 const botInit = async () => {
-    bot.start((ctx) => ctx.reply('Welcome to Auto Bot Clicker'));
+    telegraf.start((ctx) => ctx.reply('Welcome to Auto Bot Clicker'));
 
-    bot.command('init',async (ctx) => {
+    telegraf.command('init',async (ctx) => {
         await updateSession(String(ctx.from.id), { token: ctx.telegram.token });
         await ctx.reply('Success authorize');
     });
 
-    bot.command('start', async (ctx) => {
+    telegraf.command('start', async (ctx) => {
         await updateSession(String(ctx.from.id), { isStart: true });
         await ctx.reply('Bot has started');
     });
 
-    bot.command('stop', async (ctx) => {
+    telegraf.command('stop', async (ctx) => {
         await updateSession(String(ctx.from.id), { isStart: false });
         await ctx.reply('Bot has stopped');
     });
 
-    await bot.launch();
+    await telegraf.launch();
 
-    process.once('SIGINT', () => bot.stop('SIGINT'));
-    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+    process.once('SIGINT', () => telegraf.stop('SIGINT'));
+    process.once('SIGTERM', () => telegraf.stop('SIGTERM'));
 };
 
 export default botInit;

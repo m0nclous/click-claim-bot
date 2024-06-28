@@ -16,4 +16,5 @@ const telegramConfig = defineConfig({
 
 export default telegramConfig;
 
-export const bot = new Telegraf(env.get('TELEGRAM_BOT_TOKEN')).telegram;
+export const telegraf = new Telegraf(env.get('TELEGRAM_BOT_TOKEN'));
+export const bot = telegraf.telegram;
