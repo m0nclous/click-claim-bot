@@ -1,5 +1,5 @@
 import BaseGameService, { HasDailyReward, HasTap } from '#services/BaseGameService';
-import telegram from '#config/telegram';
+import telegramConfig from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
@@ -95,7 +95,7 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
                             .catch(() => ({}));
 
                         json.sid = this.sid;
-                        json.id = telegram.api.userId.toString();
+                        json.id = telegramConfig.userId.toString();
                         json.auth = await this.getAuthKey();
 
                         if (this.rev) {
