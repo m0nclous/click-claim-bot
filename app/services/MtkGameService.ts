@@ -23,8 +23,8 @@ export default class MtkGameService
                         const searchParams: URLSearchParams = options.searchParams ?? new URLSearchParams();
                         const url: URL = new URL(request.url);
 
-                        searchParams.set('telegramId', telegramConfig.api.userId.toString());
-                        searchParams.set('userId', telegramConfig.api.userId.toString());
+                        searchParams.set('telegramId', telegramConfig.userId.toString());
+                        searchParams.set('userId', telegramConfig.userId.toString());
                         searchParams.set('initData', await this.getInitDataKey());
 
                         url.search = searchParams.toString();

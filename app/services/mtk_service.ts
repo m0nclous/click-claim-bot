@@ -1,9 +1,9 @@
 import ky, { KyInstance } from 'ky';
 import telegramWebView from '#config/telegram-web-view';
-import telegramConfig, { client } from '#config/telegram';
-import { Api } from 'telegram';
+import telegramConfig from '#config/telegram';
+import { Api, TelegramClient } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
-import telegram from '#config/telegram';
+import telegram from '#services/TelegramService';
 
 interface GetUserInfo {
     lang: string;
@@ -120,9 +120,7 @@ export default class MtkService {
     }
 
     protected async getTelegramWebViewParams() {
-        if (!client.connected) {
-            await client.connect();
-        }
+        const client: TelegramClient = await telegram.getClient();
 
         const result = await client.invoke(
             new Api.messages.RequestWebView({
@@ -150,7 +148,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('telegramId', `${telegramConfig.api.userId}`);
+        searchParams.set('telegramId', `${telegramConfig.userId}`);
         searchParams.set('initData', this.getTelegramInitData());
 
         this.userInfo = (await this.httpClient
@@ -199,7 +197,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegram.api.userId}`);
+        searchParams.set('userId', `${telegramConfig.userId}`);
 
         return await this.httpClient
             .post('api/user/collectDaily', {
@@ -214,7 +212,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegram.api.userId}`);
+        searchParams.set('userId', `${telegramConfig.userId}`);
 
         return await this.httpClient
             .post('api/user/resetEnergy', {

@@ -1,5 +1,5 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegram from '#config/telegram';
+import telegramConfig, { bot } from '#config/telegram';
 import BaseGameService, { HasTap } from '#services/BaseGameService';
 import { CommandOptions } from '@adonisjs/core/types/ace';
 
@@ -53,7 +53,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegram.bot.telegram.sendMessage(telegram.api.userId, telegramText);
+            await bot.sendMessage(telegramConfig.userId, telegramText);
         }
     }
 }

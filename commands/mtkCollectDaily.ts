@@ -2,7 +2,7 @@ import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import MtkService from '#services/mtk_service';
 import { inject } from '@adonisjs/core';
-import telegram from '#config/telegram';
+import telegramConfig, { bot } from '#config/telegram';
 
 export default class MtkCollectDaily extends BaseCommand {
     static commandName = 'mtk:collect-daily';
@@ -29,8 +29,8 @@ export default class MtkCollectDaily extends BaseCommand {
         this.logger.info('[MTK] Получена награда за ежедневный вход');
 
         if (this.notify) {
-            await telegram.bot.telegram.sendMessage(
-                telegram.api.userId,
+            await bot.sendMessage(
+                telegramConfig.userId,
                 ['[MTK] Получена награда за ежедневный вход'].join('\n'),
                 {
                     parse_mode: 'HTML',
