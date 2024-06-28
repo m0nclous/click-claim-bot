@@ -1,17 +1,13 @@
-import type { TelegramClient } from 'telegram';
 import { ApplicationService } from '@adonisjs/core/types';
+import { TelegramService } from '#services/TelegramService';
 
 export default class AppProvider {
-    protected app: ApplicationService;
-
-    constructor(app: ApplicationService) {
-        this.app = app;
-    }
+    constructor(protected app: ApplicationService) {}
 
     // noinspection JSUnusedGlobalSymbols
-    public async boot() {
-        const telegramClient: TelegramClient = await this.app.container.make('telegramClient');
+    public async boot(): Promise<void> {
+        const telegram: TelegramService = await this.app.container.make('telegram');
 
-        await telegramClient.connect();
+        await (await telegram.getClient()).connect();
     }
 }

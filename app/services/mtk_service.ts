@@ -3,7 +3,6 @@ import telegramWebView from '#config/telegram-web-view';
 import telegramConfig from '#config/telegram';
 import { Api, TelegramClient } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
-import telegram from '#config/telegram';
 import app from '@adonisjs/core/services/app';
 
 interface GetUserInfo {
@@ -149,7 +148,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('telegramId', `${telegramConfig.api.userId}`);
+        searchParams.set('telegramId', `${telegramConfig.userId}`);
         searchParams.set('initData', this.getTelegramInitData());
 
         this.userInfo = (await this.httpClient
@@ -198,7 +197,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegram.api.userId}`);
+        searchParams.set('userId', `${telegramConfig.userId}`);
 
         return await this.httpClient
             .post('api/user/collectDaily', {
@@ -213,7 +212,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegram.api.userId}`);
+        searchParams.set('userId', `${telegramConfig.userId}`);
 
         return await this.httpClient
             .post('api/user/resetEnergy', {

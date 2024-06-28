@@ -33,7 +33,7 @@ export default defineConfig({
             environment: ['console'],
         },
         () => import('@adonisjs/redis/redis_provider'),
-        () => import('#providers/telegram_client_provider'),
+        () => import('#providers/telegram_provider'),
         () => import('#providers/app_provider'),
     ],
 
