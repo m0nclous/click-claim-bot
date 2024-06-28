@@ -3,6 +3,8 @@ import { RedisService } from '@adonisjs/redis/types';
 import app from '@adonisjs/core/services/app';
 import { Context, Telegraf } from 'telegraf';
 import { parseBoolean } from '../../helpers/parse.js';
+// @ts-ignore
+import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 
 export interface TelegramBotConfig {
     token: string;
@@ -13,7 +15,7 @@ export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
 }
 
 export class TelegramBotService {
-    protected bot: Telegraf;
+    public bot: Telegraf;
 
     constructor(
         public config: TelegramBotConfig,
@@ -28,7 +30,7 @@ export class TelegramBotService {
         this.bot.command('stop', this.stop.bind(this));
         this.bot.command('info', this.info.bind(this));
 
-        await this.bot.launch();
+        this.bot.launch().then();
     }
 
     public async isStarted(userId: number): Promise<boolean> {
@@ -65,6 +67,10 @@ export class TelegramBotService {
         }
 
         await ctx.reply(`Started: ${await this.isStarted(ctx.from.id)}`);
+    }
+
+    public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
+        await this.bot.telegram.sendMessage(chatId, text, extra);
     }
 }
 

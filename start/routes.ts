@@ -108,5 +108,4 @@ router.post('/', async ({ request, response }) => {
         passwordCallback.resolve(request.body().password);
         response.redirect('/');
     }
-    console.log(request.body());
 });

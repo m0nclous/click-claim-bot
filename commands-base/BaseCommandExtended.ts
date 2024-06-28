@@ -1,7 +1,8 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegramConfig, { bot } from '#config/telegram';
+import telegramConfig from '#config/telegram';
 import telegramBot from '#services/TelegramBotService';
 
+// noinspection JSUnusedGlobalSymbols
 export default class BaseCommandExtended extends BaseCommand {
     @flags.boolean({
         description: 'Отправить уведомление в Telegram',
@@ -23,7 +24,7 @@ export default class BaseCommandExtended extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await bot.sendMessage(telegramConfig.userId, telegramText);
+            await telegramBot.sendMessage(telegramConfig.userId, telegramText);
         }
     }
 

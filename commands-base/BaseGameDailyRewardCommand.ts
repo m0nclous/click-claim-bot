@@ -1,7 +1,8 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
-import telegramConfig, { bot } from '#config/telegram';
+import telegramConfig from '#config/telegram';
+import telegramBot from '#services/TelegramBotService';
 
 export default abstract class BaseGameDailyRewardCommand extends BaseCommand {
     @flags.boolean({
@@ -45,7 +46,7 @@ export default abstract class BaseGameDailyRewardCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await bot.sendMessage(telegramConfig.userId, telegramText);
+            await telegramBot.sendMessage(telegramConfig.userId, telegramText);
         }
     }
 }

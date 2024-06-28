@@ -15,6 +15,9 @@ export default class AppProvider {
 
         // Телеграм бот
         const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
-        await telegramBot.run();
+
+        if (this.app.getEnvironment() === 'web') {
+            await telegramBot.run();
+        }
     }
 }

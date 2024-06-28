@@ -1,5 +1,4 @@
 import env from '#start/env';
-import { Telegraf } from 'telegraf';
 import { defineConfig } from '#services/TelegramService';
 
 const telegramConfig = defineConfig({
@@ -15,6 +14,3 @@ const telegramConfig = defineConfig({
 });
 
 export default telegramConfig;
-
-export const telegraf = new Telegraf(env.get('TELEGRAM_BOT_TOKEN'));
-export const bot = telegraf.telegram;
