@@ -1,5 +1,5 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegram from '#config/telegram';
+import telegramConfig, { bot } from '#config/telegram';
 import { getSession } from '../helpers/redis/index.js';
 
 export default class BaseCommandExtended extends BaseCommand {
@@ -23,12 +23,12 @@ export default class BaseCommandExtended extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegram.bot.telegram.sendMessage(telegram.api.userId, telegramText);
+            await bot.sendMessage(telegramConfig.userId, telegramText);
         }
     }
 
     async prepare() {
-        const data =  await getSession(String(telegram.api.userId));
+        const data =  await getSession(String(telegramConfig.userId));
 
         if (data && data.isStart) {
             return Promise.resolve();
