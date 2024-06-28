@@ -1,6 +1,6 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
 import telegramConfig, { bot } from '#config/telegram';
-import { getSession } from '../helpers/redis/index.js';
+import telegramBot from '#services/TelegramBotService';
 
 export default class BaseCommandExtended extends BaseCommand {
     @flags.boolean({
@@ -28,12 +28,12 @@ export default class BaseCommandExtended extends BaseCommand {
     }
 
     async prepare() {
-        const data =  await getSession(String(telegramConfig.userId));
+        const botIsStarted: boolean = await telegramBot.isStarted(telegramConfig.userId);
 
-        if (data && data.isStart) {
-            return Promise.resolve();
+        if (!botIsStarted) {
+            return Promise.reject();
         }
 
-        return Promise.reject();
+        return Promise.resolve();
     }
 }

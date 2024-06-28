@@ -11,7 +11,6 @@
 
 import 'reflect-metadata';
 import { Ignitor, prettyPrintError } from '@adonisjs/core';
-import botInit from '#config/botInit';
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -34,9 +33,6 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     .tap((app) => {
         app.booting(async () => {
             await import('#start/env');
-
-            // TODO Вынести в AppProvider
-            await botInit();
         });
         app.listen('SIGTERM', () => app.terminate());
         app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate());
