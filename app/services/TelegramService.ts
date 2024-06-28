@@ -30,7 +30,7 @@ export class TelegramService {
     ) {}
 
     public async getSession(): Promise<StringSession> {
-        const authKey: string | null = await this.redis.get(this.config.sessionName);
+        const authKey: string | null = await this.redis.get(`${this.config.sessionName}:authKey`);
 
         const session: StringSession = new StringSession(authKey ?? '');
         session.setDC(this.config.dc.id, this.config.dc.ip, this.config.dc.port);
@@ -39,7 +39,7 @@ export class TelegramService {
     }
 
     public async saveSession(authKey: string): Promise<void> {
-        await this.redis.set(this.config.sessionName, authKey);
+        await this.redis.set(`${this.config.sessionName}:authKey`, authKey);
     }
 
     public async getClient(): Promise<TelegramClient> {
