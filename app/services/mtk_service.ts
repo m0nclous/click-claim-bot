@@ -3,7 +3,7 @@ import telegramWebView from '#config/telegram-web-view';
 import telegramConfig from '#config/telegram';
 import { Api, TelegramClient } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
-import app from '@adonisjs/core/services/app';
+import telegram from '#services/TelegramService';
 
 interface GetUserInfo {
     lang: string;
@@ -120,7 +120,7 @@ export default class MtkService {
     }
 
     protected async getTelegramWebViewParams() {
-        const client: TelegramClient = await app.container.make('telegramClient');
+        const client: TelegramClient = await telegram.getClient();
 
         const result = await client.invoke(
             new Api.messages.RequestWebView({
