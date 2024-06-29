@@ -33,9 +33,12 @@ export class TelegramBotService {
         this.bot.command('launch', this.launch.bind(this));
         this.bot.command('stop', this.stop.bind(this));
 
-        this.bot.start(ctx => ctx.reply("Добро пожаловать в бота!", Markup.keyboard([
-            LAUNCH_COMMAND, STOP_COMMAND, INFO_COMMAND,
-        ]).resize()));
+        this.bot.start((ctx) =>
+            ctx.reply(
+                'Добро пожаловать в бота!',
+                Markup.keyboard([LAUNCH_COMMAND, STOP_COMMAND, INFO_COMMAND]).resize(),
+            ),
+        );
 
         this.bot.hears(LAUNCH_COMMAND, this.launch.bind(this));
         this.bot.hears(STOP_COMMAND, this.stop.bind(this));

@@ -1,6 +1,7 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegram, { bot } from '#config/telegram';
+import telegram from '#config/telegram';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
+import telegramBot from '#services/TelegramBotService';
 
 export default abstract class BaseGameCommand extends BaseCommand {
     static options: CommandOptions = {
@@ -29,7 +30,7 @@ export default abstract class BaseGameCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await bot.sendMessage(telegram.userId, telegramText);
+            await telegramBot.sendMessage(telegram.userId, telegramText);
         }
     }
 }
