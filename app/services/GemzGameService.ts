@@ -1,10 +1,13 @@
-import BaseGameService, { HasDailyReward, HasTap } from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import telegramConfig from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
 
-export default class GemzGameService extends BaseGameService implements HasTap, HasDailyReward {
+export default class GemzGameService
+    extends BaseGameService
+    implements HasTap, HasDailyReward, HasEnergyRecharge
+{
     protected rev: number | null = null;
 
     protected sid: string = randomString(9).toLowerCase();
@@ -167,25 +170,36 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
     }
 
     public async collectDaily(): Promise<void> {
-        return this.replicate([{ fn: 'claimDailyReward', async: false }]);
+        return this.replicate([
+            {
+                fn: 'claimDailyReward',
+                async: false,
+            },
+        ]);
+    }
+
+    public async energyReset(): Promise<void> {
+        return this.replicate([
+            {
+                fn: 'buyBuff',
+                async: false,
+                args: {
+                    buff: 'FullEnergy',
+                },
+            },
+        ]);
     }
 
     public generateTaps(quantity: number = 1) {
         const taps: {
             fn: 'tap';
             async: false;
-            meta: {
-                now: number;
-            };
         }[] = [];
 
         for (let i = 0; i < quantity; i++) {
             taps.unshift({
                 fn: 'tap',
                 async: false,
-                meta: {
-                    now: Date.now(),
-                },
             });
         }
 
@@ -198,7 +212,7 @@ export default class GemzGameService extends BaseGameService implements HasTap, 
                 json: {
                     ...this.defaultReplicateBody,
                     crqid: randomString(9).toLowerCase(),
-                    queue,
+                    queue: queue.map((i) => ({ ...i, meta: Date.now() })),
                 },
             })
             .json<any>();

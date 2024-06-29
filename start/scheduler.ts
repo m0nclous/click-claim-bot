@@ -5,4 +5,5 @@ scheduler.command('mtk:energy-reset', ['--notify', '--claim']).everyHours(1);
 scheduler.command('mtk:collect-daily', ['--notify']).everyHours(6);
 
 scheduler.command('gemz:tap', ['--notify', '--quantity=180']).everyMinute();
+scheduler.command('gemz:energy-reset', ['--notify']).everyHours(1);
 scheduler.command('gemz:collect-daily', ['--notify']).everyHours(6);
