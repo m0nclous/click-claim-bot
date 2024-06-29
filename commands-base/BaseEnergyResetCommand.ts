@@ -1,14 +1,7 @@
-import type { CommandOptions } from '@adonisjs/core/types/ace';
 import BaseGameService, { HasEnergyRecharge } from '#services/BaseGameService';
-import BaseCommandExtended from './BaseCommandExtended.js';
+import BaseGameCommand from './BaseGameCommand.js';
 
-export default class BaseEnergyResetCommand extends BaseCommandExtended {
-    static options: CommandOptions = {
-        startApp: true,
-        staysAlive: true,
-        allowUnknownFlags: false,
-    };
-
+export default abstract class BaseEnergyResetCommand extends BaseGameCommand {
     async run(service: BaseGameService & HasEnergyRecharge) {
         await service.login();
 
@@ -17,7 +10,7 @@ export default class BaseEnergyResetCommand extends BaseCommandExtended {
         } catch (error) {
             this.logger.error(error);
 
-            return this.notify('Ошибка восстановлении энергии', 'error');
+            return this.notify('Ошибка при восстановлении энергии', 'error');
         }
 
         await this.notify('Энергия восстановлена');

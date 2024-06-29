@@ -1,14 +1,7 @@
-import type { CommandOptions } from '@adonisjs/core/types/ace';
 import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
 
-import BaseCommandExtended from './BaseCommandExtended.js';
-export default abstract class BaseGameDailyRewardCommand extends BaseCommandExtended {
-    static options: CommandOptions = {
-        startApp: true,
-        staysAlive: true,
-        allowUnknownFlags: false,
-    };
-
+import BaseGameCommand from './BaseGameCommand.js';
+export default abstract class BaseGameDailyRewardCommand extends BaseGameCommand {
     async run(service: BaseGameService & HasDailyReward) {
         await service.login();
 
