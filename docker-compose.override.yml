@@ -4,6 +4,7 @@ services:
             target: 'development'
         ports:
             - '${PORT:-80}:80'
+            - '${WEB_SERVER_PORT:-3000}:3000'
         volumes:
             - .:/app
             - /app/node_modules

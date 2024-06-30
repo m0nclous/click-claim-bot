@@ -5,6 +5,7 @@ ENV PORT=80
 ENV HOST=0.0.0.0
 WORKDIR /app
 EXPOSE 80
+EXPOSE 3000
 
 # All deps stage
 FROM base as deps

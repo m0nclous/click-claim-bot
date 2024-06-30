@@ -4,6 +4,7 @@ services:
             target: 'production'
         ports:
             - '${PORT:-80}:80'
+            - '${WEB_SERVER_PORT:-3000}:3000'
         environment:
             NODE_ENV: 'production'
     scheduler:
