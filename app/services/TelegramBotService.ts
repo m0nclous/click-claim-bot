@@ -71,9 +71,11 @@ export class TelegramBotService {
         this.bot.command('authorize', this.authorize.bind(this));
 
         this.bot.start(ctx => {
-            console.log(ctx.payload);
-            console.log(ctx);
-            return ctx.scene.enter('login')
+            if (ctx.payload === 'authorize') {
+                return this.authorize(ctx);
+            }
+
+            return ctx.scene.enter('login');
         });
 
         this.bot.launch().then();
@@ -116,8 +118,13 @@ export class TelegramBotService {
     }
 
     public async authorize(ctx: Context & { scene: SceneContextScene<SceneContext> }): Promise<void> {
-        console.log(ctx);
-        await ctx.scene.enter('menu');
+        const authKey: string | null = await this.redis.get(`${ctx.from!.id}:authKey`);
+
+        if (!authKey) {
+            await ctx.reply('Сессия не найдена');
+        } else {
+            await ctx.scene.enter('menu');
+        }
     }
 
     public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
