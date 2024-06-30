@@ -55,11 +55,11 @@ export class TelegramBotService {
         this.menuScene.hears(STOP_COMMAND, this.stop.bind(this));
         this.menuScene.hears(INFO_COMMAND, this.info.bind(this));
 
-        this.loginScene.enter(ctx => ctx.replyWithHTML(
-            'Sign In with <b>Telegram</b>',
+        this.loginScene.enter(ctx => ctx.reply(
+            'Пожалуйста, авторизуйтесь через: Telegram 🎊',
             {
                 ...Markup.inlineKeyboard([
-                    Markup.button.login('Sign In', this.telegramService.config.webserverHost, {
+                    Markup.button.login('Авторизоваться', this.telegramService.config.webserverHost, {
                         bot_username: this.config.name,
                         request_write_access: true,
                     })
