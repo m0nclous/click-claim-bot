@@ -14,7 +14,8 @@ import app from '@adonisjs/core/services/app';
 const telegram = await app.container.make('telegram', [0]);
 const client: TelegramClient = await telegram.getClient();
 
-const BASE_TEMPLATE = `
+const BASE_TEMPLATE = (error?: string) => {
+    return `
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -22,8 +23,10 @@ const BASE_TEMPLATE = `
         <title>GramJS + AdonisJS</title>
     </head>
     <body>{{0}}</body>
+    ${error ? `<p style="color: red">${error}</p>` : '<p></p>'}
 </html>
 `;
+};
 
 const PHONE_FORM = `
 <form action='/' method='post'>
@@ -47,6 +50,12 @@ const PASSWORD_FORM = `
 `;
 
 let phone;
+
+let nextStep = 0;
+let errMSG = '';
+
+const steps = [PHONE_FORM, CODE_FORM, PASSWORD_FORM];
+
 const phoneCallback = callbackPromise();
 const codeCallback = callbackPromise();
 const passwordCallback = callbackPromise();
@@ -67,7 +76,10 @@ function callbackPromise() {
 router.get('/', async ({ response }) => {
     if (await client.isUserAuthorized()) {
         return response.send(
-            BASE_TEMPLATE.replace('{{0}}', '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>'),
+            BASE_TEMPLATE().replace(
+                '{{0}}',
+                '<a href="tg://resolve?domain=ClickClaimBot">@ClickClaimBot</a>',
+            ),
         );
     } else {
         client
@@ -81,7 +93,10 @@ router.get('/', async ({ response }) => {
                 password: async () => {
                     return passwordCallback.promise as unknown as string;
                 },
-                onError: (err) => console.log(err),
+                onError: (error: any) => {
+                    errMSG = `Name: ${error.name}; Error message: ${error.errorMessage}; Message: ${error.message}`;
+                    return Promise.resolve(true);
+                },
             })
             .then(async () => {
                 const authToken: string = client.session.save() as unknown as string;
@@ -89,26 +104,32 @@ router.get('/', async ({ response }) => {
 
                 const telegram = await app.container.make('telegram', [me.id]);
                 await telegram.saveSession(authToken);
-            });
+            })
+            .catch(console.error);
 
-        return response.send(BASE_TEMPLATE.replace('{{0}}', PHONE_FORM));
+        if (!nextStep) return response.send(BASE_TEMPLATE(errMSG).replace('{{0}}', steps[nextStep]));
+        return response;
     }
 });
 
 router.post('/', async ({ request, response }) => {
     //To access POST variable use req.body()methods.
-    if ('phone' in request.body()) {
-        phone = request.body().phone;
+    const body = request.body();
+
+    if ('phone' in body) {
+        nextStep = 1;
+        phone = body.phone;
         phoneCallback.resolve(phone);
-        return response.send(BASE_TEMPLATE.replace('{{0}}', CODE_FORM));
     }
 
-    if ('code' in request.body()) {
-        codeCallback.resolve(request.body().code);
-        return response.send(BASE_TEMPLATE.replace('{{0}}', PASSWORD_FORM));
+    if ('code' in body) {
+        nextStep = 2;
+        codeCallback.resolve(body.code);
     }
-    if ('password' in request.body()) {
-        passwordCallback.resolve(request.body().password);
-        return response.send(BASE_TEMPLATE.replace('{{0}}', 'OK'));
+    if ('password' in body) {
+        nextStep = 0;
+        passwordCallback.resolve(body.password);
+        return response.redirect('/');
     }
+    return response.send(BASE_TEMPLATE(errMSG).replace('{{0}}', steps[nextStep]));
 });

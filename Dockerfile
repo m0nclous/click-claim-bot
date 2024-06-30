@@ -9,11 +9,13 @@ EXPOSE 80
 # All deps stage
 FROM base as deps
 ADD package.json package-lock.json ./
+RUN apk add --no-cache python3 make g++
 RUN npm ci
 
 # Production only deps stage
 FROM base as production-deps
 ADD package.json package-lock.json ./
+RUN apk add --no-cache python3 make g++
 RUN npm ci --omit=dev
 
 # Build stage

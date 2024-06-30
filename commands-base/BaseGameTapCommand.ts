@@ -1,9 +1,8 @@
-import { BaseCommand, flags } from '@adonisjs/core/ace';
+import { flags } from '@adonisjs/core/ace';
 import BaseGameService, { HasTap } from '#services/BaseGameService';
-import { CommandOptions } from '@adonisjs/core/types/ace';
-import telegramBot from '#services/TelegramBotService';
+import BaseGameCommand from './BaseGameCommand.js';
 
-export default abstract class BaseGameTapCommand extends BaseCommand {
+export default abstract class BaseGameTapCommand extends BaseGameCommand {
     @flags.number({
         description: 'ID пользователя телеграм',
         required: true,
@@ -15,21 +14,6 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
         default: 1,
     })
     declare quantity: number;
-
-    @flags.boolean({
-        description: 'Отправить уведомление в Telegram',
-        default: false,
-        alias: ['notify'],
-    })
-    declare notifyTelegram: boolean;
-
-    static options: CommandOptions = {
-        startApp: true,
-        staysAlive: false,
-        allowUnknownFlags: false,
-    };
-
-    protected notifyPrefix?: string;
 
     async run(service: BaseGameService & HasTap) {
         this.notifyPrefix = service.getGameName();
@@ -45,21 +29,5 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
         }
 
         await this.notify(`Успешно отправлено тапов: ${this.quantity}`);
-    }
-
-    async notify(text: string, type: 'info' | 'error' = 'info'): Promise<void> {
-        this.logger[type](text, {
-            prefix: this.notifyPrefix,
-        });
-
-        if (this.notifyTelegram) {
-            let telegramText = text;
-
-            if (this.notifyPrefix) {
-                telegramText += '\n#' + this.notifyPrefix;
-            }
-
-            await telegramBot.sendMessage(this.userId, telegramText);
-        }
     }
 }
