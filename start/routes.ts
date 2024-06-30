@@ -13,13 +13,7 @@ import crypto from 'crypto';
 import telegramBotConfig from '#config/telegram-bot';
 import app from '@adonisjs/core/services/app';
 
-const resHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Telegram Login Widget</title>
-    <style>
+const styles = `<style>
     .bg-ex-gradient-animation{
       background:linear-gradient(200deg,#a8d7e0,#213b40); /* Цвета градиента */
       background-size:500% 500%;
@@ -53,7 +47,6 @@ const resHTML = `
       {background-position:10% 100%}100%
       {background-position:90% 0}
     }
-   @import url(https://fonts.googleapis.com/css?family=Righteous);
 
     *, *:before, *:after {
       margin: 0;
@@ -109,7 +102,16 @@ const resHTML = `
       0% {background-position: 0 0}
       0% {background-position: 100% -100%}
       }
-    </style>
+</style>`;
+
+const resHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Telegram Login Widget</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+    ${styles}
 </head>
 <body class="bg-ex-gradient-animation">
     <div>
