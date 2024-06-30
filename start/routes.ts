@@ -21,8 +21,8 @@ const resHTML = `
     <title>Telegram Login Widget</title>
 </head>
 <body>
-<p>Would you like to enter via Telegram?</p>
-<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="click_claim_serhio_bot" data-size="large" data-auth-url="https://t.me/click_claim_serhio_bot?start=launch" data-request-access="write"></script>
+<p>Login via telegram</p>
+<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="${process.env.BOT_NAME}" data-size="large" data-auth-url="${process.env.WEB_SERVER_HOST}/login" data-request-access="write"></script>
 </body>
 </html>
 `
@@ -50,9 +50,9 @@ router.get('/login', async ({ request, response }) => {
 
     if (isHashValid) {
         const telegram: TelegramService = await app.container.make('telegram');
-        await telegram.saveSession(queryObject.hash);
-        response.status(200);
-        return response.redirect('https://t.me/click_claim_serhio_bot?start=authorize');
+        console.log('User info: ',queryObject);
+        await telegram.saveSession(queryObject.hash, queryObject.id);
+        return response.redirect(`https://t.me/${process.env.BOT_NAME}?start=authorize`);
     } else {
         response.status(403);
         return response.send('<div>Access denied</div>');

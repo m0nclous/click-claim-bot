@@ -9,6 +9,7 @@ export interface TelegramConfig {
     userId: number;
     hash: string;
     sessionName: string;
+    webserverHost: string;
     dc: {
         id: number;
         ip: string;
@@ -29,8 +30,8 @@ export class TelegramService {
         protected logger: Logger,
     ) {}
 
-    public async getSession(): Promise<StringSession> {
-        const authKey: string | null = await this.redis.get(`${this.config.sessionName}:authKey`);
+    public async getSession(userId?: number): Promise<StringSession> {
+        const authKey: string | null = await this.redis.get(`${this.config.sessionName}:${userId}`);
 
         const session: StringSession = new StringSession(authKey ?? '');
         session.setDC(this.config.dc.id, this.config.dc.ip, this.config.dc.port);
@@ -38,8 +39,16 @@ export class TelegramService {
         return session;
     }
 
-    public async saveSession(authKey: string): Promise<void> {
-        await this.redis.set(`${this.config.sessionName}:authKey`, authKey);
+    public async saveSession(token: string, userId: number): Promise<void> {
+        await this.redis.hset(`${this.config.sessionName}:${userId}`, { token })
+    }
+
+    public async setSessionValue(userId: number, values: object): Promise<void> {
+        await this.redis.hset(`${this.config.sessionName}:${userId}`, values);
+    }
+
+    public async getSessionValue(userId: number, field: string): Promise<any> {
+        return this.redis.hget(`${this.config.sessionName}:${userId}`, field);
     }
 
     public async getClient(): Promise<TelegramClient> {

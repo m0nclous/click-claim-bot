@@ -6,6 +6,7 @@ import { parseBoolean } from '../../helpers/parse.js';
 // @ts-expect-error почему-то ругается на то что не может найти модуль
 import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 import { SceneContext, SceneContextScene } from 'telegraf/scenes';
+import { TelegramService } from '#services/TelegramService';
 
 const LAUNCH_COMMAND = 'Запуск 🚀';
 const STOP_COMMAND = 'Остановить ⛔';
@@ -13,6 +14,7 @@ const INFO_COMMAND = 'Информация ℹ️';
 
 export interface TelegramBotConfig {
     token: string;
+    name: string;
 }
 
 export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
@@ -26,6 +28,7 @@ export class TelegramBotService {
 
     constructor(
         public config: TelegramBotConfig,
+        protected telegramService: TelegramService,
         protected redis: RedisService,
         protected logger: Logger,
     ) {
@@ -56,8 +59,8 @@ export class TelegramBotService {
             'Sign In with <b>Telegram</b>',
             {
                 ...Markup.inlineKeyboard([
-                    Markup.button.login('Sign In', 'https://c5a3-198-71-57-94.ngrok-free.app', {
-                        bot_username: "click_claim_serhio_bot",
+                    Markup.button.login('Sign In', this.telegramService.config.webserverHost, {
+                        bot_username: this.config.name,
                         request_write_access: true,
                     })
                 ])
@@ -82,7 +85,7 @@ export class TelegramBotService {
     }
 
     public async isStarted(userId: number): Promise<boolean> {
-        return parseBoolean(await this.redis.hget(`user:${userId}:bot`, 'started'));
+        return parseBoolean(await this.telegramService.getSessionValue(userId, 'started'));
     }
 
     public async launch(ctx: Context): Promise<void> {
@@ -92,7 +95,7 @@ export class TelegramBotService {
             return;
         }
 
-        await this.redis.hset(`user:${ctx.from.id}:bot`, 'started', 1);
+        await this.telegramService.setSessionValue(ctx.from.id, { started: 1 });
         await ctx.reply('Бот запущен');
     }
 
@@ -103,7 +106,7 @@ export class TelegramBotService {
             return;
         }
 
-        await this.redis.hset(`user:${ctx.from.id}:bot`, 'started', '0');
+        await this.telegramService.setSessionValue(ctx.from.id, { started: 0 });
         await ctx.reply('Бот остановлен');
     }
 
@@ -118,7 +121,7 @@ export class TelegramBotService {
     }
 
     public async authorize(ctx: Context & { scene: SceneContextScene<SceneContext> }): Promise<void> {
-        const authKey: string | null = await this.redis.get(`${ctx.from!.id}:authKey`);
+        const authKey: string | null = await this.telegramService.getSessionValue(ctx.from!.id, 'token');
 
         if (!authKey) {
             await ctx.reply('Сессия не найдена');
