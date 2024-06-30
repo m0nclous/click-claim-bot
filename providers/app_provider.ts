@@ -11,11 +11,6 @@ export default class AppProvider {
 
     // noinspection JSUnusedGlobalSymbols
     public async boot(): Promise<void> {
-        if (this.app.getEnvironment() === 'web') {
-            const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
-            await telegramBot.run();
-        }
-
         commandsQueue = new Bull('commands', {
             redis: {
                 port: redis.connections.queue.port,
@@ -25,17 +20,22 @@ export default class AppProvider {
             },
         });
 
-        await commandsQueue.process(async (job: Job, done: DoneCallback) => {
-            const ace: Kernel = await this.app.container.make('ace');
+        if (this.app.getEnvironment() === 'web') {
+            const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
+            await telegramBot.run();
 
-            try {
-                await ace.exec(job.data.command, job.data.argv);
-            } catch (error) {
-                console.log(error);
-                return done(error);
-            }
+            commandsQueue.process(async (job: Job, done: DoneCallback) => {
+                const ace: Kernel = await this.app.container.make('ace');
 
-            done();
-        });
+                try {
+                    await ace.exec(job.data.command, job.data.argv);
+                } catch (error) {
+                    console.log(error);
+                    return done(error);
+                }
+
+                done();
+            }).then();
+        }
     }
 }
