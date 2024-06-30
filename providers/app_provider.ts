@@ -24,18 +24,20 @@ export default class AppProvider {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
             await telegramBot.run();
 
-            commandsQueue.process(async (job: Job, done: DoneCallback) => {
-                const ace: Kernel = await this.app.container.make('ace');
+            commandsQueue
+                .process(async (job: Job, done: DoneCallback) => {
+                    const ace: Kernel = await this.app.container.make('ace');
 
-                try {
-                    await ace.exec(job.data.command, job.data.argv);
-                } catch (error) {
-                    console.log(error);
-                    return done(error);
-                }
+                    try {
+                        await ace.exec(job.data.command, job.data.argv);
+                    } catch (error) {
+                        console.log(error);
+                        return done(error);
+                    }
 
-                done();
-            }).then();
+                    done();
+                })
+                .then();
         }
     }
 }
