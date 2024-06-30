@@ -74,7 +74,6 @@ const styles = `<style>
       display: inline-block;
       color: white;
       font-family: 'Righteous', serif;
-      font-size: 12em;
       text-shadow: .03em .03em 0 hsla(230,40%,50%,1);
       }
       h1:after {
