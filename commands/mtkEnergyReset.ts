@@ -1,33 +1,19 @@
-import { BaseCommand, flags } from '@adonisjs/core/ace';
-import type { CommandOptions } from '@adonisjs/core/types/ace';
-import { inject } from '@adonisjs/core';
-import telegramConfig, { bot } from '#config/telegram';
+import { flags } from '@adonisjs/core/ace';
 import ace from '@adonisjs/core/services/ace';
 import MtkGameService from '#services/MtkGameService';
+import telegramBot from '#services/TelegramBotService';
+import BaseGameCommand from '../commands-base/BaseGameCommand.js';
 
-export default class MtkEnergyReset extends BaseCommand {
+// noinspection JSUnusedGlobalSymbols
+export default class MtkEnergyReset extends BaseGameCommand {
     static commandName = 'mtk:energy-reset';
     static description = 'Восстановить энергию в игре $MTK Clicker Mafia';
 
     @flags.boolean()
-    declare notify: boolean;
-
-    @flags.boolean()
     declare claim: boolean;
 
-    static options: CommandOptions = {
-        staysAlive: false,
-        startApp: true,
-    };
-
-    @inject()
-    async run(service: MtkGameService) {
-        // const userInfo = await service.getUserInfo();
-        //
-        // if (!userInfo.energyResets) {
-        //     this.logger.info(`[MTK] Недостаточно energyResets`);
-        //     return;
-        // }
+    async run() {
+        const service: MtkGameService = new MtkGameService(this.userId);
 
         await service.login();
 
@@ -39,8 +25,8 @@ export default class MtkEnergyReset extends BaseCommand {
 
         this.logger.info('[MTK] Энергия восстановлена');
 
-        if (this.notify) {
-            await bot.sendMessage(telegramConfig.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
+        if (this.notifyTelegram) {
+            await telegramBot.sendMessage(this.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
                 parse_mode: 'HTML',
             });
         }
@@ -48,7 +34,7 @@ export default class MtkEnergyReset extends BaseCommand {
         if (this.claim) {
             const claimCommandArgs = [];
 
-            if (this.notify) {
+            if (this.notifyTelegram) {
                 claimCommandArgs.push('--notify');
             }
 

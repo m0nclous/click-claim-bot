@@ -1,5 +1,4 @@
 import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import telegramConfig from '#config/telegram';
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
@@ -85,8 +84,8 @@ export default class GemzGameService
         clientRandomSeed: 0,
     };
 
-    public constructor() {
-        super();
+    public constructor(userId: number) {
+        super(userId);
 
         this.httpClient = this.httpClient.extend({
             hooks: {
@@ -98,7 +97,7 @@ export default class GemzGameService
                             .catch(() => ({}));
 
                         json.sid = this.sid;
-                        json.id = telegramConfig.userId.toString();
+                        json.id = this.userId.toString();
                         json.auth = await this.getAuthKey();
 
                         if (this.rev) {
@@ -194,12 +193,18 @@ export default class GemzGameService
         const taps: {
             fn: 'tap';
             async: false;
+            meta: {
+                now: number;
+            };
         }[] = [];
 
         for (let i = 0; i < quantity; i++) {
             taps.unshift({
                 fn: 'tap',
                 async: false,
+                meta: {
+                    now: Date.now(),
+                },
             });
         }
 
@@ -212,7 +217,7 @@ export default class GemzGameService
                 json: {
                     ...this.defaultReplicateBody,
                     crqid: randomString(9).toLowerCase(),
-                    queue: queue.map((i) => ({ ...i, meta: Date.now() })),
+                    queue: queue,
                 },
             })
             .json<any>();

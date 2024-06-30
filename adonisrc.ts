@@ -28,12 +28,10 @@ export default defineConfig({
             file: () => import('@adonisjs/core/providers/repl_provider'),
             environment: ['repl', 'test'],
         },
-        {
-            file: () => import('adonisjs-scheduler/scheduler_provider'),
-            environment: ['console'],
-        },
+        () => import('adonisjs-scheduler/scheduler_provider'),
         () => import('@adonisjs/redis/redis_provider'),
         () => import('#providers/telegram_provider'),
+        () => import('#providers/telegram_bot_provider'),
         () => import('#providers/app_provider'),
     ],
 

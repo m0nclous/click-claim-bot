@@ -1,12 +1,18 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 import MtkService from '#services/mtk_service';
-import { inject } from '@adonisjs/core';
-import telegramConfig, { bot } from '#config/telegram';
+import telegramBot from '#services/TelegramBotService';
 
+// noinspection JSUnusedGlobalSymbols
 export default class MtkCollectDaily extends BaseCommand {
     static commandName = 'mtk:collect-daily';
     static description = 'Получить награду за ежедневный вход в игре $MTK Clicker Mafia';
+
+    @flags.number({
+        description: 'ID пользователя телеграм',
+        required: true,
+    })
+    declare userId: number;
 
     @flags.boolean()
     declare notify: boolean;
@@ -15,8 +21,9 @@ export default class MtkCollectDaily extends BaseCommand {
         staysAlive: false,
     };
 
-    @inject()
-    async run(service: MtkService) {
+    async run() {
+        const service: MtkService = new MtkService(this.userId);
+
         const userInfo = await service.getUserInfo();
 
         if (!userInfo.dailyPrizeCollectAvailable) {
@@ -29,8 +36,8 @@ export default class MtkCollectDaily extends BaseCommand {
         this.logger.info('[MTK] Получена награда за ежедневный вход');
 
         if (this.notify) {
-            await bot.sendMessage(
-                telegramConfig.userId,
+            await telegramBot.sendMessage(
+                this.userId,
                 ['[MTK] Получена награда за ежедневный вход'].join('\n'),
                 {
                     parse_mode: 'HTML',
