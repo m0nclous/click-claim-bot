@@ -51,6 +51,10 @@ export class TelegramService {
         return this.redis.hget(`${this.config.sessionName}:${userId}`, field);
     }
 
+    public async isAuthorized(userId: number): Promise<any> {
+        return !!(await this.redis.hget(`${this.config.sessionName}:${userId}`, 'token'));
+    }
+
     public async getClient(): Promise<TelegramClient> {
         if (this.client) {
             return this.client;

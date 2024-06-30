@@ -73,12 +73,13 @@ export class TelegramBotService {
         this.bot.command('stop', this.stop.bind(this));
         this.bot.command('authorize', this.authorize.bind(this));
 
-        this.bot.start(ctx => {
-            if (ctx.payload === 'authorize') {
-                return this.authorize(ctx);
-            }
+        this.bot.start(async ctx => {
+            if (ctx.payload === 'authorize') return this.authorize(ctx);
 
-            return ctx.scene.enter('login');
+            const isAuth = await this.telegramService.isAuthorized(ctx.from!.id);
+
+            const toScene = isAuth ? 'menu' : 'login';
+            return ctx.scene.enter(toScene);
         });
 
         this.bot.launch().then();
@@ -121,13 +122,9 @@ export class TelegramBotService {
     }
 
     public async authorize(ctx: Context & { scene: SceneContextScene<SceneContext> }): Promise<void> {
-        const authKey: string | null = await this.telegramService.getSessionValue(ctx.from!.id, 'token');
+        const isAuth = await this.telegramService.isAuthorized(ctx.from!.id);
 
-        if (!authKey) {
-            await ctx.reply('Сессия не найдена');
-        } else {
-            await ctx.scene.enter('menu');
-        }
+        !isAuth ? await ctx.reply('Сессия не найдена') : await ctx.scene.enter('menu');
     }
 
     public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
