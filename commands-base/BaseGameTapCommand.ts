@@ -4,12 +4,6 @@ import BaseGameCommand from './BaseGameCommand.js';
 
 export default abstract class BaseGameTapCommand extends BaseGameCommand {
     @flags.number({
-        description: 'ID пользователя телеграм',
-        required: true,
-    })
-    declare userId: number;
-
-    @flags.number({
         description: 'Количество тапов для отправки',
         default: 1,
     })

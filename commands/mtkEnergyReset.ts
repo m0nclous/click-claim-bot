@@ -1,30 +1,16 @@
-import { BaseCommand, flags } from '@adonisjs/core/ace';
-import type { CommandOptions } from '@adonisjs/core/types/ace';
+import { flags } from '@adonisjs/core/ace';
 import ace from '@adonisjs/core/services/ace';
 import MtkGameService from '#services/MtkGameService';
 import telegramBot from '#services/TelegramBotService';
+import BaseGameCommand from '../commands-base/BaseGameCommand.js';
 
 // noinspection JSUnusedGlobalSymbols
-export default class MtkEnergyReset extends BaseCommand {
+export default class MtkEnergyReset extends BaseGameCommand {
     static commandName = 'mtk:energy-reset';
     static description = 'Восстановить энергию в игре $MTK Clicker Mafia';
 
-    @flags.number({
-        description: 'ID пользователя телеграм',
-        required: true,
-    })
-    declare userId: number;
-
-    @flags.boolean()
-    declare notify: boolean;
-
     @flags.boolean()
     declare claim: boolean;
-
-    static options: CommandOptions = {
-        staysAlive: false,
-        startApp: true,
-    };
 
     async run() {
         const service: MtkGameService = new MtkGameService(this.userId);
@@ -39,7 +25,7 @@ export default class MtkEnergyReset extends BaseCommand {
 
         this.logger.info('[MTK] Энергия восстановлена');
 
-        if (this.notify) {
+        if (this.notifyTelegram) {
             await telegramBot.sendMessage(this.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
                 parse_mode: 'HTML',
             });
@@ -48,7 +34,7 @@ export default class MtkEnergyReset extends BaseCommand {
         if (this.claim) {
             const claimCommandArgs = [];
 
-            if (this.notify) {
+            if (this.notifyTelegram) {
                 claimCommandArgs.push('--notify');
             }
 
