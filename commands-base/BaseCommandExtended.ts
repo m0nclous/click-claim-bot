@@ -1,9 +1,14 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegramConfig from '#config/telegram';
 import telegramBot from '#services/TelegramBotService';
 
 // noinspection JSUnusedGlobalSymbols
 export default class BaseCommandExtended extends BaseCommand {
+    @flags.number({
+        description: 'ID пользователя телеграм',
+        required: true,
+    })
+    declare userId: number;
+
     @flags.boolean({
         description: 'Отправить уведомление в Telegram',
         default: false,
@@ -24,12 +29,12 @@ export default class BaseCommandExtended extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegramBot.sendMessage(telegramConfig.userId, telegramText);
+            await telegramBot.sendMessage(this.userId, telegramText);
         }
     }
 
     async prepare() {
-        const botIsStarted: boolean = await telegramBot.isStarted(telegramConfig.userId);
+        const botIsStarted: boolean = await telegramBot.isStarted(this.userId);
 
         if (!botIsStarted) {
             return Promise.reject();

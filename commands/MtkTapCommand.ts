@@ -1,4 +1,3 @@
-import { inject } from '@adonisjs/core';
 import MtkGameService from '#services/MtkGameService';
 import BaseGameTapCommand from '../commands-base/BaseGameTapCommand.js';
 
@@ -7,8 +6,9 @@ export default class MtkTapCommand extends BaseGameTapCommand {
     static commandName = 'mtk:tap';
     static description = 'Отправить тапы в игре MTK';
 
-    @inject()
-    async run(service: MtkGameService): Promise<void> {
+    async run(): Promise<void> {
+        const service: MtkGameService = new MtkGameService(this.userId);
+
         await super.run(service);
     }
 }

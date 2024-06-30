@@ -1,8 +1,8 @@
 import BaseGameService from '#services/BaseGameService';
 
 export default class ZavodGameService extends BaseGameService {
-    public constructor() {
-        super();
+    public constructor(userId: number) {
+        super(userId);
 
         this.httpClient = this.httpClient.extend({
             hooks: {

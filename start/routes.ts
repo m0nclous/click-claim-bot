@@ -9,8 +9,9 @@
 
 import router from '@adonisjs/core/services/router';
 import type { TelegramClient } from 'telegram';
-import telegram from '#services/TelegramService';
+import app from '@adonisjs/core/services/app';
 
+const telegram = await app.container.make('telegram', [0]);
 const client: TelegramClient = await telegram.getClient();
 
 const BASE_TEMPLATE = `
@@ -84,7 +85,9 @@ router.get('/', async ({ response }) => {
             })
             .then(async () => {
                 const authToken: string = client.session.save() as unknown as string;
+                const me = await client.getMe();
 
+                const telegram = await app.container.make('telegram', [me.id]);
                 await telegram.saveSession(authToken);
             });
 
@@ -106,6 +109,6 @@ router.post('/', async ({ request, response }) => {
     }
     if ('password' in request.body()) {
         passwordCallback.resolve(request.body().password);
-        response.redirect('/');
+        return response.send(BASE_TEMPLATE.replace('{{0}}', 'OK'));
     }
 });

@@ -1,9 +1,9 @@
 import ky, { KyInstance } from 'ky';
 import telegramWebView from '#config/telegram-web-view';
-import telegramConfig from '#config/telegram';
 import { Api, TelegramClient } from 'telegram';
 import { urlParseHashParams } from '../../helpers/url.js';
-import telegram from '#services/TelegramService';
+import { TelegramService } from '#services/TelegramService';
+import app from '@adonisjs/core/services/app';
 
 interface GetUserInfo {
     lang: string;
@@ -92,7 +92,7 @@ export default class MtkService {
 
     protected httpClient: KyInstance;
 
-    public constructor() {
+    public constructor(public userId: number) {
         this.config = telegramWebView['mtk'];
         this.httpClient = this.makeHttpClient();
     }
@@ -120,6 +120,7 @@ export default class MtkService {
     }
 
     protected async getTelegramWebViewParams() {
+        const telegram: TelegramService = await app.container.make('telegram', [this.userId]);
         const client: TelegramClient = await telegram.getClient();
 
         const result = await client.invoke(
@@ -148,7 +149,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('telegramId', `${telegramConfig.userId}`);
+        searchParams.set('telegramId', `${this.userId}`);
         searchParams.set('initData', this.getTelegramInitData());
 
         this.userInfo = (await this.httpClient
@@ -197,7 +198,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegramConfig.userId}`);
+        searchParams.set('userId', `${this.userId}`);
 
         return await this.httpClient
             .post('api/user/collectDaily', {
@@ -212,7 +213,7 @@ export default class MtkService {
         }
 
         const searchParams = new URLSearchParams();
-        searchParams.set('userId', `${telegramConfig.userId}`);
+        searchParams.set('userId', `${this.userId}`);
 
         return await this.httpClient
             .post('api/user/resetEnergy', {

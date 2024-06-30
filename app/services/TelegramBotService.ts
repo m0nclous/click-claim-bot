@@ -38,13 +38,16 @@ export class TelegramBotService {
     }
 
     public async start(ctx: Context): Promise<void> {
+        console.log(ctx);
+
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
             return;
         }
 
-        await this.redis.hset(`user:${ctx.from.id}:bot`, 'started', 1);
+        await this.redis.hset(`user:${ctx.from.id}`, 'started', 1);
+        await this.redis.lpush('bot:started', ctx.from.id);
         await ctx.reply('Бот запущен');
     }
 
@@ -55,7 +58,8 @@ export class TelegramBotService {
             return;
         }
 
-        await this.redis.hset(`user:${ctx.from.id}:bot`, 'started', '0');
+        await this.redis.hset(`user:${ctx.from.id}`, 'started', 0);
+        await this.redis.lpop('bot:started', ctx.from.id);
         await ctx.reply('Бот остановлен');
     }
 

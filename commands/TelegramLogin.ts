@@ -1,6 +1,6 @@
 import { BaseCommand } from '@adonisjs/core/ace';
 import { inject } from '@adonisjs/core';
-import telegram from '#services/TelegramService';
+import { TelegramService } from '#services/TelegramService';
 
 // noinspection JSUnusedGlobalSymbols
 export default class GemzClaim extends BaseCommand {
@@ -8,7 +8,7 @@ export default class GemzClaim extends BaseCommand {
     static description = 'Залогиниться в телеграм и получить сессию';
 
     @inject()
-    async run() {
+    async run(telegram: TelegramService) {
         const client = await telegram.getClient();
 
         await client.start({

@@ -1,10 +1,15 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegramConfig from '#config/telegram';
 import BaseGameService, { HasTap } from '#services/BaseGameService';
 import { CommandOptions } from '@adonisjs/core/types/ace';
 import telegramBot from '#services/TelegramBotService';
 
 export default abstract class BaseGameTapCommand extends BaseCommand {
+    @flags.number({
+        description: 'ID пользователя телеграм',
+        required: true,
+    })
+    declare userId: number;
+
     @flags.number({
         description: 'Количество тапов для отправки',
         default: 1,
@@ -20,7 +25,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
 
     static options: CommandOptions = {
         startApp: true,
-        staysAlive: true,
+        staysAlive: false,
         allowUnknownFlags: false,
     };
 
@@ -54,7 +59,7 @@ export default abstract class BaseGameTapCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegramBot.sendMessage(telegramConfig.userId, telegramText);
+            await telegramBot.sendMessage(this.userId, telegramText);
         }
     }
 }

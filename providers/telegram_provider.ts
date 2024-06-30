@@ -1,4 +1,4 @@
-import { ApplicationService, LoggerService } from '@adonisjs/core/types';
+import { ApplicationService } from '@adonisjs/core/types';
 import { TelegramConfig, TelegramService } from '#services/TelegramService';
 import { RedisService } from '@adonisjs/redis/types';
 
@@ -14,14 +14,18 @@ export default class TelegramProvider {
 
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
-        this.app.container.singleton('telegram', async () => {
+        this.app.container.bind('telegram', async (resolver, runtimeValues) => {
+            if (!runtimeValues) {
+                throw new Error('runtimeValues must be defined');
+            }
+
             const { TelegramService } = await import('#services/TelegramService');
 
+            const userId = runtimeValues[0];
             const config: TelegramConfig = this.app.config.get<TelegramConfig>('telegram');
-            const logger: LoggerService = await this.app.container.make('logger');
-            const redis: RedisService = await this.app.container.make('redis');
+            const redis: RedisService = await resolver.make('redis');
 
-            return new TelegramService(config, redis, logger);
+            return new TelegramService(userId, config, redis);
         });
     }
 }

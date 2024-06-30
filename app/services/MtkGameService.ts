@@ -1,5 +1,4 @@
 import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import telegramConfig from '#config/telegram';
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
 
@@ -7,8 +6,8 @@ export default class MtkGameService
     extends BaseGameService
     implements HasTap, HasDailyReward, HasEnergyRecharge
 {
-    public constructor() {
-        super();
+    public constructor(userId: number) {
+        super(userId);
 
         this.httpClient = this.httpClient.extend({
             hooks: {
@@ -23,8 +22,8 @@ export default class MtkGameService
                         const searchParams: URLSearchParams = options.searchParams ?? new URLSearchParams();
                         const url: URL = new URL(request.url);
 
-                        searchParams.set('telegramId', telegramConfig.userId.toString());
-                        searchParams.set('userId', telegramConfig.userId.toString());
+                        searchParams.set('telegramId', this.userId.toString());
+                        searchParams.set('userId', this.userId.toString());
                         searchParams.set('initData', await this.getInitDataKey());
 
                         url.search = searchParams.toString();

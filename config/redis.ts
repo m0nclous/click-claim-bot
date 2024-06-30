@@ -26,6 +26,17 @@ const redisConfig = defineConfig({
                 return times > 10 ? null : times * 50;
             },
         },
+
+        queue: {
+            host: env.get('REDIS_HOST'),
+            port: env.get('REDIS_PORT'),
+            password: env.get('REDIS_PASSWORD', ''),
+            db: 1,
+            keyPrefix: '',
+            retryStrategy(times) {
+                return times > 10 ? null : times * 50;
+            },
+        },
     },
 });
 
