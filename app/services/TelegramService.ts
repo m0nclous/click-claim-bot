@@ -31,7 +31,7 @@ export class TelegramService {
     ) {}
 
     public async getSession(userId?: number): Promise<StringSession> {
-        const authKey: string | null = await this.redis.get(`${this.config.sessionName}:${userId}`);
+        const authKey: string | null = await this.redis.hget(`${this.config.sessionName}:${userId}`, 'token');
 
         const session: StringSession = new StringSession(authKey ?? '');
         session.setDC(this.config.dc.id, this.config.dc.ip, this.config.dc.port);
