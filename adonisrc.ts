@@ -34,6 +34,7 @@ export default defineConfig({
         },
         () => import('@adonisjs/redis/redis_provider'),
         () => import('#providers/telegram_provider'),
+        () => import('#providers/telegram_bot_provider'),
         () => import('#providers/app_provider'),
     ],
 

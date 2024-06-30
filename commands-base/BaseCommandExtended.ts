@@ -1,15 +1,9 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace';
-import telegram from '#config/telegram';
-import type { CommandOptions } from '@adonisjs/core/types/ace';
+import telegramConfig from '#config/telegram';
 import telegramBot from '#services/TelegramBotService';
 
-export default abstract class BaseGameCommand extends BaseCommand {
-    static options: CommandOptions = {
-        startApp: true,
-        staysAlive: true,
-        allowUnknownFlags: false,
-    };
-
+// noinspection JSUnusedGlobalSymbols
+export default class BaseCommandExtended extends BaseCommand {
     @flags.boolean({
         description: 'Отправить уведомление в Telegram',
         default: false,
@@ -30,7 +24,17 @@ export default abstract class BaseGameCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegramBot.sendMessage(telegram.userId, telegramText);
+            await telegramBot.sendMessage(telegramConfig.userId, telegramText);
         }
+    }
+
+    async prepare() {
+        const botIsStarted: boolean = await telegramBot.isStarted(telegramConfig.userId);
+
+        if (!botIsStarted) {
+            return Promise.reject();
+        }
+
+        return Promise.resolve();
     }
 }
