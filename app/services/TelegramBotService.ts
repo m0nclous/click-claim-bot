@@ -33,10 +33,63 @@ export class TelegramBotService {
         protected logger: Logger,
     ) {
         this.bot = new Telegraf<Scenes.SceneContext>(this.config.token);
-
         this.menuScene = new Scenes.BaseScene<Scenes.SceneContext>("menu");
         this.loginScene = new Scenes.BaseScene<Scenes.SceneContext>("login");
 
+        this.scenesInit();
+    }
+
+    public async run(): Promise<void> {
+        this.bot.command('launch', this.launch.bind(this));
+        this.bot.command('stop', this.stop.bind(this));
+
+        this.bot.start(async ctx => {
+            if (ctx.payload === 'authorize') return this.authorize(ctx);
+
+            const isAuth = await this.isAuthorize(ctx);
+
+            const toScene = isAuth ? 'menu' : 'login';
+            return ctx.scene.enter(toScene);
+        });
+
+        this.bot.launch().then();
+    }
+
+    public async isStarted(userId: number): Promise<boolean> {
+        return parseBoolean(await this.telegramService.getSessionValue(userId, 'started'));
+    }
+
+    public async launch(ctx: Context): Promise<void> {
+        if (!(await this.checkAuthorize(ctx))) return;
+
+        await this.telegramService.setSessionValue(ctx.from!.id, { started: 1 });
+        await ctx.reply('Бот запущен');
+    }
+
+    public async stop(ctx: Context): Promise<void> {
+        if (!(await this.checkAuthorize(ctx))) return;
+
+        await this.telegramService.setSessionValue(ctx.from!.id, { started: 0 });
+        await ctx.reply('Бот остановлен');
+    }
+
+    public async info(ctx: Context): Promise<void> {
+        if (!(await this.checkAuthorize(ctx))) return;
+
+        await ctx.reply(`Started: ${await this.isStarted(ctx.from!.id)}`);
+    }
+
+    public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
+        await this.bot.telegram.sendMessage(chatId, text, extra);
+    }
+
+    private async authorize(ctx: Context & { scene: SceneContextScene<SceneContext> }): Promise<void> {
+        const isAuth = await this.isAuthorize(ctx);
+
+        !isAuth ? await ctx.reply('Сессия не найдена') : await ctx.scene.enter('menu');
+    }
+
+    private scenesInit(): void {
         const stage = new Scenes.Stage<Scenes.SceneContext>([this.menuScene, this.loginScene], {
             ttl: 10,
         });
@@ -51,9 +104,9 @@ export class TelegramBotService {
                     INFO_COMMAND,
                 ])
             }));
-        this.menuScene.hears(LAUNCH_COMMAND, this.launch.bind(this));
-        this.menuScene.hears(STOP_COMMAND, this.stop.bind(this));
-        this.menuScene.hears(INFO_COMMAND, this.info.bind(this));
+        this.bot.hears(LAUNCH_COMMAND, this.launch.bind(this));
+        this.bot.hears(STOP_COMMAND, this.stop.bind(this));
+        this.bot.hears(INFO_COMMAND, this.info.bind(this));
 
         this.loginScene.enter(ctx => ctx.reply(
             'Пожалуйста, авторизуйтесь через: Telegram 🎊',
@@ -65,70 +118,23 @@ export class TelegramBotService {
                     })
                 ])
             }
-        ))
+        ));
     }
 
-    public async run(): Promise<void> {
-        this.bot.command('launch', this.launch.bind(this));
-        this.bot.command('stop', this.stop.bind(this));
-        this.bot.command('authorize', this.authorize.bind(this));
-
-        this.bot.start(async ctx => {
-            if (ctx.payload === 'authorize') return this.authorize(ctx);
-
-            const isAuth = await this.telegramService.isAuthorized(ctx.from!.id);
-
-            const toScene = isAuth ? 'menu' : 'login';
-            return ctx.scene.enter(toScene);
-        });
-
-        this.bot.launch().then();
+    private isAuthorize = async (ctx: Context): Promise<Boolean> => {
+        return !!(await this.telegramService.isAuthorized(ctx.from!.id));
     }
 
-    public async isStarted(userId: number): Promise<boolean> {
-        return parseBoolean(await this.telegramService.getSessionValue(userId, 'started'));
-    }
+    private checkAuthorize = async (ctx: Context): Promise<boolean> => {
+        const isAuth = await this.isAuthorize(ctx);
 
-    public async launch(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
+        if (!isAuth) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
-            return;
+            return false;
+        } else {
+            return true;
         }
-
-        await this.telegramService.setSessionValue(ctx.from.id, { started: 1 });
-        await ctx.reply('Бот запущен');
-    }
-
-    public async stop(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        await this.telegramService.setSessionValue(ctx.from.id, { started: 0 });
-        await ctx.reply('Бот остановлен');
-    }
-
-    public async info(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        await ctx.reply(`Started: ${await this.isStarted(ctx.from.id)}`);
-    }
-
-    public async authorize(ctx: Context & { scene: SceneContextScene<SceneContext> }): Promise<void> {
-        const isAuth = await this.telegramService.isAuthorized(ctx.from!.id);
-
-        !isAuth ? await ctx.reply('Сессия не найдена') : await ctx.scene.enter('menu');
-    }
-
-    public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
-        await this.bot.telegram.sendMessage(chatId, text, extra);
     }
 }
 
