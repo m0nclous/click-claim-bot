@@ -193,12 +193,18 @@ export default class GemzGameService
         const taps: {
             fn: 'tap';
             async: false;
+            meta: {
+                now: number;
+            };
         }[] = [];
 
         for (let i = 0; i < quantity; i++) {
             taps.unshift({
                 fn: 'tap',
                 async: false,
+                meta: {
+                    now: Date.now(),
+                },
             });
         }
 
@@ -211,7 +217,7 @@ export default class GemzGameService
                 json: {
                     ...this.defaultReplicateBody,
                     crqid: randomString(9).toLowerCase(),
-                    queue: queue.map((i) => ({ ...i, meta: Date.now() })),
+                    queue: queue,
                 },
             })
             .json<any>();
