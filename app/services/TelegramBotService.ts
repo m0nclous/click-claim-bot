@@ -85,15 +85,20 @@ export class TelegramBotService {
         const superWizard = new Scenes.WizardScene(
             'super-wizard',
             async (ctx) => {
+                this.logger.trace(ctx.update, 'Step 1: получение номера телефона');
+
                 await ctx.reply('Введите номер телефона', {
                     reply_markup: {
                         keyboard: [[{ text: '📲 Send phone number', request_contact: true }]],
                         one_time_keyboard: true,
                     },
                 });
+
                 return ctx.wizard.next();
             },
             async (ctx) => {
+                this.logger.trace(ctx.update, 'Step 2: получения кода авторизации');
+
                 ctx.wizard.state.phone = (ctx.message as any).contact.phone_number;
                 console.log('ctx.wizard.state.phone === ', ctx.wizard.state.phone);
                 phoneCallback.resolve(ctx.wizard.state.phone);
@@ -101,10 +106,14 @@ export class TelegramBotService {
                 return ctx.wizard.next();
             },
             async (ctx) => {
-                await ctx.reply('Step 4');
+                this.logger.trace(ctx.update, 'Step 3: получение пароля');
+
+                await ctx.reply('Step 3');
                 return ctx.wizard.next();
             },
             async (ctx) => {
+                this.logger.trace(ctx.update, 'Step 4: успешное получение сессии Telegram Client');
+
                 await ctx.reply('Done');
                 return await ctx.scene.leave();
             },
