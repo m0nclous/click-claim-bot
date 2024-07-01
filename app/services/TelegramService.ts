@@ -45,8 +45,6 @@ export class TelegramService {
 
         const session: StringSession = await this.getSession();
 
-        console.log('this.config === ', this.config);
-        console.log(session);
         this.client = new TelegramClient(session, this.config.id, this.config.hash, {
             connectionRetries: 5,
         });
