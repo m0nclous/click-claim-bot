@@ -18,7 +18,7 @@ export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
 export class TelegramBotService {
     public bot: Telegraf;
     private readonly loginScene: Scenes.BaseScene<Scenes.SceneContext>;
-    private readonly menuScene: Scenes.BaseScene<Scenes.SceneContext>;
+    // private readonly menuScene: Scenes.BaseScene<Scenes.SceneContext>;
 
     constructor(
         public config: TelegramBotConfig,
@@ -28,22 +28,22 @@ export class TelegramBotService {
     ) {
         this.bot = new Telegraf(this.config.token);
 
-        this.menuScene = new Scenes.BaseScene<Scenes.SceneContext>('menu');
+        // this.menuScene = new Scenes.BaseScene<Scenes.SceneContext>('menu');
         this.loginScene = new Scenes.BaseScene<Scenes.SceneContext>('login');
 
-        // this.loginScene.start(ctx => {
-        //     return ctx.reply('Введите номер телефона');
-        // })
+        this.loginScene.start(ctx => {
+            return ctx.reply('Введите номер телефона');
+        });
     }
 
     public async run(): Promise<void> {
         this.bot.command('start', this.start.bind(this));
         this.bot.command('stop', this.stop.bind(this));
         this.bot.command('info', this.info.bind(this));
-        //
-        // this.bot.start(async ctx => {
-        //     return ctx.scene.enter('login');
-        // });
+
+        this.bot.start(async (ctx) => {
+            return ctx.scene.enter('login');
+        });
 
         const phoneCallback = callbackPromise();
         const codeCallback = callbackPromise();
@@ -160,37 +160,6 @@ export class TelegramBotService {
     public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
         await this.bot.telegram.sendMessage(chatId, text, extra);
     }
-
-    // public async login(ctx: Context): Promise<void> {
-    //     // const phoneCallback = callbackPromise();
-    //     // const codeCallback = callbackPromise();
-    //     // const passwordCallback = callbackPromise();
-    //     //
-    //     // function callbackPromise() {
-    //     //     let resolve: any;
-    //     //     let reject: any;
-    //     //
-    //     //     const promise: Promise<unknown> = new Promise((res, rej) => {
-    //     //         resolve = res;
-    //     //         reject = rej;
-    //     //     });
-    //     //
-    //     //     return { promise, resolve, reject };
-    //     // }
-    //
-    //       const client = await this.telegramService.getClient();
-    //       client.start({
-    //           phoneNumber: async () => await input.text("Please enter your number: "),
-    //           password: async () => await input.text("Please enter your password: "),
-    //           phoneCode: async () =>
-    //               await input.text("Please enter the code you received: "),
-    //           onError: (err) => console.log(err),
-    //       }).then(async () => {
-    //           const authToken = client.session.save();
-    //           const me = await client.getMe();
-    //           this.telegramService.saveSession(String(authToken));
-    //       });
-    // }
 }
 
 let telegramBot: TelegramBotService;
