@@ -3,9 +3,10 @@ import { RedisService } from '@adonisjs/redis/types';
 import app from '@adonisjs/core/services/app';
 import { Context, Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean } from '../../helpers/parse.js';
+import { TelegramService } from '#services/TelegramService';
+
 // @ts-expect-error почему-то ругается на то что не может найти модуль
 import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
-import { TelegramService } from '#services/TelegramService';
 
 export interface TelegramBotConfig {
     token: string;
