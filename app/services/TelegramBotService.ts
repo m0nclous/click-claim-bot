@@ -106,7 +106,7 @@ export class TelegramBotService {
                 console.log('ctx.wizard.state.phone === ', ctx.wizard.state.phone);
                 phoneCallback.resolve(ctx.wizard.state.phone);
 
-                await ctx.reply('Введите код из приложения <a href="https://t.me/+42777">Telegram</a>', {
+                await ctx.reply('Введите код для входа в <a href="https://t.me/+42777">Telegram</a>', {
                     parse_mode: 'HTML',
                     reply_markup: {
                         inline_keyboard: [
