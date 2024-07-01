@@ -71,9 +71,14 @@ export class TelegramBotService {
             })
             .then(async () => {
                 console.log('then ================');
-                const authToken = client.session.save();
+                const authToken: string = client.session.save() as unknown as string;
                 const me = await client.getMe();
-                this.telegramService.saveSession(String(authToken));
+
+                const telegram = await app.container.make('telegram', [
+                    me.id,
+                ]);
+
+                await telegram.saveSession(authToken);
             });
 
         const superWizard = new Scenes.WizardScene(
