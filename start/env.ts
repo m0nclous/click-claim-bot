@@ -19,7 +19,6 @@ export default await Env.create(new URL('../', import.meta.url), {
     LOG_LEVEL: Env.schema.string(),
 
     TELEGRAM_API_ID: Env.schema.number(),
-    TELEGRAM_API_USER_ID: Env.schema.number(),
     TELEGRAM_API_HASH: Env.schema.string(),
     TELEGRAM_API_SESSION: Env.schema.string.optional(),
 
