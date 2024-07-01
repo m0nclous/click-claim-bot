@@ -146,7 +146,9 @@ export class TelegramBotService {
             return next();
         });
 
-        this.bot.launch().then();
+        this.bot.launch(() => {
+            this.logger.info(this.bot.botInfo, 'Чат-Бот запущен');
+        }).then();
     }
 
     public async isStarted(userId: number): Promise<boolean> {
