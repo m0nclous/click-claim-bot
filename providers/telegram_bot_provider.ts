@@ -1,7 +1,7 @@
 import { ApplicationService, LoggerService } from '@adonisjs/core/types';
 import { RedisService } from '@adonisjs/redis/types';
 import { TelegramBotConfig, TelegramBotService } from '#services/TelegramBotService';
-import {TelegramService} from "#services/TelegramService";
+import { TelegramService } from '#services/TelegramService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

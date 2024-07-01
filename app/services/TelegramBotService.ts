@@ -1,11 +1,11 @@
-import type {Logger} from '@adonisjs/core/logger';
-import {RedisService} from '@adonisjs/redis/types';
+import type { Logger } from '@adonisjs/core/logger';
+import { RedisService } from '@adonisjs/redis/types';
 import app from '@adonisjs/core/services/app';
-import {Context, Scenes, session, Telegraf} from 'telegraf';
-import {parseBoolean} from '../../helpers/parse.js';
+import { Context, Scenes, session, Telegraf } from 'telegraf';
+import { parseBoolean } from '../../helpers/parse.js';
 // @ts-expect-error почему-то ругается на то что не может найти модуль
-import type {ExtraReplyMessage} from 'telegraf/typings/telegram-types';
-import {TelegramService} from "#services/TelegramService";
+import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
+import { TelegramService } from '#services/TelegramService';
 
 export interface TelegramBotConfig {
     token: string;
@@ -28,8 +28,8 @@ export class TelegramBotService {
     ) {
         this.bot = new Telegraf(this.config.token);
 
-        this.menuScene = new Scenes.BaseScene<Scenes.SceneContext>("menu");
-        this.loginScene = new Scenes.BaseScene<Scenes.SceneContext>("login");
+        this.menuScene = new Scenes.BaseScene<Scenes.SceneContext>('menu');
+        this.loginScene = new Scenes.BaseScene<Scenes.SceneContext>('login');
 
         // this.loginScene.start(ctx => {
         //     return ctx.reply('Введите номер телефона');
@@ -62,53 +62,50 @@ export class TelegramBotService {
         }
 
         const client = await this.telegramService.getClient();
-        client.start({
-            phoneNumber: async () => phoneCallback.promise,
-            password: async () => passwordCallback.promise,
-            phoneCode: async () => codeCallback.promise,
-            onError: (err) => console.error(err),
-        }).then(async () => {
-            console.log('then ================')
-            const authToken = client.session.save();
-            const me = await client.getMe();
-            this.telegramService.saveSession(String(authToken));
-        });
+        client
+            .start({
+                phoneNumber: async () => phoneCallback.promise,
+                password: async () => passwordCallback.promise,
+                phoneCode: async () => codeCallback.promise,
+                onError: (err) => console.error(err),
+            })
+            .then(async () => {
+                console.log('then ================');
+                const authToken = client.session.save();
+                const me = await client.getMe();
+                this.telegramService.saveSession(String(authToken));
+            });
 
         const superWizard = new Scenes.WizardScene(
-            "super-wizard",
-            async ctx => {
-                await ctx.reply(
-                    "Введите номер телефона",
-                    {
-                        reply_markup: {
-                            keyboard: [
-                                [{text: "📲 Send phone number", request_contact: true}],
-                            ],
-                            one_time_keyboard: true,
-                        },
+            'super-wizard',
+            async (ctx) => {
+                await ctx.reply('Введите номер телефона', {
+                    reply_markup: {
+                        keyboard: [[{ text: '📲 Send phone number', request_contact: true }]],
+                        one_time_keyboard: true,
                     },
-                );
+                });
                 return ctx.wizard.next();
             },
-            async ctx => {
+            async (ctx) => {
                 ctx.wizard.state.phone = (ctx.message as any).contact.phone_number;
-                console.log('ctx.wizard.state.phone === ',ctx.wizard.state.phone)
+                console.log('ctx.wizard.state.phone === ', ctx.wizard.state.phone);
                 phoneCallback.resolve(ctx.wizard.state.phone);
-                await ctx.reply("Введите код из приложения");
+                await ctx.reply('Введите код из приложения');
                 return ctx.wizard.next();
             },
-            async ctx => {
-                await ctx.reply("Step 4");
+            async (ctx) => {
+                await ctx.reply('Step 4');
                 return ctx.wizard.next();
             },
-            async ctx => {
-                await ctx.reply("Done");
+            async (ctx) => {
+                await ctx.reply('Done');
                 return await ctx.scene.leave();
             },
         );
 
         const stage = new Scenes.Stage<Scenes.WizardContext>([superWizard], {
-            default: "super-wizard",
+            default: 'super-wizard',
         });
 
         this.bot.use(session());
