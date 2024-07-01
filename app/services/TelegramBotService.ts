@@ -8,6 +8,9 @@ import { TelegramService } from '#services/TelegramService';
 // @ts-expect-error почему-то ругается на то что не может найти модуль
 import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 
+// @ts-expect-error интерфейс не экспортирован, но мы его используем
+import { MyChatMemberUpdate } from '@telegraf/types/update.js';
+
 export interface TelegramBotConfig {
     token: string;
 }
@@ -125,6 +128,23 @@ export class TelegramBotService {
 
         this.bot.use(session());
         this.bot.use(stage.middleware());
+
+        superWizard.use(async (ctx, next) => {
+            // Если пришло событие обновления участников чата
+            if ('my_chat_member' in ctx.update) {
+                const updateInfo: MyChatMemberUpdate = ctx.update;
+
+                // Обработка случаев, когда пользователь остановил бота
+                if (['kicked', 'left'].includes(updateInfo.my_chat_member.new_chat_member.status)) {
+                    this.logger.trace(updateInfo, 'Бот был остановлен');
+
+                    // Выход со сцены и остановка дальнейших middleware
+                    return ctx.scene.leave();
+                }
+            }
+
+            return next();
+        });
 
         this.bot.launch().then();
     }
