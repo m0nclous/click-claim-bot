@@ -10,6 +10,7 @@ import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 // @ts-expect-error интерфейс не экспортирован, но мы его используем
 import { MyChatMemberUpdate } from '@telegraf/types/update.js';
 import { TelegramClient } from 'telegram';
+import { TelegramService } from '#services/TelegramService';
 
 export interface TelegramBotConfig {
     token: string;
@@ -71,6 +72,7 @@ export class TelegramBotService {
                 this.logger.trace(ctx.update, 'Step 2: получения кода авторизации');
 
                 const state: {
+                    telegram?: TelegramService;
                     client?: TelegramClient;
                     phoneNumber?: string;
                     codeCallback?: ICallbackPromise<string>;
@@ -86,10 +88,9 @@ export class TelegramBotService {
                     return;
                 }
 
-                const telegramService = await app.container.make('telegram', [ctx.message.from.id]);
-
+                state.telegram = await app.container.make('telegram', [ctx.message.from.id]);
+                state.client = await state.telegram.getClient();
                 state.phoneNumber = ctx.message.contact.phone_number;
-                state.client = await telegramService.getClient();
                 state.codeCallback = callbackPromise();
                 state.passwordCallback = callbackPromise();
                 state.onLoginCallback = callbackPromise();
@@ -100,8 +101,8 @@ export class TelegramBotService {
                 state.client
                     .start({
                         phoneNumber: state.phoneNumber,
-                        password: async () => codePromise,
-                        phoneCode: async () => passwordPromise,
+                        password: async () => passwordPromise,
+                        phoneCode: async () => codePromise,
                         onError: async (err) => {
                             this.logger.error(err);
                             return true;
@@ -115,7 +116,7 @@ export class TelegramBotService {
                         await ctx.scene.leave();
                     });
 
-                await ctx.reply('Введите код для входа в <a href="https://t.me/+42777">Telegram</a>', {
+                await ctx.reply('Введите код для входа в <a href="https://t.me/+42777">Telegram</a>\n\n❗️ Внимание! Раздели код пробелами, например <code>1 2 3 4 5 6</code>, иначе код будет недействительным!', {
                     parse_mode: 'HTML',
                     reply_markup: {
                         inline_keyboard: [
@@ -149,7 +150,9 @@ export class TelegramBotService {
                     passwordCallback?: ICallbackPromise<string>;
                 } = ctx.wizard.state;
 
-                state.codeCallback?.resolve(ctx.message.text);
+                const phoneCode: string = ctx.message.text.replaceAll(' ', '').trim();
+
+                state.codeCallback?.resolve(phoneCode);
 
                 await ctx.reply('Введите облачный пароль Telegram');
 
@@ -167,6 +170,7 @@ export class TelegramBotService {
                 }
 
                 const state: {
+                    telegram?: TelegramService;
                     client?: TelegramClient;
                     phoneNumber?: string;
                     codeCallback?: ICallbackPromise<string>;
@@ -181,10 +185,7 @@ export class TelegramBotService {
 
                 await state.onLoginCallback?.promise;
                 await ctx.reply('Успешный вход');
-                this.logger.trace({
-                    session: state.client?.session.save(),
-                    ctx: ctx,
-                });
+                await state.telegram?.saveSession(state.client?.session.save() as unknown as string);
 
                 return await ctx.scene.leave();
             },
