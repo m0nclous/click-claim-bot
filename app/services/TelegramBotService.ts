@@ -53,7 +53,8 @@ export class TelegramBotService {
             return { promise, resolve, reject };
         }
 
-        const loginWizard = new Scenes.WizardScene('login',
+        const loginWizard = new Scenes.WizardScene(
+            'login',
             async (ctx) => {
                 this.logger.trace(ctx.update, 'Step 1: получение номера телефона');
 
@@ -85,7 +86,7 @@ export class TelegramBotService {
                     return;
                 }
 
-                const telegramService = await app.container.make('telegram', [ ctx.message.from.id ]);
+                const telegramService = await app.container.make('telegram', [ctx.message.from.id]);
 
                 state.phoneNumber = ctx.message.contact.phone_number;
                 state.client = await telegramService.getClient();
@@ -96,20 +97,23 @@ export class TelegramBotService {
                 const codePromise = state.codeCallback.promise;
                 const passwordPromise = state.passwordCallback.promise;
 
-                state.client.start({
-                    phoneNumber: state.phoneNumber,
-                    password: async () => codePromise,
-                    phoneCode: async () => passwordPromise,
-                    onError: async (err) => {
-                        this.logger.error(err);
-                        return true;
-                    },
-                }).then(() => {
-                    state.onLoginCallback?.resolve(true);
-                }).catch(async () => {
-                    await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
-                    await ctx.scene.leave();
-                });
+                state.client
+                    .start({
+                        phoneNumber: state.phoneNumber,
+                        password: async () => codePromise,
+                        phoneCode: async () => passwordPromise,
+                        onError: async (err) => {
+                            this.logger.error(err);
+                            return true;
+                        },
+                    })
+                    .then(() => {
+                        state.onLoginCallback?.resolve(true);
+                    })
+                    .catch(async () => {
+                        await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
+                        await ctx.scene.leave();
+                    });
 
                 await ctx.reply('Введите код для входа в <a href="https://t.me/+42777">Telegram</a>', {
                     parse_mode: 'HTML',
@@ -186,9 +190,7 @@ export class TelegramBotService {
             },
         );
 
-        const stage = new Scenes.Stage<any>([
-            loginWizard,
-        ], {
+        const stage = new Scenes.Stage<any>([loginWizard], {
             default: 'login',
         });
 
@@ -212,9 +214,11 @@ export class TelegramBotService {
             return next();
         });
 
-        this.bot.launch(() => {
-            this.logger.info(this.bot.botInfo, 'Чат-Бот запущен');
-        }).then();
+        this.bot
+            .launch(() => {
+                this.logger.info(this.bot.botInfo, 'Чат-Бот запущен');
+            })
+            .then();
     }
 
     public async isStarted(userId: number): Promise<boolean> {
