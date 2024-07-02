@@ -44,7 +44,6 @@ export default defineConfig({
   |
   */
     preloads: [
-        () => import('#start/routes'),
         () => import('#start/kernel'),
         {
             file: () => import('#start/scheduler'),
