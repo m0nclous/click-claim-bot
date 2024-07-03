@@ -1,5 +1,6 @@
 import { defineConfig } from '@adonisjs/core/app';
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     /*
   |--------------------------------------------------------------------------
