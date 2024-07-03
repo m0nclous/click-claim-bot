@@ -4,6 +4,8 @@ services:
             target: 'development'
         environment:
             NODE_ENV: 'development'
+        ports:
+            - '9229:9229'
         volumes:
             - .:/app
             - /app/node_modules
