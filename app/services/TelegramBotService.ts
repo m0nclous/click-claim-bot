@@ -1,16 +1,17 @@
-import type { Logger } from '@adonisjs/core/logger';
-import { RedisService } from '@adonisjs/redis/types';
 import app from '@adonisjs/core/services/app';
-import { Context, Scenes, session, Telegraf } from 'telegraf';
+import { Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean } from '../../helpers/parse.js';
+
+import type { Context } from 'telegraf';
+import type { Logger } from '@adonisjs/core/logger';
+import type { RedisService } from '@adonisjs/redis/types';
+import type { TelegramClient } from 'telegram';
+import type { TelegramService } from '#services/TelegramService';
 
 // @ts-expect-error почему-то ругается на то что не может найти модуль
 import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
-
 // @ts-expect-error интерфейс не экспортирован, но мы его используем
-import { MyChatMemberUpdate } from '@telegraf/types/update.js';
-import { TelegramClient } from 'telegram';
-import { TelegramService } from '#services/TelegramService';
+import type { MyChatMemberUpdate } from '@telegraf/types/update.js';
 
 export interface TelegramBotConfig {
     token: string;
