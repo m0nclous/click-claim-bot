@@ -34,7 +34,11 @@ export class TelegramService {
         return session;
     }
 
-    public async saveSession(authKey: string): Promise<void> {
+    public async saveSession(): Promise<void> {
+        const client: TelegramClient = await this.getClient();
+        const session: StringSession = client.session as StringSession;
+        const authKey: string = session.save();
+
         await this.redis.hset(`user:${this.userId}`, 'auth-key', authKey);
     }
 

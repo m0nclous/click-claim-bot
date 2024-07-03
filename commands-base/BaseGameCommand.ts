@@ -35,7 +35,7 @@ export default abstract class BaseGameCommand extends BaseCommand {
                 telegramText += '\n#' + this.notifyPrefix;
             }
 
-            await telegramBot.sendMessage(this.userId, telegramText);
+            await telegramBot.bot.telegram.sendMessage(this.userId, telegramText);
         }
     }
 }

@@ -21,8 +21,7 @@ export default class GemzClaim extends BaseCommand {
             },
         });
 
-        const authToken: string = client.session.save() as unknown as string;
-        await telegram.saveSession(authToken);
+        await telegram.saveSession();
 
         this.logger.info('Успешно');
     }

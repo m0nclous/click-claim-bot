@@ -1,17 +1,14 @@
 import app from '@adonisjs/core/services/app';
 import { Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean } from '../../helpers/parse.js';
+import { callbackPromise } from '../../helpers/promise.js';
 
 import type { Context } from 'telegraf';
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
-
-// @ts-expect-error почему-то ругается на то что не может найти модуль
-import type { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
-// @ts-expect-error интерфейс не экспортирован, но мы его используем
-import type { MyChatMemberUpdate } from '@telegraf/types/update.js';
+import type { ICallbackPromise } from '../../helpers/promise.js';
 
 export interface TelegramBotConfig {
     token: string;
@@ -20,6 +17,19 @@ export interface TelegramBotConfig {
 export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
     return config;
 }
+
+export interface ILoginState {
+    telegram?: TelegramService;
+    client?: TelegramClient;
+    phoneNumber?: string;
+    codeCallback?: ICallbackPromise<string>;
+    passwordCallback?: ICallbackPromise<string>;
+    onLoginCallback?: ICallbackPromise<true>;
+}
+
+export const parsePhoneCode = (rawPhoneCode: string): string => {
+    return rawPhoneCode.replaceAll(' ', '').trim();
+};
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -33,91 +43,101 @@ export class TelegramBotService {
     }
 
     public async run(): Promise<void> {
-        this.bot.command('play', this.play.bind(this));
-        this.bot.command('pause', this.pause.bind(this));
-        this.bot.command('info', this.info.bind(this));
+        this.bot.command('enable', this.enable.bind(this));
+        this.bot.command('disable', this.disable.bind(this));
+        this.bot.command('status', this.status.bind(this));
 
-        interface ICallbackPromise<T> {
-            promise: Promise<T>;
-            resolve: any;
-            reject: any;
-        }
-
-        function callbackPromise<T>(): ICallbackPromise<T> {
-            let resolve: any;
-            let reject: any;
-
-            const promise: Promise<T> = new Promise((res, rej) => {
-                resolve = res;
-                reject = rej;
-            });
-
-            return { promise, resolve, reject };
-        }
+        await this.setupCommandsMenu();
 
         const loginWizard = new Scenes.WizardScene(
             'login',
+
             async (ctx) => {
                 this.logger.trace(ctx.update, 'Step 1: получение номера телефона');
 
-                await ctx.reply('Введите номер телефона', {
+                if (ctx.message === undefined) {
+                    this.logger.debug(ctx, 'ctx.message is undefined');
+                    return;
+                }
+
+                const state: ILoginState = ctx.wizard.state;
+
+                state.telegram = await app.container.make('telegram', [ctx.message.from.id]);
+
+                state.client = await state.telegram.getClient();
+
+                await ctx.reply('Нажмите кнопку "Отправить номер телефона"', {
                     reply_markup: {
-                        keyboard: [[{ text: '📲 Send phone number', request_contact: true }]],
+                        keyboard: [
+                            [
+                                {
+                                    text: '📲 Отправить номер телефона',
+                                    request_contact: true,
+                                },
+                            ],
+                        ],
+
                         one_time_keyboard: true,
                     },
                 });
 
                 return ctx.wizard.next();
             },
+
             async (ctx) => {
                 this.logger.trace(ctx.update, 'Step 2: получения кода авторизации');
 
-                const state: {
-                    telegram?: TelegramService;
-                    client?: TelegramClient;
-                    phoneNumber?: string;
-                    codeCallback?: ICallbackPromise<string>;
-                    passwordCallback?: ICallbackPromise<string>;
-                    onLoginCallback?: ICallbackPromise<true>;
-                } = ctx.wizard.state;
+                const state: ILoginState = ctx.wizard.state;
 
                 if (ctx.message === undefined) {
+                    this.logger.debug(ctx, 'ctx.message is undefined');
                     return;
                 }
 
                 if (!('contact' in ctx.message)) {
+                    this.logger.debug(ctx, 'ctx.message.contact is undefined');
                     return;
                 }
 
-                state.telegram = await app.container.make('telegram', [ctx.message.from.id]);
-                state.client = await state.telegram.getClient();
                 state.phoneNumber = ctx.message.contact.phone_number;
-                state.codeCallback = callbackPromise();
+                state.codeCallback = callbackPromise<string>();
                 state.passwordCallback = callbackPromise();
                 state.onLoginCallback = callbackPromise();
 
-                const codePromise = state.codeCallback.promise;
-                const passwordPromise = state.passwordCallback.promise;
+                const codePromise: Promise<string> = state.codeCallback.promise;
+                const passwordPromise: Promise<string> = state.passwordCallback.promise;
+                const onLoginResolve = state.onLoginCallback.resolve;
+
+                if (state.client === undefined) {
+                    this.logger.error(ctx, 'state.client is undefined');
+                    return;
+                }
 
                 state.client
                     .start({
                         phoneNumber: state.phoneNumber,
-                        password: async () => passwordPromise,
                         phoneCode: async () => codePromise,
-                        onError: async (err) => {
-                            this.logger.error(err);
-                            return true;
+                        password: async () => passwordPromise,
+                        onError: async (err: Error) => {
+                            throw err;
                         },
                     })
                     .then(() => {
-                        state.onLoginCallback?.resolve(true);
+                        onLoginResolve(true);
                     })
-                    .catch(async () => {
+                    .catch(async (error: Error) => {
+                        this.logger.error(error);
                         await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
                         await ctx.scene.leave();
                     });
 
-                await ctx.reply('Введите код для входа в <a href="https://t.me/+42777">Telegram</a>\n\n❗️ Внимание! Раздели код пробелами, например <code>1 2 3 4 5 6</code>, иначе код будет недействительным!', {
+                const text: string =
+                    'Введите код для входа в <a href="https://t.me/+42777">Telegram</a>' +
+                    '\n\n❗️ Внимание!' +
+                    '\nРаздели код пробелами, например <code>1 2 3 4 5 6</code>\n' +
+                    'Иначе код будет недействительным!';
+
+                await ctx.reply(text, {
                     parse_mode: 'HTML',
                     reply_markup: {
                         inline_keyboard: [
@@ -133,25 +153,22 @@ export class TelegramBotService {
 
                 return ctx.wizard.next();
             },
+
             async (ctx) => {
                 this.logger.trace(ctx.update, 'Step 3: получение пароля');
 
                 if (ctx.message === undefined) {
+                    this.logger.debug(ctx, 'ctx.message is undefined');
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
+                    this.logger.debug(ctx, 'ctx.message.text is undefined');
                     return;
                 }
 
-                const state: {
-                    client?: TelegramClient;
-                    phoneNumber?: string;
-                    codeCallback?: ICallbackPromise<string>;
-                    passwordCallback?: ICallbackPromise<string>;
-                } = ctx.wizard.state;
-
-                const phoneCode: string = ctx.message.text.replaceAll(' ', '').trim();
+                const state: ILoginState = ctx.wizard.state;
+                const phoneCode: string = parsePhoneCode(ctx.message.text);
 
                 state.codeCallback?.resolve(phoneCode);
 
@@ -159,34 +176,30 @@ export class TelegramBotService {
 
                 return ctx.wizard.next();
             },
+
             async (ctx) => {
                 this.logger.trace('Step 4: успешное получение сессии Telegram Client');
 
                 if (ctx.message === undefined) {
+                    this.logger.debug(ctx, 'ctx.message is undefined');
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
+                    this.logger.debug(ctx, 'ctx.message.text is undefined');
                     return;
                 }
 
-                const state: {
-                    telegram?: TelegramService;
-                    client?: TelegramClient;
-                    phoneNumber?: string;
-                    codeCallback?: ICallbackPromise<string>;
-                    passwordCallback?: ICallbackPromise<string>;
-                    onLoginCallback?: ICallbackPromise<true>;
-                } = ctx.wizard.state;
+                const state: ILoginState = ctx.wizard.state;
 
-                const password = ctx.message.text;
+                const password: string = ctx.message.text;
                 await ctx.deleteMessage(ctx.message.message_id);
 
                 state.passwordCallback?.resolve(password);
-
                 await state.onLoginCallback?.promise;
-                await ctx.reply('Успешный вход');
-                await state.telegram?.saveSession(state.client?.session.save() as unknown as string);
+
+                await state.telegram?.saveSession();
+                await ctx.reply('Telegram аккаунт успешно привязан');
 
                 return await ctx.scene.leave();
             },
@@ -202,32 +215,48 @@ export class TelegramBotService {
         loginWizard.use(async (ctx, next) => {
             // Если пришло событие обновления участников чата
             if ('my_chat_member' in ctx.update) {
-                const updateInfo: MyChatMemberUpdate = ctx.update;
-
                 // Обработка случаев, когда пользователь остановил бота
-                if (['kicked', 'left'].includes(updateInfo.my_chat_member.new_chat_member.status)) {
-                    this.logger.trace(updateInfo, 'Бот был остановлен');
+                if (['kicked', 'left'].includes(ctx.update.my_chat_member.new_chat_member.status)) {
+                    this.logger.trace(ctx.update, 'Бот был удалён из чата (или остановлен)');
 
                     // Выход со сцены и остановка дальнейших middleware
                     return ctx.scene.leave();
+                } else {
+                    this.logger.trace(ctx.update, 'Бот был добавлен в чат (или новый собеседник)');
+                    return;
                 }
             }
 
             return next();
         });
 
-        this.bot
-            .launch(() => {
-                this.logger.info(this.bot.botInfo, 'Чат-Бот запущен');
-            })
-            .then();
+        return this.bot.launch(() => {
+            this.logger.info(this.bot.botInfo, 'Чат-Бот успешно запущен');
+        });
+    }
+
+    protected async setupCommandsMenu() {
+        return this.bot.telegram.setMyCommands([
+            {
+                command: 'enable',
+                description: 'Включить бота',
+            },
+            {
+                command: 'disable',
+                description: 'Отключить бота',
+            },
+            {
+                command: 'status',
+                description: 'Статус бота',
+            },
+        ]);
     }
 
     public async isStarted(userId: number): Promise<boolean> {
         return parseBoolean(await this.redis.hget(`user:${userId}:bot`, 'started'));
     }
 
-    public async play(ctx: Context): Promise<void> {
+    public async enable(ctx: Context): Promise<void> {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
@@ -239,7 +268,7 @@ export class TelegramBotService {
         await ctx.reply('Бот запущен');
     }
 
-    public async pause(ctx: Context): Promise<void> {
+    public async disable(ctx: Context): Promise<void> {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
@@ -251,18 +280,25 @@ export class TelegramBotService {
         await ctx.reply('Бот остановлен');
     }
 
-    public async info(ctx: Context): Promise<void> {
+    public async status(ctx: Context): Promise<void> {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
             return;
         }
 
-        await ctx.reply(`Started: ${await this.isStarted(ctx.from!.id)}`);
-    }
+        const telegram: TelegramService = await app.container.make('telegram', [ctx.from?.id]);
 
-    public async sendMessage(chatId: number | string, text: string, extra?: ExtraReplyMessage) {
-        await this.bot.telegram.sendMessage(chatId, text, extra);
+        const telegramClient: TelegramClient = await telegram.getClient();
+        await telegramClient.connect();
+
+        const hasTelegramSession: boolean = await telegramClient.isUserAuthorized();
+        const isStarted: boolean = await this.isStarted(ctx.from!.id);
+
+        const text: string =
+            `Телеграм аккаунт привязан: ${hasTelegramSession}\n` + `Бот запущен: ${isStarted}`;
+
+        await ctx.reply(text);
     }
 }
 
