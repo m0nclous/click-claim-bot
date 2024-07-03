@@ -30,7 +30,7 @@ FROM base as development
 ENV NODE_ENV=development
 COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
-CMD ["node", "ace", "serve", "--watch"]
+CMD ["node", "ace", "--inspect=0.0.0.0", "serve", "--watch"]
 
 # Production stage
 FROM base as production
