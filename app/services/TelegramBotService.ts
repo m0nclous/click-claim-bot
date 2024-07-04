@@ -1,5 +1,5 @@
 import app from '@adonisjs/core/services/app';
-import { Scenes, session, Telegraf } from 'telegraf';
+import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean, parseNumbers } from '#helpers/parse';
 import { callbackPromise } from '#helpers/promise';
 
@@ -22,12 +22,47 @@ export class TelegramBotService {
     }
 
     public async run(): Promise<void> {
+        await this.setupLoginWizard();
+        await this.setupCommands();
+
+        return this.bot.launch(() => {
+            this.logger.info(this.bot.botInfo, 'Чат-Бот успешно запущен');
+        });
+    }
+
+    protected async setupCommands() {
+        this.bot.command('start', this.start.bind(this));
+        this.bot.command('login', this.login.bind(this));
+        this.bot.command('logout', this.logout.bind(this));
         this.bot.command('enable', this.enable.bind(this));
         this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
 
-        await this.setupCommandsMenu();
+        return this.bot.telegram.setMyCommands([
+            {
+                command: 'login',
+                description: 'Привязать Telegram аккаунт',
+            },
+            {
+                command: 'logout',
+                description: 'Отвязать Telegram аккаунт',
+            },
+            {
+                command: 'enable',
+                description: 'Включить бота',
+            },
+            {
+                command: 'disable',
+                description: 'Отключить бота',
+            },
+            {
+                command: 'status',
+                description: 'Статус бота',
+            },
+        ]);
+    }
 
+    protected async setupLoginWizard() {
         const loginWizard = new Scenes.WizardScene(
             'login',
 
@@ -42,23 +77,26 @@ export class TelegramBotService {
                 const state: ILoginState = ctx.wizard.state;
 
                 state.telegram = await app.container.make('telegram', [ctx.message.from.id]);
-
                 state.client = await state.telegram.getClient();
 
-                await ctx.reply('Нажмите кнопку "Отправить номер телефона"', {
-                    reply_markup: {
-                        keyboard: [
-                            [
-                                {
-                                    text: '📲 Отправить номер телефона',
-                                    request_contact: true,
-                                },
-                            ],
-                        ],
+                await state.client.connect();
 
-                        one_time_keyboard: true,
-                    },
-                });
+                if (await state.client.isUserAuthorized()) {
+                    await ctx.reply('Telegram аккаунт уже привязан\nИспользуйте /logout для выхода');
+                    return ctx.scene.leave();
+                }
+
+                const message: string = 'Нажмите кнопку "Отправить номер телефона"';
+                const keyboard = Markup.keyboard([
+                    [
+                        {
+                            text: '📲 Отправить номер телефона',
+                            request_contact: true,
+                        },
+                    ],
+                ]).oneTime(true);
+
+                await ctx.reply(message, keyboard);
 
                 return ctx.wizard.next();
             },
@@ -110,25 +148,20 @@ export class TelegramBotService {
                         await ctx.scene.leave();
                     });
 
-                const text: string =
+                const message: string =
                     'Введите код для входа в <a href="https://t.me/+42777">Telegram</a>' +
                     '\n\n❗️ Внимание!' +
                     '\nРаздели код пробелами, например <code>1 2 3 4 5 6</code>\n' +
                     'Иначе код будет недействительным!';
 
-                await ctx.reply(text, {
-                    parse_mode: 'HTML',
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: 'Посмотреть код',
-                                    url: 'https://t.me/+42777',
-                                },
-                            ],
-                        ],
-                    },
-                });
+                await ctx.replyWithHTML(message, Markup.inlineKeyboard([
+                    [
+                        {
+                            text: 'Посмотреть код',
+                            url: 'https://t.me/+42777',
+                        },
+                    ],
+                ]));
 
                 return ctx.wizard.next();
             },
@@ -184,13 +217,6 @@ export class TelegramBotService {
             },
         );
 
-        const stage = new Scenes.Stage<any>([loginWizard], {
-            default: 'login',
-        });
-
-        this.bot.use(session());
-        this.bot.use(stage.middleware());
-
         loginWizard.use(async (ctx, next) => {
             // Если пришло событие обновления участников чата
             if ('my_chat_member' in ctx.update) {
@@ -209,30 +235,44 @@ export class TelegramBotService {
             return next();
         });
 
-        return this.bot.launch(() => {
-            this.logger.info(this.bot.botInfo, 'Чат-Бот успешно запущен');
-        });
-    }
-
-    protected async setupCommandsMenu() {
-        return this.bot.telegram.setMyCommands([
-            {
-                command: 'enable',
-                description: 'Включить бота',
-            },
-            {
-                command: 'disable',
-                description: 'Отключить бота',
-            },
-            {
-                command: 'status',
-                description: 'Статус бота',
-            },
+        const stage = new Scenes.Stage<any>([
+            loginWizard,
         ]);
+
+        this.bot.use(session());
+        this.bot.use(stage.middleware());
     }
 
     public async isStarted(userId: number): Promise<boolean> {
         return parseBoolean(await this.redis.hget(`user:${userId}:bot`, 'started'));
+    }
+
+    public async start(ctx: Context): Promise<void> {
+        const message: string =
+            'Привет\\! Я умею тапать и клеймить игры вместо тебя\\!\n\n' +
+            'Чтобы начать — мне необходимо войти в твой Telegram\n' +
+            'Так я смогу открывать твои игры и собирать награды\\.\n\n' +
+            'Чтобы начать процесс привязки Telegram аккаунта\n' +
+            'Используй команду /login';
+
+        await ctx.replyWithMarkdownV2(message, Markup.removeKeyboard());
+
+    }
+
+    public async login(ctx: Context): Promise<void> {
+        // @ts-expect-error scene на самом деле есть, надо будет поработать с типами
+        await ctx.scene.enter('login');
+    }
+
+    public async logout(ctx: Context): Promise<void> {
+        if (ctx.message === undefined) {
+            this.logger.debug(ctx, 'ctx.message is undefined');
+            return;
+        }
+
+        const telegram: TelegramService = await app.container.make('telegram', [ctx.message.from.id]);
+
+        await telegram.forgetSession();
     }
 
     public async enable(ctx: Context): Promise<void> {

@@ -42,6 +42,10 @@ export class TelegramService {
         await this.redis.hset(`user:${this.userId}`, 'auth-key', authKey);
     }
 
+    public async forgetSession(): Promise<void> {
+        await this.redis.hdel(`user:${this.userId}`, 'auth-key');
+    }
+
     public async getClient(): Promise<TelegramClient> {
         if (this.client) {
             return this.client;
