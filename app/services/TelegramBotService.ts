@@ -1,35 +1,14 @@
 import app from '@adonisjs/core/services/app';
 import { Scenes, session, Telegraf } from 'telegraf';
-import { parseBoolean } from '../../helpers/parse.js';
-import { callbackPromise } from '../../helpers/promise.js';
+import { parseBoolean, parseNumbers } from '#helpers/parse';
+import { callbackPromise } from '#helpers/promise';
 
-import type { Context } from 'telegraf';
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
+import type { Context } from 'telegraf';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
-import type { ICallbackPromise } from '../../helpers/promise.js';
-
-export interface TelegramBotConfig {
-    token: string;
-}
-
-export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
-    return config;
-}
-
-export interface ILoginState {
-    telegram?: TelegramService;
-    client?: TelegramClient;
-    phoneNumber?: string;
-    codeCallback?: ICallbackPromise<string>;
-    passwordCallback?: ICallbackPromise<string>;
-    onLoginCallback?: ICallbackPromise<true>;
-}
-
-export const parsePhoneCode = (rawPhoneCode: string): string => {
-    return rawPhoneCode.replaceAll(' ', '').trim();
-};
+import type { ICallbackPromise } from '#helpers/promise';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -168,7 +147,7 @@ export class TelegramBotService {
                 }
 
                 const state: ILoginState = ctx.wizard.state;
-                const phoneCode: string = parsePhoneCode(ctx.message.text);
+                const phoneCode: string = parseNumbers(ctx.message.text);
 
                 state.codeCallback?.resolve(phoneCode);
 
@@ -309,3 +288,20 @@ await app.booted(async () => {
 });
 
 export { telegramBot as default };
+
+export interface TelegramBotConfig {
+    token: string;
+}
+
+export function defineConfig(config: TelegramBotConfig): TelegramBotConfig {
+    return config;
+}
+
+export interface ILoginState {
+    telegram?: TelegramService;
+    client?: TelegramClient;
+    phoneNumber?: string;
+    codeCallback?: ICallbackPromise<string>;
+    passwordCallback?: ICallbackPromise<string>;
+    onLoginCallback?: ICallbackPromise<true>;
+}

@@ -26,6 +26,7 @@
         "#providers/*": "./providers/*.js",
         "#policies/*": "./app/policies/*.js",
         "#abilities/*": "./app/abilities/*.js",
+        "#helpers/*": "./helpers/*.js",
         "#database/*": "./database/*.js",
         "#start/*": "./start/*.js",
         "#config/*": "./config/*.js"
