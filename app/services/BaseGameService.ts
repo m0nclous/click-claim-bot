@@ -52,6 +52,8 @@ export interface HasClaim {
 export default abstract class BaseGameService {
     protected token: string | null = null;
 
+    protected webView: WebViewResultUrl | null = null;
+
     protected httpClient: KyInstance = this.makeHttpClient();
 
     protected constructor(public userId: number) {}
@@ -141,7 +143,8 @@ export default abstract class BaseGameService {
     }
 
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
-        const webView: WebViewResultUrl = await this.requestWebView();
+        const webView: WebViewResultUrl = this.webView || await this.requestWebView();
+        this.webView = webView;
 
         return parseUrlHashParams(webView.url);
     }
