@@ -154,14 +154,17 @@ export class TelegramBotService {
                     '\nРаздели код пробелами, например <code>1 2 3 4 5 6</code>\n' +
                     'Иначе код будет недействительным!';
 
-                await ctx.replyWithHTML(message, Markup.inlineKeyboard([
-                    [
-                        {
-                            text: 'Посмотреть код',
-                            url: 'https://t.me/+42777',
-                        },
-                    ],
-                ]));
+                await ctx.replyWithHTML(
+                    message,
+                    Markup.inlineKeyboard([
+                        [
+                            {
+                                text: 'Посмотреть код',
+                                url: 'https://t.me/+42777',
+                            },
+                        ],
+                    ]),
+                );
 
                 return ctx.wizard.next();
             },
@@ -235,9 +238,7 @@ export class TelegramBotService {
             return next();
         });
 
-        const stage = new Scenes.Stage<any>([
-            loginWizard,
-        ]);
+        const stage = new Scenes.Stage<any>([loginWizard]);
 
         this.bot.use(session());
         this.bot.use(stage.middleware());
@@ -256,7 +257,6 @@ export class TelegramBotService {
             'Используй команду /login';
 
         await ctx.replyWithMarkdownV2(message, Markup.removeKeyboard());
-
     }
 
     public async login(ctx: Context): Promise<void> {
