@@ -5,6 +5,7 @@ import BaseGameCommand from '../commands-base/BaseGameCommand.js';
 import { flags } from '@adonisjs/core/ace';
 import { average, percentageDecrease } from '#helpers/math';
 import logger from '@adonisjs/core/services/logger';
+import { HTTPError } from 'ky';
 
 // noinspection JSUnusedGlobalSymbols
 export default class SeedMarketBotCommand extends BaseGameCommand {
@@ -69,16 +70,22 @@ export default class SeedMarketBotCommand extends BaseGameCommand {
                                 `Редкость: ${egg.egg_type}`,
                             ].join('\n'), 'error');
                         });
-                    }).catch((error) => {
-                        logger.error(error);
-
+                    }).catch((error: HTTPError | Error) => {
                         this.notify([
                             `[Яйцо #${egg.egg_id.substring(egg.egg_id.length - 9).toUpperCase()}] Не удалось купить ордер ⚠️`,
                             `Стоимость: ${egg.price_gross}`,
                             `Ср. рыночная цена: ${averageEggPrice}`,
                             `Выгода: ${pricePercentageDecrease}%`,
                             `Редкость: ${egg.egg_type}`,
+                            '\n',
+                            `<pre><code class="log">${error.message}</code></pre>`,
                         ].join('\n'), 'error');
+
+                        if (error instanceof HTTPError && error.response.status == 404) {
+                            return;
+                        }
+
+                        logger.error(error);
                     });
                 }
             }

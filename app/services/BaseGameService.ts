@@ -1,6 +1,6 @@
 import { Api as TelegramApi, TelegramClient } from 'telegram';
-import { parseUrlHashParams } from '../../helpers/url.js';
-import ky, { HTTPError, KyInstance } from 'ky';
+import { parseUrlHashParams } from '#helpers/url';
+import ky, { KyInstance } from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
 import { NormalizedOptions } from '../../types/ky.js';
@@ -111,14 +111,6 @@ export default abstract class BaseGameService {
                         const json = await response.json().catch(() => null);
 
                         logger.trace(json, `Ответ <- [${status}] ${url}`);
-                    },
-                ],
-
-                beforeError: [
-                    (error: HTTPError): HTTPError => {
-                        logger.error(error);
-
-                        return error;
                     },
                 ],
             },
