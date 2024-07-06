@@ -135,10 +135,15 @@ export default abstract class BaseGameService {
     }
 
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
-        const webView: WebViewResultUrl = this.webView || await this.requestWebView();
-        this.webView = webView;
+        if (!this.webView) {
+            this.webView = await this.requestWebView();
 
-        return parseUrlHashParams(webView.url);
+            setTimeout(() => {
+                this.webView = null;
+            }, 1000 * 60 * 60);
+        }
+
+        return parseUrlHashParams(this.webView.url);
     }
 
     public async getWebAppData(asObject?: false): Promise<string>;
