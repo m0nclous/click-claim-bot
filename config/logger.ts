@@ -17,7 +17,16 @@ const loggerConfig = defineConfig({
             transport: {
                 targets: targets()
                     .pushIf(!app.inProduction, targets.pretty())
-                    .pushIf(app.inProduction, targets.file({ destination: 1 }))
+                    .pushIf(app.inProduction, targets.file({destination: 1 }))
+                    .push({
+                        target: 'pino-roll',
+                        level: 'info',
+                        options: {
+                            file: '/app/storage/logs/adonis.log',
+                            frequency: 'daily',
+                            mkdir: true,
+                        },
+                    })
                     .toArray(),
             },
         },

@@ -2,6 +2,8 @@ services:
     app:
         build:
             context: .
+        volumes:
+            - './storage/logs:/app/storage/logs'
         depends_on:
             - redis
     redis:
@@ -19,3 +21,4 @@ services:
             timeout: 5s
 volumes:
     redis:
+    logs:
