@@ -26,9 +26,13 @@ export default class MtkEnergyReset extends BaseGameCommand {
         this.logger.info('[MTK] Энергия восстановлена');
 
         if (this.notifyTelegram) {
-            await telegramBot.sendMessage(this.userId, ['[MTK] Энергия восстановлена'].join('\n'), {
-                parse_mode: 'HTML',
-            });
+            await telegramBot.bot.telegram.sendMessage(
+                this.userId,
+                ['[MTK] Энергия восстановлена'].join('\n'),
+                {
+                    parse_mode: 'HTML',
+                },
+            );
         }
 
         if (this.claim) {

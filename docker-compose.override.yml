@@ -2,8 +2,9 @@ services:
     app:
         build:
             target: 'development'
+        environment:
+            NODE_ENV: 'development'
         ports:
-            - '${PORT:-80}:80'
             - '9229:9229'
         volumes:
             - .:/app

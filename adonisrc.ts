@@ -1,5 +1,6 @@
 import { defineConfig } from '@adonisjs/core/app';
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     /*
   |--------------------------------------------------------------------------
@@ -44,7 +45,6 @@ export default defineConfig({
   |
   */
     preloads: [
-        () => import('#start/routes'),
         () => import('#start/kernel'),
         {
             file: () => import('#start/scheduler'),
