@@ -77,11 +77,10 @@ export default class SeedMarketBotCommand extends BaseGameCommand {
                             `Ср. рыночная цена: ${averageEggPrice}`,
                             `Выгода: ${pricePercentageDecrease}%`,
                             `Редкость: ${egg.egg_type}`,
-                            '\n',
                             `<pre><code class="log">${error.message}</code></pre>`,
                         ].join('\n'), 'error');
 
-                        if (error instanceof HTTPError && error.response.status == 404) {
+                        if (error instanceof HTTPError && [400, 404].includes(error.response.status)) {
                             return;
                         }
 
