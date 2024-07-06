@@ -18,7 +18,7 @@ RUN npm ci --omit=dev
 FROM base as build
 COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
-CMD ["node", "ace", "build", "--ignore-ts-errors"]
+RUN node ace build --ignore-ts-errors
 COPY .env /app/build
 
 # Development stage
