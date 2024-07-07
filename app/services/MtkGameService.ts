@@ -2,14 +2,12 @@ import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#ser
 import { NormalizedOptions } from '../../types/ky.js';
 import { URLSearchParams } from 'node:url';
 import emitter from '@adonisjs/core/services/emitter';
+import { ITapEvent } from '#start/events';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
-        'mtk:tap': {
-            userId: number;
-            quantity: number;
-        }
+        'mtk:tap': ITapEvent
     }
 }
 
@@ -93,6 +91,7 @@ export default class MtkGameService
         });
 
         await emitter.emit('mtk:tap', {
+            self: this,
             userId: this.userId,
             quantity,
         });

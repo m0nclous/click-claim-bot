@@ -3,14 +3,12 @@ import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
 import emitter from '@adonisjs/core/services/emitter';
+import { ITapEvent } from '#start/events';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
-        'gemz:tap': {
-            userId: number;
-            quantity: number;
-        }
+        'gemz:tap': ITapEvent
     }
 }
 
@@ -181,6 +179,7 @@ export default class GemzGameService
         await this.replicate(this.generateTaps(quantity));
 
         await emitter.emit('gemz:tap', {
+            self: this,
             userId: this.userId,
             quantity,
         });
