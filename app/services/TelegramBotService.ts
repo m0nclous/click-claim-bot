@@ -357,58 +357,54 @@ export class TelegramBotService {
     }
 
     public async botMtkClickStart(ctx: Context): Promise<void> {
-        await this.executeService(ctx, 'mtkClickBotService', 'MTK кликер запущен');
+        await this.enableServiceByUserId(ctx, 'mtkClickBotService');
     }
 
     public async botMtkClickStop(ctx: Context): Promise<void> {
-        await this.stopService(ctx, 'mtkClickBotService', 'MTK кликер остановлен');
+        await this.stopServiceByUserId(ctx, 'mtkClickBotService');
     }
 
     public async botGemzClickStart(ctx: Context): Promise<void> {
-        await this.executeService(ctx, 'gemzClickBotService', 'Gemz кликер запущен');
+        await this.enableServiceByUserId(ctx, 'gemzClickBotService');
     }
 
     public async botGemzClickStop(ctx: Context): Promise<void> {
-        await this.stopService(ctx, 'gemzClickBotService', 'Gemz кликер остановлен');
+        await this.stopServiceByUserId(ctx, 'gemzClickBotService');
     }
 
     public async botMtkDailyStart(ctx: Context): Promise<void> {
-        await this.executeService(ctx, 'mtkDailyBotService', 'Сбор ежедневной награды MTK запущен');
+        await this.enableServiceByUserId(ctx, 'mtkDailyBotService');
     }
 
     public async botMtkDailyStop(ctx: Context): Promise<void> {
-        await this.stopService(ctx, 'mtkDailyBotService', 'Сбор ежедневной награды MTK остановлен');
+        await this.stopServiceByUserId(ctx, 'mtkDailyBotService');
     }
 
     public async botGemzDailyStart(ctx: Context): Promise<void> {
-        await this.executeService(ctx, 'gemzDailyBotService', 'Сбор ежедневной награды Gemz запущен');
+        await this.enableServiceByUserId(ctx, 'gemzDailyBotService');
     }
 
     public async botGemzDailyStop(ctx: Context): Promise<void> {
-        await this.stopService(ctx, 'gemzDailyBotService', 'Сбор ежедневной награды Gemz остановлен');
+        await this.stopServiceByUserId(ctx, 'gemzDailyBotService');
     }
 
-    private async executeService(ctx: Context, serviceName: string, description: string) {
-        if (await this.checkUser(ctx)) {
-            const userId: string = ctx.from?.id.toString() || '';
+    private async enableServiceByUserId(ctx: Context, serviceName: string) {
+        const userId: string = ctx.from?.id.toString() || '';
 
-            const service: BaseBotService = await app.container.make(serviceName);
-            await service.addUser(userId);
-            await service.execute(userId);
+        const service: BaseBotService = await app.container.make(serviceName);
+        await service.addUser(userId);
+        await service.execute(userId);
 
-            await ctx.reply(description);
-        }
+        await ctx.react('👌');
     }
 
-    private async stopService(ctx: Context, serviceName: string, description: string) {
-        if (await this.checkUser(ctx)) {
-            const userId: string = ctx.from?.id.toString() || '';
+    private async stopServiceByUserId(ctx: Context, serviceName: string) {
+        const userId: string = ctx.from?.id.toString() || '';
 
-            const service: BaseBotService = await app.container.make(serviceName);
-            await service.removeUser(userId);
+        const service: BaseBotService = await app.container.make(serviceName);
+        await service.removeUser(userId);
 
-            await ctx.reply(description);
-        }
+        await ctx.react('👌');
     }
 
     private async checkUser(ctx: Context) {
