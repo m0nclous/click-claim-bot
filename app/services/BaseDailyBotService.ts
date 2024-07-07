@@ -1,26 +1,22 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
 
-export abstract class BaseClickBotService extends BaseBotService {
+export abstract class BaseDailyBotService extends BaseBotService {
     protected abstract getIntervalDelay(): number;
 
-    public abstract getTapQuantity(): Promise<number>;
-
     public getRedisSlug(): string {
-        return 'click';
+        return 'daily';
     }
 
-    public getGameService(runtimeValues: any[] = []): Promise<BaseGameService & HasTap> {
+    public getGameService(runtimeValues: any[] = []): Promise<BaseGameService & HasDailyReward> {
         return this.app.container.make(this.getGameServiceName(), runtimeValues);
     }
 
     public async execute(userId: string): Promise<void> {
-        const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
-
-        const tapQuantity: number = await this.getTapQuantity();
+        const gameService: BaseGameService & HasDailyReward = await this.getGameService([userId]);
 
         await gameService.login();
-        await gameService.tap(tapQuantity);
+        await gameService.collectDaily();
     }
 
     public async run(): Promise<NodeJS.Timeout> {

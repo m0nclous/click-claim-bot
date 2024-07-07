@@ -11,6 +11,7 @@ import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import { MtkClickBotService } from '#services/MtkClickBotService';
+import { MtkDailyBotService } from '#services/MtkDailyBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -41,8 +42,12 @@ export class TelegramBotService {
         this.bot.command('enable', this.enable.bind(this));
         this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
+
         this.bot.command('bot_mtk_click_start', this.botMtkClickStart.bind(this));
         this.bot.command('bot_mtk_click_stop', this.botMtkClickStop.bind(this));
+
+        this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
+        this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -72,6 +77,14 @@ export class TelegramBotService {
             {
                 command: 'bot_mtk_click_stop',
                 description: 'Остановить кликер MTK',
+            },
+            {
+                command: 'bot_mtk_daily_start',
+                description: 'Запустить сбор ежедневной награды MTK',
+            },
+            {
+                command: 'bot_mtk_daily_stop',
+                description: 'Остановить сбор ежедневной награды MTK',
             },
         ]);
     }
@@ -363,6 +376,37 @@ export class TelegramBotService {
         await mtkClickBotService.removeUser(userId);
 
         await ctx.reply('MTK кликер остановлен');
+    }
+
+    public async botMtkDailyStart(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const userId: string = ctx.from?.id.toString();
+
+        const mtkDailyBotService: MtkDailyBotService = await app.container.make('mtkDailyBotService');
+        await mtkDailyBotService.addUser(userId);
+        await mtkDailyBotService.execute(userId);
+
+        await ctx.reply('Сбор ежедневной награды MTK запущен');
+    }
+
+    public async botMtkDailyStop(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const userId: string = ctx.from?.id.toString();
+
+        const mtkDailyBotService: MtkDailyBotService = await app.container.make('mtkDailyBotService');
+        await mtkDailyBotService.removeUser(userId);
+
+        await ctx.reply('Сбор ежедневной награды MTK остановлено');
     }
 }
 

@@ -61,8 +61,7 @@ export default abstract class BaseGameService {
     public abstract getGameName(): string;
 
     public getWebViewTTL(): number {
-        // 60 минут
-        return 3_600_000;
+        return 1_000 * 60 * 60;
     }
 
     protected abstract getBotName(): string;

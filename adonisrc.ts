@@ -35,6 +35,7 @@ export default defineConfig({
         () => import('#providers/app_provider'),
         () => import('#providers/MtkGameProvider'),
         () => import('#providers/MtkClickBotServiceProvider'),
+        () => import('#providers/MtkDailyBotServiceProvider'),
     ],
 
     /*
