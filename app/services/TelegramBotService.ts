@@ -10,10 +10,7 @@ import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
-import { MtkClickBotService } from '#services/MtkClickBotService';
-import { MtkDailyBotService } from '#services/MtkDailyBotService';
-import { GemzClickBotService } from '#services/GemzClickBotService';
-import { GemzDailyBotService } from '#services/GemzDailyBotService';
+import { BaseBotService } from '#services/BaseBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -327,11 +324,7 @@ export class TelegramBotService {
     }
 
     public async enable(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         await this.redis.hset(`user:${ctx.from!.id}`, 'started', 1);
         await this.redis.lpush('bot:started', ctx.from!.id);
@@ -339,11 +332,7 @@ export class TelegramBotService {
     }
 
     public async disable(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         await this.redis.hset(`user:${ctx.from!.id}`, 'started', 0);
         await this.redis.lpop('bot:started', ctx.from!.id);
@@ -351,11 +340,7 @@ export class TelegramBotService {
     }
 
     public async status(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         const telegram: TelegramService = await app.container.make('telegram', [ctx.from?.id]);
 
@@ -372,127 +357,67 @@ export class TelegramBotService {
     }
 
     public async botMtkClickStart(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const mtkClickBotService: MtkClickBotService = await app.container.make('mtkClickBotService');
-        await mtkClickBotService.addUser(userId);
-        await mtkClickBotService.execute(userId);
-
-        await ctx.reply('MTK кликер запущен');
+        await this.executeService(ctx, 'mtkClickBotService', 'MTK кликер запущен');
     }
 
     public async botMtkClickStop(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const mtkClickBotService: MtkClickBotService = await app.container.make('mtkClickBotService');
-        await mtkClickBotService.removeUser(userId);
-
-        await ctx.reply('MTK кликер остановлен');
+        await this.stopService(ctx, 'mtkClickBotService', 'MTK кликер остановлен');
     }
 
     public async botGemzClickStart(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const gemzClickBotService: GemzClickBotService = await app.container.make('gemzClickBotService');
-        await gemzClickBotService.addUser(userId);
-        await gemzClickBotService.execute(userId);
-
-        await ctx.reply('Gemz кликер запущен');
+        await this.executeService(ctx, 'gemzClickBotService', 'Gemz кликер запущен');
     }
 
     public async botGemzClickStop(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const gemzClickBotService: GemzClickBotService = await app.container.make('gemzClickBotService');
-        await gemzClickBotService.removeUser(userId);
-
-        await ctx.reply('Gemz кликер остановлен');
+        await this.stopService(ctx, 'gemzClickBotService', 'Gemz кликер остановлен');
     }
 
     public async botMtkDailyStart(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const mtkDailyBotService: MtkDailyBotService = await app.container.make('mtkDailyBotService');
-        await mtkDailyBotService.addUser(userId);
-        await mtkDailyBotService.execute(userId);
-
-        await ctx.reply('Сбор ежедневной награды MTK запущен');
+        await this.executeService(ctx, 'mtkDailyBotService', 'Сбор ежедневной награды MTK запущен');
     }
 
     public async botMtkDailyStop(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const mtkDailyBotService: MtkDailyBotService = await app.container.make('mtkDailyBotService');
-        await mtkDailyBotService.removeUser(userId);
-
-        await ctx.reply('Сбор ежедневной награды MTK остановлено');
+        await this.stopService(ctx, 'mtkDailyBotService', 'Сбор ежедневной награды MTK остановлен');
     }
 
     public async botGemzDailyStart(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const gemzDailyBotService: GemzDailyBotService = await app.container.make('gemzDailyBotService');
-        await gemzDailyBotService.addUser(userId);
-        await gemzDailyBotService.execute(userId);
-
-        await ctx.reply('Сбор ежедневной награды Gemz запущен');
+        await this.executeService(ctx, 'gemzDailyBotService', 'Сбор ежедневной награды Gemz запущен');
     }
 
     public async botGemzDailyStop(ctx: Context): Promise<void> {
+        await this.stopService(ctx, 'gemzDailyBotService', 'Сбор ежедневной награды Gemz остановлен');
+    }
+
+    private async executeService(ctx: Context, serviceName: string, description: string) {
+        if (await this.checkUser(ctx)) {
+            const userId: string = ctx.from?.id.toString() || '';
+
+            const service: BaseBotService = await app.container.make(serviceName);
+            await service.addUser(userId);
+            await service.execute(userId);
+
+            await ctx.reply(description);
+        }
+    }
+
+    private async stopService(ctx: Context, serviceName: string, description: string) {
+        if (await this.checkUser(ctx)) {
+            const userId: string = ctx.from?.id.toString() || '';
+
+            const service: BaseBotService = await app.container.make(serviceName);
+            await service.removeUser(userId);
+
+            await ctx.reply(description);
+        }
+    }
+
+    private async checkUser(ctx: Context) {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
-            return;
+            return false;
         }
-
-        const userId: string = ctx.from?.id.toString();
-
-        const gemzDailyBotService: GemzDailyBotService = await app.container.make('gemzDailyBotService');
-        await gemzDailyBotService.removeUser(userId);
-
-        await ctx.reply('Сбор ежедневной награды Gemz остановлено');
+        return true;
     }
 }
 
