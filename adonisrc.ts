@@ -38,6 +38,7 @@ export default defineConfig({
         () => import('#providers/MtkClickBotServiceProvider'),
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
+        () => import('#providers/GemzDailyBotServiceProvider'),
     ],
 
     /*

@@ -1,6 +1,7 @@
 import { RedisService } from '@adonisjs/redis/types';
 import { ApplicationService } from '@adonisjs/core/types';
 import BaseGameService from '#services/BaseGameService';
+import logger from '@adonisjs/core/services/logger';
 
 export abstract class BaseBotService {
     public constructor(
@@ -16,7 +17,7 @@ export abstract class BaseBotService {
 
     public abstract execute(userId: string): Promise<void>;
 
-    public abstract run(): Promise<NodeJS.Timeout>;
+    protected abstract getIntervalDelay(): number;
 
     public getGameService(runtimeValues: any[] = []): Promise<BaseGameService> {
         return this.app.container.make(this.getGameServiceName(), runtimeValues);
@@ -40,5 +41,17 @@ export abstract class BaseBotService {
 
     public async getUsers(): Promise<string[]> {
         return this.redis.smembers(this.getRedisKey('users'));
+    }
+
+    public async run(): Promise<NodeJS.Timeout> {
+        return setInterval(async () => {
+            const userIds: string[] = await this.getUsers();
+
+            for (const userId of userIds) {
+                this.execute(userId).catch((error: Error) => {
+                    logger.error(error);
+                }).then();
+            }
+        }, this.getIntervalDelay());
     }
 }

@@ -118,11 +118,11 @@ export default class GemzGameService
                             return {};
                         });
 
-                        if (json?.data.token) {
+                        if (json?.data?.token) {
                             this.token = json.data.token;
                         }
 
-                        if (json?.data.rev) {
+                        if (json?.data?.rev) {
                             this.rev = json.data.rev;
                         }
                     },
@@ -144,7 +144,7 @@ export default class GemzGameService
     }
 
     protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.18.0';
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.32.0';
     }
 
     protected async getInitDataKey(): Promise<string> {
@@ -161,7 +161,9 @@ export default class GemzGameService
     }
 
     public async login(): Promise<void> {
-        await this.httpClient.post('loginOrCreate').json();
+        if (!this.isAuthenticated()) {
+            await this.httpClient.post('loginOrCreate').json();
+        }
     }
 
     public async tap(quantity: number = 1): Promise<any> {

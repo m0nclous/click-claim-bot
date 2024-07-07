@@ -2,8 +2,6 @@ import { BaseBotService } from '#services/BaseBotService';
 import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
 
 export abstract class BaseDailyBotService extends BaseBotService {
-    protected abstract getIntervalDelay(): number;
-
     public getRedisSlug(): string {
         return 'daily';
     }
@@ -17,15 +15,5 @@ export abstract class BaseDailyBotService extends BaseBotService {
 
         await gameService.login();
         await gameService.collectDaily();
-    }
-
-    public async run(): Promise<NodeJS.Timeout> {
-        return setInterval(async () => {
-            const userIds: string[] = await this.getUsers();
-
-            for (const userId of userIds) {
-                this.execute(userId).then();
-            }
-        }, this.getIntervalDelay());
     }
 }
