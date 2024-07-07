@@ -60,6 +60,11 @@ export default abstract class BaseGameService {
 
     public abstract getGameName(): string;
 
+    public getWebViewTTL(): number {
+        // 60 минут
+        return 3_600_000;
+    };
+
     protected abstract getBotName(): string;
 
     protected abstract getWebViewUrl(): string;
@@ -148,7 +153,7 @@ export default abstract class BaseGameService {
 
             setTimeout(() => {
                 this.webView = null;
-            }, 100_000);
+            }, this.getWebViewTTL());
         }
 
         return parseUrlHashParams(this.webView.url);
