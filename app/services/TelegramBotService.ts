@@ -12,6 +12,7 @@ import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import { MtkClickBotService } from '#services/MtkClickBotService';
 import { MtkDailyBotService } from '#services/MtkDailyBotService';
+import { GemzClickBotService } from '#services/GemzClickBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -46,6 +47,9 @@ export class TelegramBotService {
         this.bot.command('bot_mtk_click_start', this.botMtkClickStart.bind(this));
         this.bot.command('bot_mtk_click_stop', this.botMtkClickStop.bind(this));
 
+        this.bot.command('bot_gemz_click_start', this.botGemzClickStart.bind(this));
+        this.bot.command('bot_gemz_click_stop', this.botGemzClickStop.bind(this));
+
         this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
         this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
 
@@ -77,6 +81,14 @@ export class TelegramBotService {
             {
                 command: 'bot_mtk_click_stop',
                 description: 'Остановить кликер MTK',
+            },
+            {
+                command: 'bot_gemz_click_start',
+                description: 'Запустить кликер Gemz',
+            },
+            {
+                command: 'bot_gemz_click_stop',
+                description: 'Остановить кликер Gemz',
             },
             {
                 command: 'bot_mtk_daily_start',
@@ -376,6 +388,37 @@ export class TelegramBotService {
         await mtkClickBotService.removeUser(userId);
 
         await ctx.reply('MTK кликер остановлен');
+    }
+
+    public async botGemzClickStart(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const userId: string = ctx.from?.id.toString();
+
+        const gemzClickBotService: GemzClickBotService = await app.container.make('gemzClickBotService');
+        await gemzClickBotService.addUser(userId);
+        await gemzClickBotService.execute(userId);
+
+        await ctx.reply('Gemz кликер запущен');
+    }
+
+    public async botGemzClickStop(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const userId: string = ctx.from?.id.toString();
+
+        const gemzClickBotService: GemzClickBotService = await app.container.make('gemzClickBotService');
+        await gemzClickBotService.removeUser(userId);
+
+        await ctx.reply('Gemz кликер остановлен');
     }
 
     public async botMtkDailyStart(ctx: Context): Promise<void> {
