@@ -15,9 +15,7 @@ export abstract class BaseClickBotService extends BaseBotService {
     }
 
     public async execute(userId: string): Promise<void> {
-        const gameClickService: BaseGameService & HasTap = await this.getGameService([
-            userId,
-        ]);
+        const gameClickService: BaseGameService & HasTap = await this.getGameService([userId]);
 
         const tapQuantity: number = await this.getTapQuantity();
 

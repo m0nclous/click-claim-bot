@@ -20,7 +20,8 @@ export default class AppProvider {
                 logger.info(botInfo, 'Чат-Бот успешно запущен');
             });
 
-            const mtkClickBotService: MtkClickBotService = await this.app.container.make('mtkClickBotService');
+            const mtkClickBotService: MtkClickBotService =
+                await this.app.container.make('mtkClickBotService');
             mtkClickBotService.run().then(() => {
                 logger.info('Mtk Click Bot Service started');
             });

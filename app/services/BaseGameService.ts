@@ -63,7 +63,7 @@ export default abstract class BaseGameService {
     public getWebViewTTL(): number {
         // 60 минут
         return 3_600_000;
-    };
+    }
 
     protected abstract getBotName(): string;
 
