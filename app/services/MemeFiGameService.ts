@@ -1,4 +1,5 @@
 import BaseGameService, { HasTap } from '#services/BaseGameService';
+import randomString from '#helpers/randomString';
 
 export default class MemeFiGameService extends BaseGameService implements HasTap {
     public constructor(userId: number) {
@@ -27,14 +28,14 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
         });
     }
 
-    async tap(quantity: number): Promise<void> {
+    async tap(quantity: number, opts: { vector: string }): Promise<void> {
         const operationName: string = 'MutationGameProcessTapsBatch';
 
         const variables = {
             payload: {
-                nonce: '5550cdcd8d28719350c83c467d6c7eec904c3b26ac20f314461434a3691b94a5',
+                nonce: randomString(64),
                 tapsCount: quantity,
-                vector: '2,2,2,2',
+                vector: opts.vector,
             },
         };
 

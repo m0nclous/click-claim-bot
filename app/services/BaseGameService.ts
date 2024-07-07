@@ -9,8 +9,8 @@ import { TgWebAppDataJson } from '../../types/telegram.js';
 import type { TelegramService } from '#services/TelegramService';
 import app from '@adonisjs/core/services/app';
 
-export interface HasTap {
-    tap(quantity: number): Promise<void>;
+export interface HasTap<T = unknown> {
+    tap(quantity: number, opts?: T): Promise<void>;
 }
 
 export interface TapUpgradable extends HasTap {

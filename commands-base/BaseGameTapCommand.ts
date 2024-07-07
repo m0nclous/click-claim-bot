@@ -2,20 +2,20 @@ import { flags } from '@adonisjs/core/ace';
 import BaseGameService, { HasTap } from '#services/BaseGameService';
 import BaseGameCommand from './BaseGameCommand.js';
 
-export default abstract class BaseGameTapCommand extends BaseGameCommand {
+export default abstract class BaseGameTapCommand<T = unknown> extends BaseGameCommand {
     @flags.number({
         description: 'Количество тапов для отправки',
         default: 1,
     })
     declare quantity: number;
 
-    async run(service: BaseGameService & HasTap) {
+    async run(service: BaseGameService & HasTap, opts?: T) {
         this.notifyPrefix = service.getGameName();
 
         await service.login();
 
         try {
-            await service.tap(this.quantity);
+            await service.tap(this.quantity, opts);
         } catch (error) {
             this.logger.error(error);
 
