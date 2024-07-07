@@ -1,6 +1,6 @@
-import BaseGameService from '#services/BaseGameService';
+import BaseGameService, { HasTap } from '#services/BaseGameService';
 
-export default class MemeFiGameService extends BaseGameService {
+export default class MemeFiGameService extends BaseGameService implements HasTap {
     public constructor(userId: number) {
         super(userId);
 
@@ -25,6 +25,23 @@ export default class MemeFiGameService extends BaseGameService {
                 ],
             },
         });
+    }
+
+    async tap(quantity: number): Promise<void> {
+        const operationName: string = 'MutationGameProcessTapsBatch';
+
+        const variables = {
+            payload: {
+                nonce: '5550cdcd8d28719350c83c467d6c7eec904c3b26ac20f314461434a3691b94a5',
+                tapsCount: quantity,
+                vector: '2,2,2,2',
+            },
+        };
+
+        const query =
+            'mutation MutationGameProcessTapsBatch($payload: TelegramGameTapsBatchInput!) {\n  telegramGameProcessTapsBatch(payload: $payload) {\n    ...FragmentBossFightConfig\n    __typename\n  }\n}\n\nfragment FragmentBossFightConfig on TelegramGameConfigOutput {\n  _id\n  coinsAmount\n  currentEnergy\n  maxEnergy\n  weaponLevel\n  zonesCount\n  tapsReward\n  energyLimitLevel\n  energyRechargeLevel\n  tapBotLevel\n  currentBoss {\n    _id\n    level\n    currentHealth\n    maxHealth\n    __typename\n  }\n  freeBoosts {\n    _id\n    currentTurboAmount\n    maxTurboAmount\n    turboLastActivatedAt\n    turboAmountLastRechargeDate\n    currentRefillEnergyAmount\n    maxRefillEnergyAmount\n    refillEnergyLastActivatedAt\n    refillEnergyAmountLastRechargeDate\n    __typename\n  }\n  bonusLeaderDamageEndAt\n  bonusLeaderDamageStartAt\n  bonusLeaderDamageMultiplier\n  nonce\n  __typename\n}';
+
+        await this.graphql(operationName, variables, query);
     }
 
     public getGameName(): string {
