@@ -35,29 +35,41 @@ export default class AppProvider {
             const gemzDailyBotService: GemzDailyBotService =
                 await this.app.container.make('gemzDailyBotService');
 
-            mtkClickBotService.run().then(() => {
-                logger.info('Mtk Click Bot Service started');
-            }).catch((err: Error) => {
-                logger.error(err);
-            });
+            mtkClickBotService
+                .run()
+                .then(() => {
+                    logger.info('Mtk Click Bot Service started');
+                })
+                .catch((err: Error) => {
+                    logger.error(err);
+                });
 
-            gemzClickBotService.run().then(() => {
-                logger.info('Gemz Click Bot Service started');
-            }).catch((err: Error) => {
-                logger.error(err);
-            });
+            gemzClickBotService
+                .run()
+                .then(() => {
+                    logger.info('Gemz Click Bot Service started');
+                })
+                .catch((err: Error) => {
+                    logger.error(err);
+                });
 
-            mtkDailyBotService.run().then(() => {
-                logger.info('Mtk Daily Bot Service started');
-            }).catch((err: Error) => {
-                logger.error(err);
-            });
+            mtkDailyBotService
+                .run()
+                .then(() => {
+                    logger.info('Mtk Daily Bot Service started');
+                })
+                .catch((err: Error) => {
+                    logger.error(err);
+                });
 
-            gemzDailyBotService.run().then(() => {
-                logger.info('Gemz Daily Bot Service started');
-            }).catch((err: Error) => {
-                logger.error(err);
-            });
+            gemzDailyBotService
+                .run()
+                .then(() => {
+                    logger.info('Gemz Daily Bot Service started');
+                })
+                .catch((err: Error) => {
+                    logger.error(err);
+                });
         }
     }
 }

@@ -48,9 +48,11 @@ export abstract class BaseBotService {
             const userIds: string[] = await this.getUsers();
 
             for (const userId of userIds) {
-                this.execute(userId).catch((error: Error) => {
-                    logger.error(error);
-                }).then();
+                this.execute(userId)
+                    .catch((error: Error) => {
+                        logger.error(error);
+                    })
+                    .then();
             }
         }, this.getIntervalDelay());
     }
