@@ -8,7 +8,7 @@ declare module '@adonisjs/core/types' {
     }
 }
 
-const singletonById: Record<string, MtkGameService> = {};
+const singletonById: Map<string, MtkGameService> = new Map();
 
 export default class MtkGameClickBotProvider {
     constructor(protected app: ApplicationService) {}
@@ -23,11 +23,11 @@ export default class MtkGameClickBotProvider {
             const userId = runtimeValues[0];
             const { default: MtkGameService } = await import('#services/MtkGameService');
 
-            if (!singletonById[userId]) {
-                singletonById[userId] = new MtkGameService(userId);
+            if (!singletonById.has(userId)) {
+                singletonById.set(userId, new MtkGameService(userId));
             }
 
-            return singletonById[userId];
+            return singletonById.get(userId) as MtkGameService;
         });
     }
 }
