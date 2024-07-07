@@ -144,7 +144,7 @@ export default class GemzGameService
     }
 
     protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.18.0';
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.32.0';
     }
 
     protected async getInitDataKey(): Promise<string> {
