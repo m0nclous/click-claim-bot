@@ -68,7 +68,9 @@ export default class MtkGameService
     }
 
     async login(): Promise<void> {
-        await this.httpClient.get('api/user/info');
+        if (!this.isAuthenticated()) {
+            await this.httpClient.get('api/user/info');
+        }
     }
 
     async tap(quantity: number = 1): Promise<any> {

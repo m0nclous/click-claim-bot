@@ -9,6 +9,7 @@ import type { Context } from 'telegraf';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
+import type { MtkGameClickBotService } from '#services/MtkGameClickBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -37,6 +38,8 @@ export class TelegramBotService {
         this.bot.command('enable', this.enable.bind(this));
         this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
+        this.bot.command('mtk_clicker_start', this.mtkClickerStart.bind(this));
+        this.bot.command('mtk_clicker_stop', this.mtkClickerStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -58,6 +61,14 @@ export class TelegramBotService {
             {
                 command: 'status',
                 description: 'Статус бота',
+            },
+            {
+                command: 'mtk_clicker_start',
+                description: 'Start MTK Clicker',
+            },
+            {
+                command: 'mtk_clicker_stop',
+                description: 'Stop MTK Clicker',
             },
         ]);
     }
@@ -316,6 +327,37 @@ export class TelegramBotService {
 
         const text: string =
             `Телеграм аккаунт привязан: ${hasTelegramSession}\n` + `Бот запущен: ${isStarted}`;
+
+        await ctx.reply(text);
+    }
+
+    public async mtkClickerStart(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const mtkGameClickBotService: MtkGameClickBotService = await app.container.make('mtkGameClickBotService');
+        await mtkGameClickBotService.enableUser(ctx.from?.id);
+        await mtkGameClickBotService.execute('' + ctx.from?.id);
+
+        const text: string = 'Started';
+
+        await ctx.reply(text);
+    }
+
+    public async mtkClickerStop(ctx: Context): Promise<void> {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return;
+        }
+
+        const mtkGameClickBotService: MtkGameClickBotService = await app.container.make('mtkGameClickBotService');
+        await mtkGameClickBotService.disableUser(ctx.from?.id);
+
+        const text: string = 'Stopped';
 
         await ctx.reply(text);
     }

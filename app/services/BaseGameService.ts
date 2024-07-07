@@ -1,5 +1,5 @@
 import { Api as TelegramApi, TelegramClient } from 'telegram';
-import { parseUrlHashParams } from '../../helpers/url.js';
+import { parseUrlHashParams } from '#helpers/url';
 import ky, { HTTPError, KyInstance } from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
@@ -51,6 +51,8 @@ export interface HasClaim {
 
 export default abstract class BaseGameService {
     protected token: string | null = null;
+
+    protected webView: WebViewResultUrl | null = null;
 
     protected httpClient: KyInstance = this.makeHttpClient();
 
@@ -141,9 +143,15 @@ export default abstract class BaseGameService {
     }
 
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
-        const webView: WebViewResultUrl = await this.requestWebView();
+        if (!this.webView) {
+            this.webView = await this.requestWebView();
 
-        return parseUrlHashParams(webView.url);
+            setTimeout(() => {
+                this.webView = null;
+            }, 100_000);
+        }
+
+        return parseUrlHashParams(this.webView.url);
     }
 
     public async getWebAppData(asObject?: false): Promise<string>;
@@ -169,6 +177,6 @@ export default abstract class BaseGameService {
     }
 
     public isAuthenticated(): boolean {
-        return this.token !== null;
+        return this.token !== null && this.webView !== null;
     }
 }
