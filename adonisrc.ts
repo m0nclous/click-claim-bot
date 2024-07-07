@@ -36,7 +36,7 @@ export default defineConfig({
         () => import('#providers/telegram_bot_provider'),
         () => import('#providers/app_provider'),
         () => import('#providers/MtkGameProvider'),
-        () => import('#providers/MtkGameClickBotProvider'),
+        () => import('#providers/MtkClickBotServiceProvider'),
     ],
 
     /*

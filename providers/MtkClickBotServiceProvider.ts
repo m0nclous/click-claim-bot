@@ -1,24 +1,24 @@
 import { ApplicationService } from '@adonisjs/core/types';
-import type { MtkGameClickBotService } from '#services/MtkGameClickBotService';
 import { RedisService } from '@adonisjs/redis/types';
+import { MtkClickBotService } from '#services/MtkClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     export interface ContainerBindings {
-        mtkGameClickBotService: MtkGameClickBotService;
+        mtkClickBotService: MtkClickBotService;
     }
 }
 
-export default class MtkGameClickBotProvider {
+export default class MtkClickBotServiceProvider {
     constructor(protected app: ApplicationService) {}
 
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
-        this.app.container.singleton('mtkGameClickBotService', async () => {
-            const { MtkGameClickBotService } = await import('#services/MtkGameClickBotService');
+        this.app.container.singleton('mtkClickBotService', async () => {
+            const { MtkClickBotService } = await import('#services/MtkClickBotService');
             const redis: RedisService = await this.app.container.make('redis');
 
-            return new MtkGameClickBotService(redis);
+            return new MtkClickBotService(this.app, redis);
         });
     }
 }

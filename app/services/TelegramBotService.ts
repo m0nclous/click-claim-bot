@@ -6,10 +6,11 @@ import { callbackPromise } from '#helpers/promise';
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
 import type { Context } from 'telegraf';
+import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
-import type { MtkGameClickBotService } from '#services/MtkGameClickBotService';
+import { MtkClickBotService } from '#services/MtkClickBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -22,12 +23,14 @@ export class TelegramBotService {
         this.bot = new Telegraf(this.config.token);
     }
 
-    public async run(): Promise<void> {
+    public async run(): Promise<UserFromGetMe | undefined> {
         await this.setupLoginWizard();
         await this.setupCommands();
 
-        return this.bot.launch(() => {
-            this.logger.info(this.bot.botInfo, 'Чат-Бот успешно запущен');
+        return new Promise((resolve) => {
+            this.bot.launch(() => {
+                resolve(this.bot.botInfo);
+            });
         });
     }
 
@@ -38,8 +41,8 @@ export class TelegramBotService {
         this.bot.command('enable', this.enable.bind(this));
         this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
-        this.bot.command('mtk_clicker_start', this.mtkClickerStart.bind(this));
-        this.bot.command('mtk_clicker_stop', this.mtkClickerStop.bind(this));
+        this.bot.command('bot_mtk_click_start', this.botMtkClickStart.bind(this));
+        this.bot.command('bot_mtk_click_stop', this.botMtkClickStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -63,12 +66,12 @@ export class TelegramBotService {
                 description: 'Статус бота',
             },
             {
-                command: 'mtk_clicker_start',
-                description: 'Start MTK Clicker',
+                command: 'bot_mtk_click_start',
+                description: 'Запустить кликер MTK',
             },
             {
-                command: 'mtk_clicker_stop',
-                description: 'Stop MTK Clicker',
+                command: 'bot_mtk_click_stop',
+                description: 'Остановить кликер MTK',
             },
         ]);
     }
@@ -331,35 +334,35 @@ export class TelegramBotService {
         await ctx.reply(text);
     }
 
-    public async mtkClickerStart(ctx: Context): Promise<void> {
+    public async botMtkClickStart(ctx: Context): Promise<void> {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
             return;
         }
 
-        const mtkGameClickBotService: MtkGameClickBotService = await app.container.make('mtkGameClickBotService');
-        await mtkGameClickBotService.enableUser(ctx.from?.id);
-        await mtkGameClickBotService.execute('' + ctx.from?.id);
+        const userId: string = ctx.from?.id.toString();
 
-        const text: string = 'Started';
+        const mtkClickBotService: MtkClickBotService = await app.container.make('mtkClickBotService');
+        await mtkClickBotService.addUser(userId);
+        await mtkClickBotService.execute(userId);
 
-        await ctx.reply(text);
+        await ctx.reply('MTK кликер запущен');
     }
 
-    public async mtkClickerStop(ctx: Context): Promise<void> {
+    public async botMtkClickStop(ctx: Context): Promise<void> {
         if (!ctx.from?.id) {
             this.logger.error(ctx, 'Не найден ID пользователя');
             await ctx.reply('Ошибка, попробуйте позже');
             return;
         }
 
-        const mtkGameClickBotService: MtkGameClickBotService = await app.container.make('mtkGameClickBotService');
-        await mtkGameClickBotService.disableUser(ctx.from?.id);
+        const userId: string = ctx.from?.id.toString();
 
-        const text: string = 'Stopped';
+        const mtkClickBotService: MtkClickBotService = await app.container.make('mtkClickBotService');
+        await mtkClickBotService.removeUser(userId);
 
-        await ctx.reply(text);
+        await ctx.reply('MTK кликер остановлен');
     }
 }
 
