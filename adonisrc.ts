@@ -3,25 +3,25 @@ import { defineConfig } from '@adonisjs/core/app';
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     /*
-  |--------------------------------------------------------------------------
-  | Commands
-  |--------------------------------------------------------------------------
-  |
-  | List of ace commands to register from packages. The application commands
-  | will be scanned automatically from the "./commands" directory.
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Commands
+    |--------------------------------------------------------------------------
+    |
+    | List of ace commands to register from packages. The application commands
+    | will be scanned automatically from the "./commands" directory.
+    |
+    */
     commands: [() => import('@adonisjs/core/commands')],
 
     /*
-  |--------------------------------------------------------------------------
-  | Service providers
-  |--------------------------------------------------------------------------
-  |
-  | List of service providers to import and register when booting the
-  | application
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Service providers
+    |--------------------------------------------------------------------------
+    |
+    | List of service providers to import and register when booting the
+    | application
+    |
+    */
     providers: [
         () => import('@adonisjs/core/providers/app_provider'),
         () => import('@adonisjs/core/providers/hash_provider'),
@@ -42,24 +42,24 @@ export default defineConfig({
     ],
 
     /*
-  |--------------------------------------------------------------------------
-  | Preloads
-  |--------------------------------------------------------------------------
-  |
-  | List of modules to import before starting the application.
-  |
-  */
-    preloads: [() => import('#start/kernel')],
+    |--------------------------------------------------------------------------
+    | Preloads
+    |--------------------------------------------------------------------------
+    |
+    | List of modules to import before starting the application.
+    |
+    */
+    preloads: [() => import('#start/kernel'), () => import('#start/events')],
 
     /*
-  |--------------------------------------------------------------------------
-  | Tests
-  |--------------------------------------------------------------------------
-  |
-  | List of test suites to organize tests by their type. Feel free to remove
-  | and add additional suites.
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Tests
+    |--------------------------------------------------------------------------
+    |
+    | List of test suites to organize tests by their type. Feel free to remove
+    | and add additional suites.
+    |
+    */
     tests: {
         suites: [
             {

@@ -2,6 +2,17 @@ import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#ser
 import randomString from '../../helpers/randomString.js';
 import { NormalizedOptions } from 'ky';
 import logger from '@adonisjs/core/services/logger';
+import emitter from '@adonisjs/core/services/emitter';
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'gemz:tap': {
+            userId: number;
+            quantity: number;
+        }
+    }
+}
 
 export default class GemzGameService
     extends BaseGameService
@@ -167,7 +178,12 @@ export default class GemzGameService
     }
 
     public async tap(quantity: number = 1): Promise<any> {
-        return this.replicate(this.generateTaps(quantity));
+        await this.replicate(this.generateTaps(quantity));
+
+        await emitter.emit('gemz:tap', {
+            userId: this.userId,
+            quantity,
+        });
     }
 
     public async collectDaily(): Promise<void> {
