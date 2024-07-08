@@ -6,9 +6,11 @@ import { callbackPromise } from '#helpers/promise';
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
 import type { Context } from 'telegraf';
+import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
+import type { BaseBotService } from '#services/BaseBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -21,12 +23,18 @@ export class TelegramBotService {
         this.bot = new Telegraf(this.config.token);
     }
 
-    public async run(): Promise<void> {
+    public async run(): Promise<UserFromGetMe> {
         await this.setupLoginWizard();
         await this.setupCommands();
 
-        return this.bot.launch(() => {
-            this.logger.info(this.bot.botInfo, 'Чат-Бот успешно запущен');
+        return new Promise((resolve, reject) => {
+            this.bot.launch(() => {
+                if (this.bot.botInfo !== undefined) {
+                    resolve(this.bot.botInfo);
+                } else {
+                    reject('Bot info is undefined');
+                }
+            });
         });
     }
 
@@ -37,6 +45,18 @@ export class TelegramBotService {
         this.bot.command('enable', this.enable.bind(this));
         this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
+
+        this.bot.command('bot_mtk_click_start', this.botMtkClickStart.bind(this));
+        this.bot.command('bot_mtk_click_stop', this.botMtkClickStop.bind(this));
+
+        this.bot.command('bot_gemz_click_start', this.botGemzClickStart.bind(this));
+        this.bot.command('bot_gemz_click_stop', this.botGemzClickStop.bind(this));
+
+        this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
+        this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
+
+        this.bot.command('bot_gemz_daily_start', this.botGemzDailyStart.bind(this));
+        this.bot.command('bot_gemz_daily_stop', this.botGemzDailyStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -58,6 +78,38 @@ export class TelegramBotService {
             {
                 command: 'status',
                 description: 'Статус бота',
+            },
+            {
+                command: 'bot_mtk_click_start',
+                description: 'Запустить кликер MTK',
+            },
+            {
+                command: 'bot_mtk_click_stop',
+                description: 'Остановить кликер MTK',
+            },
+            {
+                command: 'bot_gemz_click_start',
+                description: 'Запустить кликер Gemz',
+            },
+            {
+                command: 'bot_gemz_click_stop',
+                description: 'Остановить кликер Gemz',
+            },
+            {
+                command: 'bot_mtk_daily_start',
+                description: 'Запустить сбор ежедневной награды MTK',
+            },
+            {
+                command: 'bot_mtk_daily_stop',
+                description: 'Остановить сбор ежедневной награды MTK',
+            },
+            {
+                command: 'bot_gemz_daily_start',
+                description: 'Запустить сбор ежедневной награды Gemz',
+            },
+            {
+                command: 'bot_gemz_daily_stop',
+                description: 'Остановить сбор ежедневной награды Gemz',
             },
         ]);
     }
@@ -276,11 +328,7 @@ export class TelegramBotService {
     }
 
     public async enable(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         await this.redis.hset(`user:${ctx.from!.id}`, 'started', 1);
         await this.redis.lpush('bot:started', ctx.from!.id);
@@ -288,11 +336,7 @@ export class TelegramBotService {
     }
 
     public async disable(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         await this.redis.hset(`user:${ctx.from!.id}`, 'started', 0);
         await this.redis.lpop('bot:started', ctx.from!.id);
@@ -300,11 +344,7 @@ export class TelegramBotService {
     }
 
     public async status(ctx: Context): Promise<void> {
-        if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
-            await ctx.reply('Ошибка, попробуйте позже');
-            return;
-        }
+        if (!(await this.checkUser(ctx))) return;
 
         const telegram: TelegramService = await app.container.make('telegram', [ctx.from?.id]);
 
@@ -318,6 +358,66 @@ export class TelegramBotService {
             `Телеграм аккаунт привязан: ${hasTelegramSession}\n` + `Бот запущен: ${isStarted}`;
 
         await ctx.reply(text);
+    }
+
+    public async botMtkClickStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'mtkClickBotService');
+    }
+
+    public async botMtkClickStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'mtkClickBotService');
+    }
+
+    public async botGemzClickStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'gemzClickBotService');
+    }
+
+    public async botGemzClickStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'gemzClickBotService');
+    }
+
+    public async botMtkDailyStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'mtkDailyBotService');
+    }
+
+    public async botMtkDailyStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'mtkDailyBotService');
+    }
+
+    public async botGemzDailyStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'gemzDailyBotService');
+    }
+
+    public async botGemzDailyStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'gemzDailyBotService');
+    }
+
+    private async enableServiceByUserId(ctx: Context, serviceName: string) {
+        const userId: string = ctx.from?.id.toString() || '';
+
+        const service: BaseBotService = await app.container.make(serviceName);
+        await service.addUser(userId);
+        await service.execute(userId);
+
+        await ctx.react('👌');
+    }
+
+    private async stopServiceByUserId(ctx: Context, serviceName: string) {
+        const userId: string = ctx.from?.id.toString() || '';
+
+        const service: BaseBotService = await app.container.make(serviceName);
+        await service.removeUser(userId);
+
+        await ctx.react('👌');
+    }
+
+    private async checkUser(ctx: Context) {
+        if (!ctx.from?.id) {
+            this.logger.error(ctx, 'Не найден ID пользователя');
+            await ctx.reply('Ошибка, попробуйте позже');
+            return false;
+        }
+        return true;
     }
 }
 

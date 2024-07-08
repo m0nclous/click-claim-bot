@@ -1,43 +1,41 @@
-import { ApplicationService } from '@adonisjs/core/types';
-import Bull, { DoneCallback, Job } from 'bull';
-import redis from '#config/redis';
-import { Kernel } from '@adonisjs/core/ace';
-import { TelegramBotService } from '#services/TelegramBotService';
+import type { ApplicationService, ContainerBindings, LoggerService } from '@adonisjs/core/types';
+import type { TelegramBotService } from '#services/TelegramBotService';
+import type { UserFromGetMe } from '@telegraf/types/manage.js';
 
-export let commandsQueue: Bull.Queue;
+type GameBotServiceBinding = keyof ContainerBindings;
 
 export default class AppProvider {
     constructor(protected app: ApplicationService) {}
 
     // noinspection JSUnusedGlobalSymbols
     public async boot(): Promise<void> {
-        commandsQueue = new Bull('commands', {
-            redis: {
-                port: redis.connections.queue.port,
-                host: redis.connections.queue.host,
-                password: redis.connections.queue.password,
-                db: redis.connections.queue.db,
-            },
-        });
+        const logger: LoggerService = await this.app.container.make('logger');
 
         if (this.app.getEnvironment() === 'web') {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
-            await telegramBot.run();
+            telegramBot.run().then((botInfo: UserFromGetMe) => {
+                logger.info(botInfo, 'Чат-Бот успешно запущен');
+            });
 
-            commandsQueue
-                .process(async (job: Job, done: DoneCallback) => {
-                    const ace: Kernel = await this.app.container.make('ace');
+            const gameBotServicesToRun: GameBotServiceBinding[] = [
+                'mtkClickBotService',
+                'mtkDailyBotService',
+                'gemzClickBotService',
+                'gemzDailyBotService',
+            ];
 
-                    try {
-                        await ace.exec(job.data.command, job.data.argv);
-                    } catch (error) {
-                        console.log(error);
-                        return done(error);
-                    }
+            for (const gameBotServiceBinding of gameBotServicesToRun) {
+                const service: ContainerBindings[keyof ContainerBindings] =
+                    await this.app.container.make(gameBotServiceBinding);
 
-                    done();
-                })
-                .then();
+                if (!('run' in service)) {
+                    throw new Error('Run method is not implemented');
+                }
+
+                service.run().then(() => {
+                    logger.info(`${service.constructor.name} started`);
+                });
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 import { Api as TelegramApi, TelegramClient } from 'telegram';
-import { parseUrlHashParams } from '../../helpers/url.js';
+import { parseUrlHashParams } from '#helpers/url';
 import ky, { HTTPError, KyInstance } from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
@@ -9,7 +9,19 @@ import { TgWebAppDataJson } from '../../types/telegram.js';
 import type { TelegramService } from '#services/TelegramService';
 import app from '@adonisjs/core/services/app';
 
+export class TapError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка отправки тапов');
+    }
+}
+
 export interface HasTap<T = unknown> {
+    /**
+     * Отправить тапы
+     *
+     * @param quantity количество тапов
+     * @throws TapError
+     */
     tap(quantity: number, opts?: T): Promise<void>;
 }
 
@@ -52,11 +64,17 @@ export interface HasClaim {
 export default abstract class BaseGameService {
     protected token: string | null = null;
 
+    protected webView: WebViewResultUrl | null = null;
+
     protected httpClient: KyInstance = this.makeHttpClient();
 
     protected constructor(public userId: number) {}
 
     public abstract getGameName(): string;
+
+    public getWebViewTTL(): number {
+        return 1_000 * 60 * 60;
+    }
 
     protected abstract getBotName(): string;
 
@@ -141,9 +159,15 @@ export default abstract class BaseGameService {
     }
 
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
-        const webView: WebViewResultUrl = await this.requestWebView();
+        if (this.webView === null) {
+            this.webView = await this.requestWebView();
 
-        return parseUrlHashParams(webView.url);
+            setTimeout(() => {
+                this.webView = null;
+            }, this.getWebViewTTL());
+        }
+
+        return parseUrlHashParams(this.webView.url);
     }
 
     public async getWebAppData(asObject?: false): Promise<string>;
@@ -169,6 +193,6 @@ export default abstract class BaseGameService {
     }
 
     public isAuthenticated(): boolean {
-        return this.token !== null;
+        return this.token !== null && this.webView !== null;
     }
 }
