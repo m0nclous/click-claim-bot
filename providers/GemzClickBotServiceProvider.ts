@@ -1,6 +1,6 @@
-import { ApplicationService } from '@adonisjs/core/types';
-import { RedisService } from '@adonisjs/redis/types';
-import { GemzClickBotService } from '#services/GemzClickBotService';
+import type { ApplicationService } from '@adonisjs/core/types';
+import type { RedisService } from '@adonisjs/redis/types';
+import type { GemzClickBotService } from '#services/GemzClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

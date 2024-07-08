@@ -1,9 +1,9 @@
-import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
+import BaseGameService from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
-import { NormalizedOptions } from 'ky';
-import logger from '@adonisjs/core/services/logger';
 import emitter from '@adonisjs/core/services/emitter';
-import { ITapEvent } from '#start/events';
+import type { NormalizedOptions } from 'ky';
+import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
+import type { ITapEvent } from '#start/events';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
@@ -121,17 +121,13 @@ export default class GemzGameService
 
                 afterResponse: [
                     async (_request: Request, _options: NormalizedOptions, response: Response) => {
-                        const json: any = await new Response(response.clone().body).json().catch((error) => {
-                            logger.error(error);
+                        const json: any = await new Response(response.clone().body).json().catch(() => ({}));
 
-                            return {};
-                        });
-
-                        if (json?.data?.token) {
+                        if (json?.data.token) {
                             this.token = json.data.token;
                         }
 
-                        if (json?.data?.rev) {
+                        if (json?.data.rev) {
                             this.rev = json.data.rev;
                         }
                     },
@@ -170,9 +166,11 @@ export default class GemzGameService
     }
 
     public async login(): Promise<void> {
-        if (!this.isAuthenticated()) {
-            await this.httpClient.post('loginOrCreate').json();
+        if (this.isAuthenticated()) {
+            return;
         }
+
+        await this.httpClient.post('loginOrCreate');
     }
 
     public async tap(quantity: number = 1): Promise<any> {

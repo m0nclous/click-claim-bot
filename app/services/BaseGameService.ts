@@ -147,7 +147,7 @@ export default abstract class BaseGameService {
     }
 
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
-        if (!this.webView) {
+        if (this.webView === null) {
             this.webView = await this.requestWebView();
 
             setTimeout(() => {

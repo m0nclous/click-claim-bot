@@ -1,5 +1,6 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { HasDailyReward } from '#services/BaseGameService';
+import type BaseGameService from '#services/BaseGameService';
+import type { HasDailyReward } from '#services/BaseGameService';
 
 export abstract class BaseDailyBotService extends BaseBotService {
     public getRedisSlug(): string {

@@ -1,7 +1,6 @@
-import { RedisService } from '@adonisjs/redis/types';
-import { ApplicationService } from '@adonisjs/core/types';
-import BaseGameService from '#services/BaseGameService';
-import logger from '@adonisjs/core/services/logger';
+import type { RedisService } from '@adonisjs/redis/types';
+import type { ApplicationService } from '@adonisjs/core/types';
+import type BaseGameService from '#services/BaseGameService';
 
 export abstract class BaseBotService {
     public constructor(
@@ -48,11 +47,7 @@ export abstract class BaseBotService {
             const userIds: string[] = await this.getUsers();
 
             for (const userId of userIds) {
-                this.execute(userId)
-                    .catch((error: Error) => {
-                        logger.error(error);
-                    })
-                    .then();
+                this.execute(userId).then();
             }
         }, this.getIntervalDelay());
     }

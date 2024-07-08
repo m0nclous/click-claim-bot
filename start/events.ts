@@ -9,7 +9,7 @@ export interface ITapEvent {
     quantity: number;
 }
 
-const notifyTap = async (data: ITapEvent) => {
+export const notifyTap = async (data: ITapEvent) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [
         data.userId,
     ]);

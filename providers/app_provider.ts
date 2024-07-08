@@ -35,36 +35,24 @@ export default class AppProvider {
                 .run()
                 .then(() => {
                     logger.info('Mtk Click Bot Service started');
-                })
-                .catch((err: Error) => {
-                    logger.error(err);
                 });
 
             gemzClickBotService
                 .run()
                 .then(() => {
                     logger.info('Gemz Click Bot Service started');
-                })
-                .catch((err: Error) => {
-                    logger.error(err);
                 });
 
             mtkDailyBotService
                 .run()
                 .then(() => {
                     logger.info('Mtk Daily Bot Service started');
-                })
-                .catch((err: Error) => {
-                    logger.error(err);
                 });
 
             gemzDailyBotService
                 .run()
                 .then(() => {
                     logger.info('Gemz Daily Bot Service started');
-                })
-                .catch((err: Error) => {
-                    logger.error(err);
                 });
         }
     }

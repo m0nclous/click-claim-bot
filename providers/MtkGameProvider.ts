@@ -1,5 +1,5 @@
-import { ApplicationService } from '@adonisjs/core/types';
-import MtkGameService from '#services/MtkGameService';
+import type { ApplicationService } from '@adonisjs/core/types';
+import type MtkGameService from '#services/MtkGameService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

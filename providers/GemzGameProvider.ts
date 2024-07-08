@@ -1,5 +1,5 @@
-import { ApplicationService } from '@adonisjs/core/types';
-import GemzGameService from '#services/GemzGameService';
+import type { ApplicationService } from '@adonisjs/core/types';
+import type GemzGameService from '#services/GemzGameService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

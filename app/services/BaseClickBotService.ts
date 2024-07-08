@@ -1,6 +1,6 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { HasTap } from '#services/BaseGameService';
-import logger from '@adonisjs/core/services/logger';
+import type BaseGameService from '#services/BaseGameService';
+import type { HasTap } from '#services/BaseGameService';
 
 export abstract class BaseClickBotService extends BaseBotService {
     public abstract getTapQuantity(): Promise<number>;
@@ -19,8 +19,6 @@ export abstract class BaseClickBotService extends BaseBotService {
         const tapQuantity: number = await this.getTapQuantity();
 
         await gameService.login();
-        await gameService.tap(tapQuantity).catch((error: Error) => {
-            logger.error(error);
-        });
+        await gameService.tap(tapQuantity);
     }
 }
