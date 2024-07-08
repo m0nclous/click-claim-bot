@@ -14,14 +14,23 @@ jobs:
         steps:
             - uses: anc95/ChatGPT-CodeReview@v1.0.13
               env:
+                  # В начале каждого задания GitHub автоматически создает уникальный секретный токен GITHUB_TOKEN
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+                  # Токен из личного кабинета api.proxyapi.ru
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-                  # Optional
+
+                  # Язык Code Review
                   LANGUAGE: Russian
+
+                  # OpenAPI endpoint. api.proxyapi.ru используется для РФ
                   OPENAI_API_ENDPOINT: https://api.proxyapi.ru/openai/v1
+
+                  # Используемая модель ChatGPT
                   MODEL: gpt-3.5-turbo
+
+                  # Стартовый контекст для ChatGPT
                   PROMPT: Вы опытный разработчик на NodeJS, и ваша работа — проверять Pull Request. Пожалуйста, просмотрите следующий код на предмет каких-либо недоразумений или нарушений. Не тратьте время на комментарии о том, что уже работает отлично. Жду конструктивной критики и предложений по улучшению кода, только полезные и обстоятельные замечания.
-                  top_p: 1
-                  temperature: 1
+
+                  # Максимальное количество токенов, которое может быть сгенерировано в завершении.
                   max_tokens: 4096
-                  MAX_PATCH_LENGTH: 10000
