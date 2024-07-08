@@ -1,6 +1,16 @@
 import { BaseBotService } from '#services/BaseBotService';
-import type BaseGameService from '#services/BaseGameService';
+import BaseGameService, { TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
+
+export interface ITapEvent {
+    self: BaseGameService;
+    userId: number;
+    quantity: number;
+}
+
+export interface ITapErrorEvent<T> extends ITapEvent {
+    error: TapError<T>;
+}
 
 export abstract class BaseClickBotService extends BaseBotService {
     public abstract getTapQuantity(): Promise<number>;
@@ -19,6 +29,12 @@ export abstract class BaseClickBotService extends BaseBotService {
         const tapQuantity: number = await this.getTapQuantity();
 
         await gameService.login();
-        await gameService.tap(tapQuantity);
+        await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown>) => {
+            if (error instanceof TapError) {
+                return;
+            }
+
+            throw error;
+        });
     }
 }

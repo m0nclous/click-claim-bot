@@ -3,7 +3,7 @@ import { URLSearchParams } from 'node:url';
 import emitter from '@adonisjs/core/services/emitter';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import type { NormalizedOptions } from '../../types/ky.js';
-import type { ITapEvent } from '#start/events';
+import { ITapEvent } from '#services/BaseClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

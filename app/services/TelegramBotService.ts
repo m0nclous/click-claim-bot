@@ -10,7 +10,7 @@ import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
-import { BaseBotService } from '#services/BaseBotService';
+import type { BaseBotService } from '#services/BaseBotService';
 
 export class TelegramBotService {
     public bot: Telegraf;

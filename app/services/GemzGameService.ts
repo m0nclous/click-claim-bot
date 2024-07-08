@@ -1,15 +1,22 @@
-import BaseGameService from '#services/BaseGameService';
+import BaseGameService, { TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
-import type { NormalizedOptions } from 'ky';
+import type { HTTPError, NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import type { ITapEvent } from '#start/events';
+import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
         'gemz:tap': ITapEvent;
+        'gemz:tap:error': ITapErrorEvent<IReplicationError>;
     }
+}
+
+export interface IReplicationError {
+    message: string;
+    code: 'replication_error';
+    subCode: 'replication_error';
 }
 
 export default class GemzGameService
@@ -174,7 +181,22 @@ export default class GemzGameService
     }
 
     public async tap(quantity: number = 1): Promise<any> {
-        await this.replicate(this.generateTaps(quantity));
+        await this.replicate(this.generateTaps(quantity)).catch(async (error: HTTPError) => {
+            const response: IReplicationError | any = await error.response.json();
+
+            if (response.code === 'replication_error') {
+                const tapError: TapError<IReplicationError> = new TapError(response);
+
+                await emitter.emit('gemz:tap:error', {
+                    self: this,
+                    userId: this.userId,
+                    quantity,
+                    error: tapError,
+                });
+
+                throw tapError;
+            }
+        });
 
         await emitter.emit('gemz:tap', {
             self: this,

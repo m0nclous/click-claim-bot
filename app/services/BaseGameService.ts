@@ -9,7 +9,19 @@ import { TgWebAppDataJson } from '../../types/telegram.js';
 import type { TelegramService } from '#services/TelegramService';
 import app from '@adonisjs/core/services/app';
 
+export class TapError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка отправки тапов');
+    }
+}
+
 export interface HasTap {
+    /**
+     * Отправить тапы
+     *
+     * @param quantity количество тапов
+     * @throws TapError
+     */
     tap(quantity: number): Promise<void>;
 }
 
