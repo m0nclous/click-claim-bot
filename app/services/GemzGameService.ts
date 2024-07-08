@@ -195,7 +195,8 @@ export default class GemzGameService
                 });
 
                 if (attemptCount < 3) {
-                    await sleep(0.3 * 2 ** (attemptCount++ - 1) * 1000);
+                    await sleep(0.3 * 2 ** (attemptCount - 1) * 1000);
+                    attemptCount++;
                     return this.tap(quantity);
                 }
 
