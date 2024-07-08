@@ -123,11 +123,11 @@ export default class GemzGameService
                     async (_request: Request, _options: NormalizedOptions, response: Response) => {
                         const json: any = await new Response(response.clone().body).json().catch(() => ({}));
 
-                        if (json?.data.token) {
+                        if (json?.data?.token) {
                             this.token = json.data.token;
                         }
 
-                        if (json?.data.rev) {
+                        if (json?.data?.rev) {
                             this.rev = json.data.rev;
                         }
                     },
