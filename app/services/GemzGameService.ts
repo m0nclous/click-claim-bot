@@ -205,7 +205,9 @@ export default class GemzGameService
                     });
 
                     await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
-                    replicateError = await replicateTaps().then(() => false).catch(() => true);
+                    replicateError = await replicateTaps()
+                        .then(() => false)
+                        .catch(() => true);
 
                     if (!replicateError) {
                         break;
