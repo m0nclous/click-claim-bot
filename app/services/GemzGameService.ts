@@ -1,7 +1,23 @@
-import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
+import BaseGameService, { TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
-import { NormalizedOptions } from 'ky';
-import logger from '@adonisjs/core/services/logger';
+import emitter from '@adonisjs/core/services/emitter';
+import type { HTTPError, NormalizedOptions } from 'ky';
+import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
+import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'gemz:tap': ITapEvent;
+        'gemz:tap:error': ITapErrorEvent<IReplicationError>;
+    }
+}
+
+export interface IReplicationError {
+    message: string;
+    code: 'replication_error';
+    subCode: 'replication_error';
+}
 
 export default class GemzGameService
     extends BaseGameService
@@ -112,17 +128,13 @@ export default class GemzGameService
 
                 afterResponse: [
                     async (_request: Request, _options: NormalizedOptions, response: Response) => {
-                        const json: any = await new Response(response.clone().body).json().catch((error) => {
-                            logger.error(error);
+                        const json: any = await new Response(response.clone().body).json().catch(() => ({}));
 
-                            return {};
-                        });
-
-                        if (json?.data.token) {
+                        if (json?.data?.token) {
                             this.token = json.data.token;
                         }
 
-                        if (json?.data.rev) {
+                        if (json?.data?.rev) {
                             this.rev = json.data.rev;
                         }
                     },
@@ -144,7 +156,7 @@ export default class GemzGameService
     }
 
     protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.18.0';
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.32.0';
     }
 
     protected async getInitDataKey(): Promise<string> {
@@ -161,11 +173,36 @@ export default class GemzGameService
     }
 
     public async login(): Promise<void> {
-        await this.httpClient.post('loginOrCreate').json();
+        if (this.isAuthenticated()) {
+            return;
+        }
+
+        await this.httpClient.post('loginOrCreate');
     }
 
     public async tap(quantity: number = 1): Promise<any> {
-        return this.replicate(this.generateTaps(quantity));
+        await this.replicate(this.generateTaps(quantity)).catch(async (error: HTTPError) => {
+            const response: IReplicationError | any = await error.response.json();
+
+            if (response.code === 'replication_error') {
+                const tapError: TapError<IReplicationError> = new TapError(response);
+
+                await emitter.emit('gemz:tap:error', {
+                    self: this,
+                    userId: this.userId,
+                    quantity,
+                    error: tapError,
+                });
+
+                throw tapError;
+            }
+        });
+
+        await emitter.emit('gemz:tap', {
+            self: this,
+            userId: this.userId,
+            quantity,
+        });
     }
 
     public async collectDaily(): Promise<void> {

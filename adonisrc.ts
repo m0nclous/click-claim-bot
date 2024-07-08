@@ -3,25 +3,25 @@ import { defineConfig } from '@adonisjs/core/app';
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
     /*
-  |--------------------------------------------------------------------------
-  | Commands
-  |--------------------------------------------------------------------------
-  |
-  | List of ace commands to register from packages. The application commands
-  | will be scanned automatically from the "./commands" directory.
-  |
-  */
-    commands: [() => import('@adonisjs/core/commands'), () => import('adonisjs-scheduler/commands')],
+    |--------------------------------------------------------------------------
+    | Commands
+    |--------------------------------------------------------------------------
+    |
+    | List of ace commands to register from packages. The application commands
+    | will be scanned automatically from the "./commands" directory.
+    |
+    */
+    commands: [() => import('@adonisjs/core/commands')],
 
     /*
-  |--------------------------------------------------------------------------
-  | Service providers
-  |--------------------------------------------------------------------------
-  |
-  | List of service providers to import and register when booting the
-  | application
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Service providers
+    |--------------------------------------------------------------------------
+    |
+    | List of service providers to import and register when booting the
+    | application
+    |
+    */
     providers: [
         () => import('@adonisjs/core/providers/app_provider'),
         () => import('@adonisjs/core/providers/hash_provider'),
@@ -29,38 +29,37 @@ export default defineConfig({
             file: () => import('@adonisjs/core/providers/repl_provider'),
             environment: ['repl', 'test'],
         },
-        () => import('adonisjs-scheduler/scheduler_provider'),
         () => import('@adonisjs/redis/redis_provider'),
         () => import('#providers/telegram_provider'),
         () => import('#providers/telegram_bot_provider'),
         () => import('#providers/app_provider'),
+        () => import('#providers/MtkGameProvider'),
+        () => import('#providers/GemzGameProvider'),
+        () => import('#providers/MtkClickBotServiceProvider'),
+        () => import('#providers/GemzClickBotServiceProvider'),
+        () => import('#providers/MtkDailyBotServiceProvider'),
+        () => import('#providers/GemzDailyBotServiceProvider'),
     ],
 
     /*
-  |--------------------------------------------------------------------------
-  | Preloads
-  |--------------------------------------------------------------------------
-  |
-  | List of modules to import before starting the application.
-  |
-  */
-    preloads: [
-        () => import('#start/kernel'),
-        {
-            file: () => import('#start/scheduler'),
-            environment: ['console'],
-        },
-    ],
+    |--------------------------------------------------------------------------
+    | Preloads
+    |--------------------------------------------------------------------------
+    |
+    | List of modules to import before starting the application.
+    |
+    */
+    preloads: [() => import('#start/kernel'), () => import('#start/events')],
 
     /*
-  |--------------------------------------------------------------------------
-  | Tests
-  |--------------------------------------------------------------------------
-  |
-  | List of test suites to organize tests by their type. Feel free to remove
-  | and add additional suites.
-  |
-  */
+    |--------------------------------------------------------------------------
+    | Tests
+    |--------------------------------------------------------------------------
+    |
+    | List of test suites to organize tests by their type. Feel free to remove
+    | and add additional suites.
+    |
+    */
     tests: {
         suites: [
             {

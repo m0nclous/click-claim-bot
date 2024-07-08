@@ -1,6 +1,16 @@
-import BaseGameService, { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import { NormalizedOptions } from '../../types/ky.js';
+import BaseGameService from '#services/BaseGameService';
 import { URLSearchParams } from 'node:url';
+import emitter from '@adonisjs/core/services/emitter';
+import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
+import type { NormalizedOptions } from '../../types/ky.js';
+import { ITapEvent } from '#services/BaseClickBotService';
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'mtk:tap': ITapEvent;
+    }
+}
 
 export default class MtkGameService
     extends BaseGameService
@@ -68,6 +78,10 @@ export default class MtkGameService
     }
 
     async login(): Promise<void> {
+        if (this.isAuthenticated()) {
+            return;
+        }
+
         await this.httpClient.get('api/user/info');
     }
 
@@ -77,6 +91,12 @@ export default class MtkGameService
 
         await this.httpClient.post('api/user/click', {
             searchParams,
+        });
+
+        await emitter.emit('mtk:tap', {
+            self: this,
+            userId: this.userId,
+            quantity,
         });
     }
 
