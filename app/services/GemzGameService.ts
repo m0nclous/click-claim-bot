@@ -182,8 +182,8 @@ export default class GemzGameService
         await this.httpClient.post('loginOrCreate');
     }
 
-    public async tap(quantity: number = 1): Promise<void> {
-        let attemptCount: number = 1;
+    public async tap(quantity: number = 1, attemptCount: number = 0): Promise<void> {
+        attemptCount++;
 
         await this.replicate(this.generateTaps(quantity)).catch(async (error: HTTPError) => {
             const response: IReplicationError | any = await error.response.json();
@@ -196,7 +196,6 @@ export default class GemzGameService
 
                 if (attemptCount < 3) {
                     await sleep(0.3 * 2 ** (attemptCount - 1) * 1000);
-                    attemptCount++;
                     return this.tap(quantity);
                 }
 
