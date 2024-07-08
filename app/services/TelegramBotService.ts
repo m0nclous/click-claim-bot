@@ -23,13 +23,17 @@ export class TelegramBotService {
         this.bot = new Telegraf(this.config.token);
     }
 
-    public async run(): Promise<UserFromGetMe | undefined> {
+    public async run(): Promise<UserFromGetMe> {
         await this.setupLoginWizard();
         await this.setupCommands();
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             this.bot.launch(() => {
-                resolve(this.bot.botInfo);
+                if (this.bot.botInfo !== undefined) {
+                    resolve(this.bot.botInfo);
+                } else {
+                    reject('Bot info is undefined');
+                }
             });
         });
     }

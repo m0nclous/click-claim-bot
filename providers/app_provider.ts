@@ -1,4 +1,4 @@
-import { ApplicationService } from '@adonisjs/core/types';
+import { ApplicationService, LoggerService } from '@adonisjs/core/types';
 import { TelegramBotService } from '#services/TelegramBotService';
 import { MtkClickBotService } from '#services/MtkClickBotService';
 import { UserFromGetMe } from '@telegraf/types/manage.js';
@@ -11,15 +11,11 @@ export default class AppProvider {
 
     // noinspection JSUnusedGlobalSymbols
     public async boot(): Promise<void> {
-        const logger = await this.app.container.make('logger');
+        const logger: LoggerService = await this.app.container.make('logger');
 
         if (this.app.getEnvironment() === 'web') {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
-            telegramBot.run().then((botInfo: UserFromGetMe | undefined) => {
-                if (!botInfo) {
-                    throw new Error('Bot not found!');
-                }
-
+            telegramBot.run().then((botInfo: UserFromGetMe) => {
                 logger.info(botInfo, 'Чат-Бот успешно запущен');
             });
 
