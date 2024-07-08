@@ -8,7 +8,7 @@ import type { ITapEvent } from '#start/events';
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
-        'mtk:tap': ITapEvent
+        'mtk:tap': ITapEvent;
     }
 }
 

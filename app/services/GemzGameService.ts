@@ -8,7 +8,7 @@ import type { ITapEvent } from '#start/events';
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
-        'gemz:tap': ITapEvent
+        'gemz:tap': ITapEvent;
     }
 }
 

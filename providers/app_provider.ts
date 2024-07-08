@@ -31,29 +31,21 @@ export default class AppProvider {
             const gemzDailyBotService: GemzDailyBotService =
                 await this.app.container.make('gemzDailyBotService');
 
-            mtkClickBotService
-                .run()
-                .then(() => {
-                    logger.info('Mtk Click Bot Service started');
-                });
+            mtkClickBotService.run().then(() => {
+                logger.info('Mtk Click Bot Service started');
+            });
 
-            gemzClickBotService
-                .run()
-                .then(() => {
-                    logger.info('Gemz Click Bot Service started');
-                });
+            gemzClickBotService.run().then(() => {
+                logger.info('Gemz Click Bot Service started');
+            });
 
-            mtkDailyBotService
-                .run()
-                .then(() => {
-                    logger.info('Mtk Daily Bot Service started');
-                });
+            mtkDailyBotService.run().then(() => {
+                logger.info('Mtk Daily Bot Service started');
+            });
 
-            gemzDailyBotService
-                .run()
-                .then(() => {
-                    logger.info('Gemz Daily Bot Service started');
-                });
+            gemzDailyBotService.run().then(() => {
+                logger.info('Gemz Daily Bot Service started');
+            });
         }
     }
 }

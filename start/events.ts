@@ -10,14 +10,12 @@ export interface ITapEvent {
 }
 
 export const notifyTap = async (data: ITapEvent) => {
-    const telegramBot: TelegramBotService = await app.container.make('telegramBot', [
-        data.userId,
-    ]);
+    const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
 
-    await telegramBot.bot.telegram.sendMessage(data.userId, [
-        `Успешно отправлено тапов: ${data.quantity}`,
-        `#${data.self.getGameName()}`,
-    ].join('\n'));
+    await telegramBot.bot.telegram.sendMessage(
+        data.userId,
+        [`Успешно отправлено тапов: ${data.quantity}`, `#${data.self.getGameName()}`].join('\n'),
+    );
 };
 
 emitter.on('mtk:tap', notifyTap);
