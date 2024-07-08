@@ -1,6 +1,8 @@
 import BaseGameService, { TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
+import { sleep } from '#helpers/timer';
+import logger from '@adonisjs/core/services/logger';
 import type { HTTPError, NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
@@ -180,11 +182,23 @@ export default class GemzGameService
         await this.httpClient.post('loginOrCreate');
     }
 
-    public async tap(quantity: number = 1): Promise<any> {
+    public async tap(quantity: number = 1): Promise<void> {
+        let attemptCount: number = 1;
+
         await this.replicate(this.generateTaps(quantity)).catch(async (error: HTTPError) => {
             const response: IReplicationError | any = await error.response.json();
 
             if (response.code === 'replication_error') {
+                logger.debug({
+                    replicationError: response,
+                    attemptCount,
+                });
+
+                if (attemptCount < 3) {
+                    await sleep(0.3 * (2 ** (attemptCount++ - 1)) * 1000);
+                    return this.tap(quantity);
+                }
+
                 const tapError: TapError<IReplicationError> = new TapError(response);
 
                 await emitter.emit('gemz:tap:error', {
