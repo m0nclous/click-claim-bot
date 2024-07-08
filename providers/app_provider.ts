@@ -1,10 +1,8 @@
-import { ApplicationService, LoggerService } from '@adonisjs/core/types';
-import { TelegramBotService } from '#services/TelegramBotService';
-import { MtkClickBotService } from '#services/MtkClickBotService';
-import { UserFromGetMe } from '@telegraf/types/manage.js';
-import { MtkDailyBotService } from '#services/MtkDailyBotService';
-import { GemzClickBotService } from '#services/GemzClickBotService';
-import { GemzDailyBotService } from '#services/GemzDailyBotService';
+import type { ApplicationService, ContainerBindings, LoggerService } from '@adonisjs/core/types';
+import type { TelegramBotService } from '#services/TelegramBotService';
+import type { UserFromGetMe } from '@telegraf/types/manage.js';
+
+type GameBotServiceBinding = keyof ContainerBindings;
 
 export default class AppProvider {
     constructor(protected app: ApplicationService) {}
@@ -19,33 +17,25 @@ export default class AppProvider {
                 logger.info(botInfo, 'Чат-Бот успешно запущен');
             });
 
-            const mtkClickBotService: MtkClickBotService =
-                await this.app.container.make('mtkClickBotService');
+            const gameBotServicesToRun: GameBotServiceBinding[] = [
+                'mtkClickBotService',
+                'mtkDailyBotService',
+                'gemzClickBotService',
+                'gemzDailyBotService',
+            ];
 
-            const gemzClickBotService: GemzClickBotService =
-                await this.app.container.make('gemzClickBotService');
+            for (const gameBotServiceBinding of gameBotServicesToRun) {
+                const service: ContainerBindings[keyof ContainerBindings] =
+                    await this.app.container.make(gameBotServiceBinding);
 
-            const mtkDailyBotService: MtkDailyBotService =
-                await this.app.container.make('mtkDailyBotService');
+                if (!('run' in service)) {
+                    throw new Error('Run method is not implemented');
+                }
 
-            const gemzDailyBotService: GemzDailyBotService =
-                await this.app.container.make('gemzDailyBotService');
-
-            mtkClickBotService.run().then(() => {
-                logger.info('Mtk Click Bot Service started');
-            });
-
-            gemzClickBotService.run().then(() => {
-                logger.info('Gemz Click Bot Service started');
-            });
-
-            mtkDailyBotService.run().then(() => {
-                logger.info('Mtk Daily Bot Service started');
-            });
-
-            gemzDailyBotService.run().then(() => {
-                logger.info('Gemz Daily Bot Service started');
-            });
+                service.run().then(() => {
+                    logger.info(`${service.constructor.name} started`);
+                });
+            }
         }
     }
 }
