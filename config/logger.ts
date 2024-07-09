@@ -17,7 +17,32 @@ const loggerConfig = defineConfig({
             transport: {
                 targets: targets()
                     .pushIf(!app.inProduction, targets.pretty())
-                    .pushIf(app.inProduction, targets.file({ destination: 1 }))
+                    .push({
+                        target: 'pino-elasticsearch',
+                        level: env.get('LOG_LEVEL'),
+                        options: {
+                            node: 'http://elasticsearch:9200',
+                            esVersion: 8,
+                        },
+                    })
+                    .toArray(),
+            },
+        },
+        gameServiceRequest: {
+            enabled: true,
+            name: 'game-service-request',
+            level: env.get('LOG_LEVEL'),
+            transport: {
+                targets: targets()
+                    .pushIf(!app.inProduction, targets.pretty())
+                    .push({
+                        target: 'pino-elasticsearch',
+                        level: env.get('LOG_LEVEL'),
+                        options: {
+                            node: 'http://elasticsearch:9200',
+                            esVersion: 8,
+                        },
+                    })
                     .toArray(),
             },
         },
