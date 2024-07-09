@@ -58,8 +58,8 @@ export class TelegramBotService {
         this.bot.command('bot_gemz_daily_start', this.botGemzDailyStart.bind(this));
         this.bot.command('bot_gemz_daily_stop', this.botGemzDailyStop.bind(this));
 
-        this.bot.command('bot_zavod_claim_start', this.zavodClaimStart);
-        this.bot.command('bot_zavod_claim_stop', this.zavodClaimStop);
+        this.bot.command('bot_zavod_claim_start', this.zavodClaimStart.bind(this));
+        this.bot.command('bot_zavod_claim_stop', this.zavodClaimStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {

@@ -1,7 +1,10 @@
 import BaseGameService, { TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
-import type { HTTPError, NormalizedOptions } from 'ky';
+import { sleep } from '#helpers/timer';
+import logger from '@adonisjs/core/services/logger';
+import { HTTPError } from 'ky';
+import type { NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
 
@@ -180,23 +183,51 @@ export default class GemzGameService
         await this.httpClient.post('loginOrCreate');
     }
 
-    public async tap(quantity: number = 1): Promise<any> {
-        await this.replicate(this.generateTaps(quantity)).catch(async (error: HTTPError) => {
+    public async tap(quantity: number = 1): Promise<void> {
+        const replicateTaps = async () => this.replicate(this.generateTaps(quantity));
+
+        try {
+            await replicateTaps();
+        } catch (error) {
+            if (!(error instanceof HTTPError)) {
+                throw error;
+            }
+
             const response: IReplicationError | any = await error.response.json();
 
             if (response.code === 'replication_error') {
-                const tapError: TapError<IReplicationError> = new TapError(response);
+                let replicateError: boolean = true;
 
-                await emitter.emit('gemz:tap:error', {
-                    self: this,
-                    userId: this.userId,
-                    quantity,
-                    error: tapError,
-                });
+                for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
+                    logger.debug({
+                        replicationError: response,
+                        attemptCount,
+                    });
 
-                throw tapError;
+                    await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
+                    replicateError = await replicateTaps()
+                        .then(() => false)
+                        .catch(() => true);
+
+                    if (!replicateError) {
+                        break;
+                    }
+                }
+
+                if (replicateError) {
+                    const tapError: TapError<IReplicationError> = new TapError(response);
+
+                    await emitter.emit('gemz:tap:error', {
+                        self: this,
+                        userId: this.userId,
+                        quantity,
+                        error: tapError,
+                    });
+
+                    throw tapError;
+                }
             }
-        });
+        }
 
         await emitter.emit('gemz:tap', {
             self: this,
