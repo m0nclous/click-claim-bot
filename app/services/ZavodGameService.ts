@@ -1,7 +1,8 @@
 import BaseGameService, { HasClaim } from '#services/BaseGameService';
 import logger from '@adonisjs/core/services/logger';
+import { ContainerBindings } from '@adonisjs/core/types';
 
-interface IProfile {
+export interface IProfile {
     telegramId: string;
     username: string;
     tokens: number;
@@ -19,7 +20,7 @@ interface IProfile {
     serverTime: string;
 }
 
-interface IFarm {
+export interface IFarm {
     id: number;
     userTelegramId: string;
     tokensPerHour: number;
@@ -30,8 +31,10 @@ interface IFarm {
 }
 
 export default class ZavodGameService extends BaseGameService implements HasClaim {
-    public profile: IProfile = {} as IProfile;
-    public farm: IFarm = {} as IFarm;
+    public static serviceToken = 'zavodGameService' as keyof ContainerBindings;
+
+    protected profile: IProfile  | null = null;
+    protected farm: IFarm | null = null;
 
     public constructor(userId: number) {
         super(userId);
@@ -45,10 +48,6 @@ export default class ZavodGameService extends BaseGameService implements HasClai
                 ],
             },
         });
-    }
-
-    async claim(): Promise<void> {
-        await this.httpClient.post('user/claim');
     }
 
     public getGameName(): string {
@@ -68,12 +67,63 @@ export default class ZavodGameService extends BaseGameService implements HasClai
     }
 
     async login(): Promise<void> {
+        await this.getProfile();
+        await this.getFarm();
+    }
+
+    async claim(): Promise<void> {
+        await this.httpClient.post('user/claim');
+    }
+
+    async canClaim(): Promise<boolean> {
+        if (this.farm && this.profile) {
+            const claimStartedAt = await this.claimStartedAt();
+            const claimFinishAt = await this.claimFinishAt();
+            const claimInterval = await this.claimInterval();
+
+            if (claimStartedAt && claimFinishAt) {
+                if ((claimFinishAt.getTime() + claimInterval) < claimStartedAt.getTime()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    async claimFinishAt(): Promise<Date | null> {
+        const { lastClaim } = this.farm!;
+
+        return new Date(lastClaim);
+    }
+
+    async claimInterval(): Promise<number> {
+        return this.farm?.claimInterval || 0;
+    }
+
+    async claimStartedAt(): Promise<Date | null> {
+        return this.syncedTimeNow(this.serverDeltaTime(this.profile!.serverTime));
+    }
+
+    private async getProfile() {
         const profileRes = await this.httpClient.get('user/profile');
         if (!profileRes.ok) return logger.error(profileRes);
         this.profile = await profileRes.json();
+    }
 
+    private async getFarm(){
         const farmRes = await this.httpClient.get('user/farm');
         if (!farmRes.ok) return logger.error(farmRes);
         this.farm = await farmRes.json();
+    }
+
+    private syncedTimeNow(delta: number) {
+        if (!delta) {
+            return new Date();
+        }
+        return new Date(Date.now() - delta);
+    }
+
+    private serverDeltaTime(serverTime: string) {
+        return new Date().getTime() - new Date(serverTime ?? 0).getTime();
     }
 }

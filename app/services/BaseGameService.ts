@@ -15,6 +15,12 @@ export class TapError<T> extends Error {
     }
 }
 
+export class ClaimError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка сборки ресурсов');
+    }
+}
+
 export interface HasTap {
     /**
      * Отправить тапы

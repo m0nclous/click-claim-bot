@@ -4,6 +4,7 @@ import emitter from '@adonisjs/core/services/emitter';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
 import type { NormalizedOptions } from '../../types/ky.js';
 import { ITapEvent } from '#services/BaseClickBotService';
+import { ContainerBindings } from '@adonisjs/core/types';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
@@ -16,6 +17,8 @@ export default class MtkGameService
     extends BaseGameService
     implements HasTap, HasDailyReward, HasEnergyRecharge
 {
+    public static serviceToken: keyof ContainerBindings = 'mtkGameService';
+
     public constructor(userId: number) {
         super(userId);
 
