@@ -2,31 +2,31 @@ import BaseGameService, { HasClaim } from '#services/BaseGameService';
 import logger from '@adonisjs/core/services/logger';
 
 interface IProfile {
-    telegramId: string,
-    username: string,
-    tokens: number,
-    burnedTokens: number,
-    multiplier: number,
-    refLink: string,
-    invitedBy: number | null,
-    lastAuth: string,
-    claims: number,
-    language: string,
-    guildId: number | null,
-    icon: string,
-    timestamp: string,
-    refSyncAttempts: number,
-    serverTime: string
+    telegramId: string;
+    username: string;
+    tokens: number;
+    burnedTokens: number;
+    multiplier: number;
+    refLink: string;
+    invitedBy: number | null;
+    lastAuth: string;
+    claims: number;
+    language: string;
+    guildId: number | null;
+    icon: string;
+    timestamp: string;
+    refSyncAttempts: number;
+    serverTime: string;
 }
 
 interface IFarm {
-    id: number,
-    userTelegramId: string,
-    tokensPerHour: number,
-    claimInterval: number,
-    toolkitLevel: number,
-    workbenchLevel: number,
-    lastClaim: string
+    id: number;
+    userTelegramId: string;
+    tokensPerHour: number;
+    claimInterval: number;
+    toolkitLevel: number;
+    workbenchLevel: number;
+    lastClaim: string;
 }
 
 export default class ZavodGameService extends BaseGameService implements HasClaim {

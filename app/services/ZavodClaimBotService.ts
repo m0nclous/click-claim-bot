@@ -18,9 +18,13 @@ export class ZavodClaimBotService extends BaseClaimBotService {
         const { lastClaim, claimInterval } = service.farm;
         service.profile.serverTime;
 
-        const canClaim = this.canClaim(new Date(lastClaim).getTime(), claimInterval, this.serverDeltaTime(service.profile.serverTime));
+        const canClaim = this.canClaim(
+            new Date(lastClaim).getTime(),
+            claimInterval,
+            this.serverDeltaTime(service.profile.serverTime),
+        );
 
-        canClaim && await service.claim();
+        canClaim && (await service.claim());
     }
 
     private serverDeltaTime(serverTime: string) {
@@ -32,14 +36,14 @@ export class ZavodClaimBotService extends BaseClaimBotService {
             return new Date();
         }
         return new Date(Date.now() - delta);
-    };
+    }
 
-    private canClaim(claimTime: number, claimInterval: number, serverTimeDelta = 0){
+    private canClaim(claimTime: number, claimInterval: number, serverTimeDelta = 0) {
         const now = this.syncedTimeNow(serverTimeDelta)?.getTime();
         const difference = claimTime + claimInterval - now; // Difference in milliseconds
 
         return difference <= 0;
-    };
+    }
 
     protected getIntervalDelay(): number {
         return 3_600;
