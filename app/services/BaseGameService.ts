@@ -58,7 +58,30 @@ export interface EnergyUpgradable extends HasEnergyRecharge {
 }
 
 export interface HasClaim {
+    /**
+     * Собрать награду
+     */
     claim(): Promise<void>;
+
+    /**
+     * Можно ли собрать награду сейчас
+     */
+    canClaim(): Promise<boolean>;
+
+    /**
+     * Время в ms, сколько занимает полный claim от старта до финиша
+     */
+    claimInterval(): Promise<number>;
+
+    /**
+     * Дата, когда был начат процесс подготовки награды
+     */
+    claimStartedAt(): Promise<Date | null>;
+
+    /**
+     * Дата, когда ожидается завершение процесса подготовки награды
+     */
+    claimFinishAt(): Promise<Date | null>;
 }
 
 export default abstract class BaseGameService {
