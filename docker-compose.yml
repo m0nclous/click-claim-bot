@@ -47,7 +47,7 @@ services:
             ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
             XPACK_MONITORING_ENABLED: 'true'
             XPACK_MONITORING_COLLECTION_ENABLED: 'true'
-            XPACK_SECURITY_ENABLED: 'true'
+            XPACK_SECURITY_ENABLED: 'false'
             ELASTICSEARCH_USERNAME: 'kibana_system'
             ELASTICSEARCH_PASSWORD: '${ELASTICSEARCH_PASSWORD}'
         depends_on:
