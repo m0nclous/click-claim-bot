@@ -25,10 +25,10 @@ services:
     elasticsearch:
         image: 'elasticsearch:8.14.2'
         environment:
-            - discovery.type=single-node
-            # Elasticsearch 8.x has HTTPS and auth on by default. This option is
-            # needed to use HTTP and no auth (as used in the tests).
-            - xpack.security.enabled=false
+            discovery.type: 'single-node'
+            xpack.security.enabled: 'false'
+            ELASTICSEARCH_USERNAME: 'kibana_system'
+            ELASTICSEARCH_PASSWORD: '${ELASTICSEARCH_PASSWORD}'
         ports:
             - '${FORWARD_ELASTIC_PORT:-9200}:9200'
         volumes:
@@ -43,6 +43,13 @@ services:
         image: 'kibana:8.14.2'
         ports:
             - '${FORWARD_KIBANA_PORT:-5601}:5601'
+        environment:
+            ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
+            XPACK_MONITORING_ENABLED: 'true'
+            XPACK_MONITORING_COLLECTION_ENABLED: 'true'
+            XPACK_SECURITY_ENABLED: 'true'
+            ELASTICSEARCH_USERNAME: 'kibana_system'
+            ELASTICSEARCH_PASSWORD: '${ELASTICSEARCH_PASSWORD}'
         depends_on:
             - 'elasticsearch'
 volumes:
