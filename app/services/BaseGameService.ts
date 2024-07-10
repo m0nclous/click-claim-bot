@@ -1,13 +1,15 @@
 import { Api as TelegramApi, TelegramClient } from 'telegram';
 import { parseUrlHashParams } from '#helpers/url';
-import ky, { HTTPError, KyInstance } from 'ky';
+import ky from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
-import { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
-import { TgWebAppDataJson } from '../../types/telegram.js';
-import type { TelegramService } from '#services/TelegramService';
 import app from '@adonisjs/core/services/app';
+
+import type { HTTPError, KyInstance } from 'ky';
+import type { NormalizedOptions } from '../../types/ky.js';
+import type { TgWebAppDataJson } from '../../types/telegram.js';
+import type { TelegramService } from '#services/TelegramService';
 
 export class TapError<T> extends Error {
     constructor(public data: T) {
@@ -109,30 +111,45 @@ export default abstract class BaseGameService {
             },
 
             hooks: {
-                beforeRequest: [
-                    (request: Request): void => {
-                        const { url, method } = request;
-
-                        logger.trace(`Запрос -> [${method}] ${url}`);
-                    },
-                ],
-
                 afterResponse: [
                     async (
-                        _request: Request,
-                        _options: NormalizedOptions,
+                        request: Request,
+                        options: NormalizedOptions,
                         response: Response,
                     ): Promise<void> => {
-                        const { url, status } = response;
-                        const json = await response.json().catch(() => null);
+                        response = response.clone();
+                        request = request.clone();
 
-                        logger.trace(json, `Ответ <- [${status}] ${url}`);
+                        const urlInstance = new URL(request.url);
+
+                        logger.use('gameServiceRequest').trace({
+                            event: 'GAME_SERVICE_HTTP',
+                            game: this.getGameName(),
+                            userId: this.userId,
+                            request: {
+                                method: request.method,
+                                url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
+                                search: Object.fromEntries(options.searchParams?.entries() ?? []),
+                                headers: Object.fromEntries(request.headers),
+                                json: await request.json().catch(() => null),
+                            },
+                            response: {
+                                status: response.status,
+                                headers: Object.fromEntries(response.headers),
+                                json: await response.json().catch(() => null),
+                            },
+                        });
                     },
                 ],
 
                 beforeError: [
                     (error: HTTPError): HTTPError => {
-                        logger.error(error);
+                        logger.use('gameServiceRequest').error({
+                            event: 'GAME_SERVICE_HTTP',
+                            game: this.getGameName(),
+                            userId: this.userId,
+                            error,
+                        });
 
                         return error;
                     },
