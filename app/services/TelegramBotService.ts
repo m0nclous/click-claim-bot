@@ -120,11 +120,14 @@ export class TelegramBotService {
 
             async (ctx) => {
                 if (ctx.message === undefined) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 1,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 1,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message is undefined',
+                    );
 
                     return;
                 }
@@ -160,21 +163,27 @@ export class TelegramBotService {
                 const state: ILoginState = ctx.wizard.state;
 
                 if (ctx.message === undefined) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 2,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 2,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message is undefined',
+                    );
 
                     return;
                 }
 
                 if (!('contact' in ctx.message)) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 2,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message.contact is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 2,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message.contact is undefined',
+                    );
 
                     return;
                 }
@@ -189,11 +198,14 @@ export class TelegramBotService {
                 const onLoginResolve = state.onLoginCallback.resolve;
 
                 if (state.client === undefined) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 2,
-                        ctxUpdate: ctx.update,
-                    }, 'state.client is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 2,
+                            ctxUpdate: ctx.update,
+                        },
+                        'state.client is undefined',
+                    );
 
                     return;
                 }
@@ -245,21 +257,27 @@ export class TelegramBotService {
 
             async (ctx) => {
                 if (ctx.message === undefined) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 3,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 3,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message is undefined',
+                    );
 
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 3,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message.text is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 3,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message.text is undefined',
+                    );
 
                     return;
                 }
@@ -276,21 +294,27 @@ export class TelegramBotService {
 
             async (ctx) => {
                 if (ctx.message === undefined) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 4,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 4,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message is undefined',
+                    );
 
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
-                    this.logger.error({
-                        event: 'TELEGRAM_LOGIN_WIZARD',
-                        step: 4,
-                        ctxUpdate: ctx.update,
-                    }, 'ctx.message.text is undefined');
+                    this.logger.error(
+                        {
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 4,
+                            ctxUpdate: ctx.update,
+                        },
+                        'ctx.message.text is undefined',
+                    );
 
                     return;
                 }
@@ -368,11 +392,14 @@ export class TelegramBotService {
 
     public async logout(ctx: Context): Promise<void> {
         if (ctx.message === undefined) {
-            this.logger.error({
-                event: 'TELEGRAM_COMMAND',
-                command: 'logout',
-                ctx,
-            }, 'ctx.message is undefined');
+            this.logger.error(
+                {
+                    event: 'TELEGRAM_COMMAND',
+                    command: 'logout',
+                    ctx,
+                },
+                'ctx.message is undefined',
+            );
 
             return;
         }
@@ -468,10 +495,13 @@ export class TelegramBotService {
 
     private async checkUser(ctx: Context) {
         if (!ctx.from?.id) {
-            this.logger.error({
-                event: 'TELEGRAM_CHECK_USER',
-                ctx,
-            }, 'Не найден ID пользователя');
+            this.logger.error(
+                {
+                    event: 'TELEGRAM_CHECK_USER',
+                    ctx,
+                },
+                'Не найден ID пользователя',
+            );
 
             await ctx.reply('Ошибка, попробуйте позже');
             return false;
