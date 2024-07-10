@@ -35,23 +35,40 @@ export default class SeedGameService extends BaseGameService {
         await this.httpClient.get('api/v1/profile');
     }
 
-    async getMarket(
+    async getMarketEgg(
         eggType: Egg['egg_type'] | '' = '',
         sortByPrice: 'ASC' | 'DESC' = 'ASC',
-        sortByUpdatedAt: string = '',
+        sortByUpdatedAt?: 'ASC' | 'DESC',
         page: number = 1,
-    ): Promise<GetMarketResponse> {
+    ): Promise<GetMarketResponse<Egg>> {
         return await this.httpClient.get('api/v1/market', {
             searchParams: {
                 egg_type: eggType,
                 sort_by_price: sortByPrice,
-                sort_by_updated_at: sortByUpdatedAt,
+                sort_by_updated_at: sortByUpdatedAt ?? '',
+                page,
+            },
+        }).json();
+    }
+
+    async getMarketWorm(
+        wormType: Worm['worm_type'] | '' = '',
+        sortByPrice: 'ASC' | 'DESC' = 'ASC',
+        sortByUpdatedAt?: 'ASC' | 'DESC',
+        page: number = 1,
+    ): Promise<GetMarketResponse<Worm>> {
+        return await this.httpClient.get('api/v1/market', {
+            searchParams: {
+                market_type: 'worm',
+                worm_type: wormType,
+                sort_by_price: sortByPrice,
+                sort_by_updated_at: sortByUpdatedAt ?? '',
                 page: page,
             },
         }).json();
     }
 
-    async buyMarket(marketId: string): Promise<GetMarketResponse> {
+    async buyMarket(marketId: string): Promise<GetMarketResponse<Egg>> {
         return await this.httpClient.post('api/v1/market-item/buy', {
             json: {
                 market_id: marketId,
@@ -59,7 +76,7 @@ export default class SeedGameService extends BaseGameService {
         }).json();
     }
 
-    async sellMarket(eggId: string, price: number): Promise<GetMarketResponse> {
+    async sellMarketEgg(eggId: string, price: number): Promise<GetMarketResponse<Egg>> {
         return await this.httpClient.post('api/v1/market-item/add', {
             json: {
                 egg_id: eggId,
@@ -67,14 +84,23 @@ export default class SeedGameService extends BaseGameService {
             },
         }).json();
     }
+
+    async sellMarketWorm(wormId: string, price: number): Promise<GetMarketResponse<Worm>> {
+        return await this.httpClient.post('api/v1/market-item/add', {
+            json: {
+                worm_id: wormId,
+                price,
+            },
+        }).json();
+    }
 }
 
-export interface GetMarketResponse {
+export interface GetMarketResponse<T> {
     data: {
         total: number,
         page: number,
         page_size: number,
-        items: Egg[],
+        items: T[],
     }
 }
 
@@ -82,7 +108,20 @@ export interface Egg {
     id: string,
     egg_id: string,
     egg_type: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic',
-    egg_owner_id: string,
+    price_gross: number,
+    price_net: number,
+    fee: number,
+    status: string,
+    created_by: string,
+    bought_by: string | null,
+    created_at: string,
+    updated_at: string,
+}
+
+export interface Worm {
+    id: string,
+    worm_id: string,
+    worm_type: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic',
     price_gross: number,
     price_net: number,
     fee: number,

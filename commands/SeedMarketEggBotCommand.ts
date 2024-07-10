@@ -8,8 +8,8 @@ import logger from '@adonisjs/core/services/logger';
 import { HTTPError } from 'ky';
 
 // noinspection JSUnusedGlobalSymbols
-export default class SeedMarketBotCommand extends BaseGameCommand {
-    static commandName = 'seed:market-bot';
+export default class SeedMarketEggBotCommand extends BaseGameCommand {
+    static commandName = 'seed:market-egg-bot';
     static description = 'Бот автоматической торговли яйцами';
 
     @flags.string({
@@ -29,7 +29,7 @@ export default class SeedMarketBotCommand extends BaseGameCommand {
         this.notifyPrefix = service.getGameName();
 
         setInterval(async () => {
-            const marketData: GetMarketResponse = await service.getMarket(this.marketEggType);
+            const marketData: GetMarketResponse<Egg> = await service.getMarketEgg(this.marketEggType);
             const eggs: Egg[] = marketData.data.items.map((egg: Egg) => {
                 egg.price_gross /= 1000000000;
 
@@ -53,7 +53,7 @@ export default class SeedMarketBotCommand extends BaseGameCommand {
 
                         const orderPrice: number = Math.floor(averageEggPrice * 0.95);
 
-                        service.sellMarket(egg.egg_id, orderPrice * 1000000000).then(() => {
+                        service.sellMarketEgg(egg.egg_id, orderPrice * 1000000000).then(() => {
                             this.notify([
                                 `[Яйцо #${egg.egg_id.substring(egg.egg_id.length - 9).toUpperCase()}] Выставлен ордер 💸`,
                                 `Стоимость: ${orderPrice}`,
