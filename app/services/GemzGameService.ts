@@ -200,7 +200,8 @@ export default class GemzGameService
 
                 for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
                     logger.debug({
-                        replicationError: response,
+                        event: 'GAME_SERVICE_TAP_RETRY',
+                        userId: this.userId,
                         attemptCount,
                     });
 

@@ -144,7 +144,12 @@ export default abstract class BaseGameService {
 
                 beforeError: [
                     (error: HTTPError): HTTPError => {
-                        logger.error(error);
+                        logger.use('gameServiceRequest').error({
+                            event: 'GAME_SERVICE_HTTP',
+                            game: this.getGameName(),
+                            userId: this.userId,
+                            error,
+                        });
 
                         return error;
                     },

@@ -119,10 +119,13 @@ export class TelegramBotService {
             'login',
 
             async (ctx) => {
-                this.logger.trace(ctx.update, 'Step 1: получение номера телефона');
-
                 if (ctx.message === undefined) {
-                    this.logger.debug(ctx, 'ctx.message is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 1,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message is undefined');
+
                     return;
                 }
 
@@ -154,17 +157,25 @@ export class TelegramBotService {
             },
 
             async (ctx) => {
-                this.logger.trace(ctx.update, 'Step 2: получения кода авторизации');
-
                 const state: ILoginState = ctx.wizard.state;
 
                 if (ctx.message === undefined) {
-                    this.logger.debug(ctx, 'ctx.message is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 2,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message is undefined');
+
                     return;
                 }
 
                 if (!('contact' in ctx.message)) {
-                    this.logger.debug(ctx, 'ctx.message.contact is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 2,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message.contact is undefined');
+
                     return;
                 }
 
@@ -178,7 +189,12 @@ export class TelegramBotService {
                 const onLoginResolve = state.onLoginCallback.resolve;
 
                 if (state.client === undefined) {
-                    this.logger.error(ctx, 'state.client is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 2,
+                        ctxUpdate: ctx.update,
+                    }, 'state.client is undefined');
+
                     return;
                 }
 
@@ -195,7 +211,13 @@ export class TelegramBotService {
                         onLoginResolve(true);
                     })
                     .catch(async (error: Error) => {
-                        this.logger.error(error);
+                        this.logger.error({
+                            event: 'TELEGRAM_LOGIN_WIZARD',
+                            step: 2,
+                            ctxUpdate: ctx.update,
+                            error,
+                        });
+
                         await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
                         await ctx.scene.leave();
                     });
@@ -222,15 +244,23 @@ export class TelegramBotService {
             },
 
             async (ctx) => {
-                this.logger.trace(ctx.update, 'Step 3: получение пароля');
-
                 if (ctx.message === undefined) {
-                    this.logger.debug(ctx, 'ctx.message is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 3,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message is undefined');
+
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
-                    this.logger.debug(ctx, 'ctx.message.text is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 3,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message.text is undefined');
+
                     return;
                 }
 
@@ -245,15 +275,23 @@ export class TelegramBotService {
             },
 
             async (ctx) => {
-                this.logger.trace('Step 4: успешное получение сессии Telegram Client');
-
                 if (ctx.message === undefined) {
-                    this.logger.debug(ctx, 'ctx.message is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 4,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message is undefined');
+
                     return;
                 }
 
                 if (!('text' in ctx.message)) {
-                    this.logger.debug(ctx, 'ctx.message.text is undefined');
+                    this.logger.error({
+                        event: 'TELEGRAM_LOGIN_WIZARD',
+                        step: 4,
+                        ctxUpdate: ctx.update,
+                    }, 'ctx.message.text is undefined');
+
                     return;
                 }
 
@@ -268,6 +306,11 @@ export class TelegramBotService {
                 await state.telegram?.saveSession();
                 await ctx.reply('Telegram аккаунт успешно привязан');
 
+                this.logger.info({
+                    event: 'TELEGRAM_LOGIN_SUCCESS',
+                    userId: ctx.message.from.id,
+                });
+
                 return await ctx.scene.leave();
             },
         );
@@ -277,12 +320,19 @@ export class TelegramBotService {
             if ('my_chat_member' in ctx.update) {
                 // Обработка случаев, когда пользователь остановил бота
                 if (['kicked', 'left'].includes(ctx.update.my_chat_member.new_chat_member.status)) {
-                    this.logger.trace(ctx.update, 'Бот был удалён из чата (или остановлен)');
+                    this.logger.debug({
+                        event: 'TELEGRAM_BOT_KICKED',
+                        ctxUpdate: ctx.update,
+                    });
 
                     // Выход со сцены и остановка дальнейших middleware
                     return ctx.scene.leave();
                 } else {
-                    this.logger.trace(ctx.update, 'Бот был добавлен в чат (или новый собеседник)');
+                    this.logger.trace({
+                        event: 'TELEGRAM_BOT_ADD',
+                        ctxUpdate: ctx.update,
+                    });
+
                     return;
                 }
             }
@@ -318,7 +368,12 @@ export class TelegramBotService {
 
     public async logout(ctx: Context): Promise<void> {
         if (ctx.message === undefined) {
-            this.logger.debug(ctx, 'ctx.message is undefined');
+            this.logger.error({
+                event: 'TELEGRAM_COMMAND',
+                command: 'logout',
+                ctx,
+            }, 'ctx.message is undefined');
+
             return;
         }
 
@@ -413,7 +468,11 @@ export class TelegramBotService {
 
     private async checkUser(ctx: Context) {
         if (!ctx.from?.id) {
-            this.logger.error(ctx, 'Не найден ID пользователя');
+            this.logger.error({
+                event: 'TELEGRAM_CHECK_USER',
+                ctx,
+            }, 'Не найден ID пользователя');
+
             await ctx.reply('Ошибка, попробуйте позже');
             return false;
         }
