@@ -1,6 +1,7 @@
 import env from '#start/env';
 import app from '@adonisjs/core/services/app';
 import { defineConfig, targets } from '@adonisjs/core/logger';
+import { readFileSync } from 'node:fs';
 
 const loggerConfig = defineConfig({
     default: 'app',
@@ -17,12 +18,28 @@ const loggerConfig = defineConfig({
             transport: {
                 targets: targets()
                     .pushIf(!app.inProduction, targets.pretty())
-                    .push({
+                    .pushIf(!app.inProduction, {
                         target: 'pino-elasticsearch',
                         level: env.get('LOG_LEVEL'),
                         options: {
-                            node: 'http://elasticsearch:9200',
+                            node: `http://${env.get('ELASTIC_HOST')}:${env.get('ELASTIC_PORT')}`,
                             esVersion: 8,
+                        },
+                    })
+                    .pushIf(app.inProduction, {
+                        target: 'pino-elasticsearch',
+                        level: env.get('LOG_LEVEL'),
+                        options: {
+                            node: `https://${env.get('ELASTIC_HOST')}:${env.get('ELASTIC_PORT')}`,
+                            esVersion: 8,
+                            auth: {
+                                username: 'elastic',
+                                password: env.get('ELASTIC_PASSWORD'),
+                            },
+                            tls: {
+                                ca: readFileSync('./http_ca.crt'),
+                                rejectUnauthorized: false,
+                            },
                         },
                     })
                     .toArray(),
