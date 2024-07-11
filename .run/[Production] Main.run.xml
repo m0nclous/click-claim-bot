@@ -11,6 +11,7 @@
         </option>
         <option name="sourceFilePath" value="docker-compose.yml" />
         <option name="upDetach" value="false" />
+        <option name="upRemoveOrphans" value="true" />
       </settings>
     </deployment>
     <method v="2" />
