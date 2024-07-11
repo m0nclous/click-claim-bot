@@ -5,6 +5,15 @@ services:
         environment:
             NODE_ENV: 'production'
 
+    redis:
+        command:
+            - /bin/sh
+            - -c
+            - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+        environment:
+            - ALLOW_EMPTY_PASSWORD=false
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+
     elasticsearch:
         image: 'elasticsearch:8.14.2'
         environment:
