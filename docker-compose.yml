@@ -2,6 +2,9 @@ services:
     app:
         build:
             context: .
+        networks:
+            - elasticsearch
+            - redis
         depends_on:
             redis:
                 condition: service_healthy
@@ -13,7 +16,9 @@ services:
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
-            - 'redis:/data'
+            - 'redis-data:/data'
+        networks:
+            - redis
         healthcheck:
             test:
                 - CMD
@@ -26,15 +31,20 @@ services:
         image: 'elasticsearch:8.14.2'
         environment:
             discovery.type: 'single-node'
-            xpack.security.enabled: 'false'
-            ELASTICSEARCH_USERNAME: 'kibana_system'
-            ELASTICSEARCH_PASSWORD: '${ELASTICSEARCH_PASSWORD}'
+            ELASTIC_PASSWORD: '${ELASTIC_PASSWORD:-}'
         ports:
             - '${FORWARD_ELASTIC_PORT:-9200}:9200'
         volumes:
-            - elasticsearch:/usr/share/elasticsearch/data
+            - elasticsearch-data:/usr/share/elasticsearch/data
+            - elasticsearch-config:/usr/share/elasticsearch/config
+        networks:
+            - elasticsearch
         healthcheck:
-            test: ['CMD-SHELL', 'curl --silent --fail http://localhost:9200/_cluster/health || exit 1']
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl --cacert /usr/share/elasticsearch/config/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health || exit 1',
+                ]
             interval: 30s
             timeout: 10s
             retries: 50
@@ -43,15 +53,15 @@ services:
         image: 'kibana:8.14.2'
         ports:
             - '${FORWARD_KIBANA_PORT:-5601}:5601'
-        environment:
-            ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
-            XPACK_MONITORING_ENABLED: 'true'
-            XPACK_MONITORING_COLLECTION_ENABLED: 'true'
-            XPACK_SECURITY_ENABLED: 'false'
-            ELASTICSEARCH_USERNAME: 'kibana_system'
-            ELASTICSEARCH_PASSWORD: '${ELASTICSEARCH_PASSWORD}'
+        networks:
+            - elasticsearch
         depends_on:
-            - 'elasticsearch'
-volumes:
-    redis:
+            elasticsearch:
+                condition: service_healthy
+networks:
     elasticsearch:
+    redis:
+volumes:
+    redis-data:
+    elasticsearch-data:
+    elasticsearch-config:
