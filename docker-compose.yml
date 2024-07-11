@@ -40,7 +40,11 @@ services:
         networks:
             - elasticsearch
         healthcheck:
-            test: ['CMD-SHELL', 'curl --cacert /usr/share/elasticsearch/config/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health || exit 1']
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl --cacert /usr/share/elasticsearch/config/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health || exit 1',
+                ]
             interval: 30s
             timeout: 10s
             retries: 50
