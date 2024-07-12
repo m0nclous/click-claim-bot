@@ -54,7 +54,7 @@ services:
         ports:
             - '${FORWARD_KIBANA_PORT:-5601}:5601'
         environment:
-            - SERVER_NAME=${KIBANA_SERVER_NAME:0.0.0.0}
+            SERVER_NAME: '${KIBANA_SERVER_NAME:-0.0.0.0}'
         networks:
             - elasticsearch
         depends_on:
