@@ -1,7 +1,7 @@
 import emitter from '@adonisjs/core/services/emitter';
 import app from '@adonisjs/core/services/app';
 import { TelegramBotService } from '#services/TelegramBotService';
-import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import { IReLoginErrorEvent, IReLoginEvent, ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
 
 export const notifyTap = async (data: ITapEvent) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
@@ -17,7 +17,7 @@ export const notifyTap = async (data: ITapEvent) => {
     );
 };
 
-export const notifyTapError = async (data: ITapErrorEvent<any>) => {
+export const notifyTapError = async (data: ITapErrorEvent<ITapEvent>) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
 
     await telegramBot.bot.telegram.sendMessage(
@@ -34,7 +34,24 @@ export const notifyTapError = async (data: ITapErrorEvent<any>) => {
     );
 };
 
+export const notifyReLoginError = async (data: IReLoginErrorEvent<IReLoginEvent>) => {
+    const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
+
+    await telegramBot.bot.telegram.sendMessage(
+        data.userId,
+        [
+            '⚠️ Ошибка релогина',
+            `<pre><code class="json">${JSON.stringify(data.error.data, null, 4)}</code></pre>`,
+            `#${data.self.getGameName()}`,
+        ].join('\n'),
+        {
+            parse_mode: 'HTML',
+        },
+    );
+};
+
 emitter.on('mtk:tap', notifyTap);
 emitter.on('gemz:tap', notifyTap);
 
-emitter.on('gemz:tap:error', notifyTapError);
+emitter.on<any, any>('gemz:tap:error', notifyTapError);
+emitter.on<any, any>('gemz:relogin:error', notifyReLoginError);

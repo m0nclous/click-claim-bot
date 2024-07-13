@@ -17,6 +17,12 @@ export class TapError<T> extends Error {
     }
 }
 
+export class ReLoginError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка релогина');
+    }
+}
+
 export interface HasTap {
     /**
      * Отправить тапы
