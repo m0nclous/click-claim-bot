@@ -1,4 +1,4 @@
-import BaseGameService, { TapError } from '#services/BaseGameService';
+import BaseGameService, { ReLoginError, TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
 import { sleep } from '#helpers/timer';
@@ -6,13 +6,15 @@ import logger from '@adonisjs/core/services/logger';
 import { HTTPError } from 'ky';
 import type { NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import { IReLoginErrorEvent, IReLoginEvent, ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import { EventsList } from '@adonisjs/core/types';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
         'gemz:tap': ITapEvent;
         'gemz:tap:error': ITapErrorEvent<IReplicationError>;
+        'gemz:relogin:error': IReLoginErrorEvent<IReplicationError>;
     }
 }
 
@@ -214,37 +216,37 @@ export default class GemzGameService
 
             const response: IReplicationError | any = await error.response.json();
 
+            let replicateError: boolean = true;
+            let emmitEvent: keyof EventsList;
+            let emmitOptions = {};
+            let errorInstance:
+                | TapError<ITapErrorEvent<ITapEvent>>
+                | ReLoginError<IReLoginErrorEvent<IReLoginEvent>>;
+
             if (response.code === 'replication_error') {
-                let replicateError: boolean = true;
+                replicateError = await this.retryFunction('GAME_SERVICE_TAP_RETRY', replicateTaps);
+                emmitEvent = 'gemz:tap:error';
+                emmitOptions = { quantity };
+                errorInstance = new TapError(response);
+            }
 
-                for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
-                    logger.debug({
-                        event: 'GAME_SERVICE_TAP_RETRY',
-                        userId: this.userId,
-                        attemptCount,
-                    });
+            if (response.code === 'session_desync_error') {
+                replicateError = await this.retryFunction('GAME_SERVICE_RE_LOGIN', this.reLogin.bind(this));
+                emmitEvent = 'gemz:relogin:error';
+                errorInstance = new ReLoginError(response);
+            }
 
-                    await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
-                    replicateError = await replicateTaps()
-                        .then(() => false)
-                        .catch(() => true);
-
-                    if (!replicateError) {
-                        break;
-                    }
-                }
-
-                if (replicateError) {
-                    const tapError: TapError<IReplicationError> = new TapError(response);
-
-                    await emitter.emit('gemz:tap:error', {
+            if (replicateError) {
+                if (emmitEvent!) {
+                    await emitter.emit<any>(emmitEvent, {
                         self: this,
                         userId: this.userId,
+                        ...emmitOptions,
                         quantity,
-                        error: tapError,
+                        error: errorInstance!,
                     });
 
-                    throw tapError;
+                    throw errorInstance!;
                 }
             }
         }
@@ -300,5 +302,34 @@ export default class GemzGameService
                 },
             })
             .json<any>();
+    }
+
+    private async reLogin(): Promise<void> {
+        this.token = null;
+        this.webView = null;
+        this.rev = null;
+        return await this.login();
+    }
+
+    private async retryFunction(event: string, retryFunc: () => Promise<void>) {
+        let replicateError: boolean = true;
+        for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
+            logger.debug({
+                event,
+                userId: this.userId,
+                attemptCount,
+            });
+
+            await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
+            replicateError = await retryFunc()
+                .then(() => false)
+                .catch(() => true);
+
+            if (!replicateError) {
+                break;
+            }
+        }
+
+        return replicateError;
     }
 }
