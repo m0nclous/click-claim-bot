@@ -1,7 +1,7 @@
 import type { RedisService } from '@adonisjs/redis/types';
 import type { ApplicationService } from '@adonisjs/core/types';
 import type BaseGameService from '#services/BaseGameService';
-import { randomInt } from 'crypto';
+import { randomInt } from 'node:crypto';
 
 export abstract class BaseBotService {
     public constructor(
