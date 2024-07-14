@@ -26,6 +26,11 @@ export interface HasTap {
      * @throws TapError
      */
     tap(quantity: number, meta?: any): Promise<void>;
+
+    /**
+     * Количество доступных тапов для отправки
+     */
+    getTapQuantity(): Promise<number>;
 }
 
 export interface TapUpgradable extends HasTap {
