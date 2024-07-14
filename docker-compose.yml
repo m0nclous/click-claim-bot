@@ -2,7 +2,7 @@ services:
     app:
         build:
             context: .
-        restart: unless-stopped
+        restart: always
         networks:
             - elasticsearch
             - redis
@@ -14,7 +14,7 @@ services:
 
     redis:
         image: 'redis:alpine'
-        restart: unless-stopped
+        restart: always
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
@@ -31,7 +31,7 @@ services:
 
     elasticsearch:
         image: 'elasticsearch:8.14.2'
-        restart: unless-stopped
+        restart: always
         environment:
             discovery.type: 'single-node'
             ELASTIC_PASSWORD: '${ELASTIC_PASSWORD:-}'
@@ -54,7 +54,7 @@ services:
 
     kibana:
         image: 'kibana:8.14.2'
-        restart: unless-stopped
+        restart: always
         ports:
             - '${FORWARD_KIBANA_PORT:-5601}:5601'
         environment:
