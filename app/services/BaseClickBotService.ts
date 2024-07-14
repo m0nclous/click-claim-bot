@@ -13,8 +13,6 @@ export interface ITapErrorEvent<T> extends ITapEvent {
 }
 
 export abstract class BaseClickBotService extends BaseBotService {
-    public abstract getTapQuantity(): Promise<number>;
-
     public getRedisSlug(): string {
         return 'click';
     }
@@ -26,9 +24,14 @@ export abstract class BaseClickBotService extends BaseBotService {
     public async execute(userId: string): Promise<void> {
         const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
 
-        const tapQuantity: number = await this.getTapQuantity();
-
         await gameService.login();
+
+        const tapQuantity: number = await gameService.getTapQuantity();
+
+        if (tapQuantity === 0) {
+            return;
+        }
+
         await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown>) => {
             if (error instanceof TapError) {
                 return;
