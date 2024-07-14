@@ -311,7 +311,7 @@ export default class GemzGameService
     }
 
     private async reLogin(): Promise<void> {
-        this.logout();
+        await this.logout();
         return await this.login();
     }
 
@@ -335,11 +335,5 @@ export default class GemzGameService
         }
 
         return replicateError;
-    }
-
-    private logout(): void {
-        this.token = null;
-        this.webView = null;
-        this.rev = null;
     }
 }
