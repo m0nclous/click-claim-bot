@@ -48,9 +48,12 @@ export abstract class BaseBotService {
             const userIds: string[] = await this.getUsers();
 
             for (const userId of userIds) {
-                setTimeout(() => {
-                    this.execute(userId).then();
-                }, randomInt(0, 15_000));
+                setTimeout(
+                    () => {
+                        this.execute(userId).then();
+                    },
+                    randomInt(0, 15_000),
+                );
             }
         }, this.getIntervalDelay());
     }
