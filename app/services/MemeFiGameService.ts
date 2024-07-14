@@ -118,6 +118,26 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
         });
     }
 
+    public async getTapQuantity(): Promise<number> {
+        const operationName: string = 'QUERY_GAME_CONFIG';
+        const variables = {};
+
+        const query: string = `
+            query QUERY_GAME_CONFIG {
+                telegramGameGetConfig {
+                    currentEnergy
+                    weaponLevel
+                }
+            }
+        `;
+
+        const queryResult = await this.graphql(operationName, variables, query);
+        const energyPerTap = queryResult.data.telegramGameGetConfig.weaponLevel + 1;
+        const currentEnergy = queryResult.data.telegramGameGetConfig.currentEnergy;
+
+        return Math.floor(currentEnergy / energyPerTap);
+    }
+
     public getGameName(): string {
         return 'MemeFi';
     }
