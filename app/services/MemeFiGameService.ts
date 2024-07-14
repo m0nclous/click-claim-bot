@@ -39,8 +39,51 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
             },
         };
 
-        const query =
-            'mutation MutationGameProcessTapsBatch($payload: TelegramGameTapsBatchInput!) {\n  telegramGameProcessTapsBatch(payload: $payload) {\n    ...FragmentBossFightConfig\n    __typename\n  }\n}\n\nfragment FragmentBossFightConfig on TelegramGameConfigOutput {\n  _id\n  coinsAmount\n  currentEnergy\n  maxEnergy\n  weaponLevel\n  zonesCount\n  tapsReward\n  energyLimitLevel\n  energyRechargeLevel\n  tapBotLevel\n  currentBoss {\n    _id\n    level\n    currentHealth\n    maxHealth\n    __typename\n  }\n  freeBoosts {\n    _id\n    currentTurboAmount\n    maxTurboAmount\n    turboLastActivatedAt\n    turboAmountLastRechargeDate\n    currentRefillEnergyAmount\n    maxRefillEnergyAmount\n    refillEnergyLastActivatedAt\n    refillEnergyAmountLastRechargeDate\n    __typename\n  }\n  bonusLeaderDamageEndAt\n  bonusLeaderDamageStartAt\n  bonusLeaderDamageMultiplier\n  nonce\n  __typename\n}';
+        const query: string = `
+            mutation MutationGameProcessTapsBatch($payload: TelegramGameTapsBatchInput!) {
+                telegramGameProcessTapsBatch(payload: $payload) {
+                    ...FragmentBossFightConfig
+                    __typename
+                }
+            }
+
+            fragment FragmentBossFightConfig on TelegramGameConfigOutput {
+                _id
+                coinsAmount
+                currentEnergy
+                maxEnergy
+                weaponLevel
+                zonesCount
+                tapsReward
+                energyLimitLevel
+                energyRechargeLevel
+                tapBotLevel
+                currentBoss {
+                    _id
+                    level
+                    currentHealth
+                    maxHealth
+                    __typename
+                }
+                freeBoosts {
+                    _id
+                    currentTurboAmount
+                    maxTurboAmount
+                    turboLastActivatedAt
+                    turboAmountLastRechargeDate
+                    currentRefillEnergyAmount
+                    maxRefillEnergyAmount
+                    refillEnergyLastActivatedAt
+                    refillEnergyAmountLastRechargeDate
+                    __typename
+                }
+                bonusLeaderDamageEndAt
+                bonusLeaderDamageStartAt
+                bonusLeaderDamageMultiplier
+                nonce
+                __typename
+            }
+        `;
 
         await this.graphql(operationName, variables, query);
     }
