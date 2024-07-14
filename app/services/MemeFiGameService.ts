@@ -1,5 +1,6 @@
-import BaseGameService, { HasTap } from '#services/BaseGameService';
+import BaseGameService from '#services/BaseGameService';
 import randomString from '#helpers/randomString';
+import type { HasTap }  from '#services/BaseGameService';
 
 export interface ITapMeta {
     vector: string;
