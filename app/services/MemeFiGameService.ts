@@ -1,6 +1,7 @@
 import BaseGameService from '#services/BaseGameService';
 import randomString from '#helpers/randomString';
 import type { HasTap } from '#services/BaseGameService';
+import { randomInt } from 'node:crypto';
 
 export interface ITapMeta {
     vector: string;
@@ -33,8 +34,15 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
         });
     }
 
-    async tap(quantity: number, { vector }: ITapMeta): Promise<void> {
+    async tap(quantity: number, meta?: ITapMeta): Promise<void> {
         const operationName: string = 'MutationGameProcessTapsBatch';
+
+        const vector: string = meta?.vector ??
+            Array.from({
+                length: quantity,
+            })
+                .map(() => randomInt(1, 5))
+                .join(',');
 
         const variables = {
             payload: {
