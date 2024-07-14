@@ -19,7 +19,7 @@ export class TapError<T> extends Error {
 
 export class SessionExpiredError<T> extends Error {
     constructor(public data: T) {
-        super('Ошибка релогина');
+        super('Ошибка текущей сессии');
     }
 }
 
