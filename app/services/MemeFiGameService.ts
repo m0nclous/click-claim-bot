@@ -2,9 +2,18 @@ import BaseGameService from '#services/BaseGameService';
 import randomString from '#helpers/randomString';
 import type { HasTap } from '#services/BaseGameService';
 import { randomInt } from 'node:crypto';
+import type { ITapEvent } from '#services/BaseClickBotService';
+import emitter from '@adonisjs/core/services/emitter';
 
 export interface ITapMeta {
     vector: string;
+}
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'memeFi:tap': ITapEvent;
+    }
 }
 
 export default class MemeFiGameService extends BaseGameService implements HasTap {
@@ -101,6 +110,12 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
         `;
 
         await this.graphql(operationName, variables, query);
+
+        await emitter.emit('memeFi:tap', {
+            self: this,
+            userId: this.userId,
+            quantity,
+        });
     }
 
     public getGameName(): string {
