@@ -132,6 +132,10 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
     }
 
     async login(): Promise<void> {
+        if (this.isAuthenticated()) {
+            return;
+        }
+
         const operationName: string = 'MutationTelegramUserLogin';
 
         const query: string = `mutation MutationTelegramUserLogin($webAppData: TelegramWebAppDataInput!) {
