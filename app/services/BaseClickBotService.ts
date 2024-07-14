@@ -1,5 +1,5 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { ReLoginError, TapError } from '#services/BaseGameService';
+import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
 
 export interface ITapEvent {
@@ -12,13 +12,13 @@ export interface ITapErrorEvent<T> extends ITapEvent {
     error: TapError<T>;
 }
 
-export interface IReLoginEvent {
+export interface ISessionExpiredEvent {
     self: BaseGameService;
     userId: number;
 }
 
-export interface IReLoginErrorEvent<T> extends IReLoginEvent {
-    error: ReLoginError<T>;
+export interface ISessionExpiredErrorEvent<T> extends ISessionExpiredEvent {
+    error: SessionExpiredError<T>;
 }
 
 export abstract class BaseClickBotService extends BaseBotService {
@@ -41,8 +41,8 @@ export abstract class BaseClickBotService extends BaseBotService {
             return;
         }
 
-        await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown> | ReLoginError<unknown>) => {
-            if (error instanceof TapError || error instanceof ReLoginError) {
+        await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
+            if (error instanceof TapError || error instanceof SessionExpiredError) {
                 return;
             }
 
