@@ -40,6 +40,7 @@ export default defineConfig({
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
         () => import('#providers/GemzDailyBotServiceProvider'),
+        () => import('#providers/MemeFiClickBotServiceProvider'),
     ],
 
     /*
