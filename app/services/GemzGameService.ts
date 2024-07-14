@@ -1,4 +1,4 @@
-import BaseGameService, { ReLoginError, TapError } from '#services/BaseGameService';
+import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
 import { sleep } from '#helpers/timer';
@@ -6,15 +6,19 @@ import logger from '@adonisjs/core/services/logger';
 import { HTTPError } from 'ky';
 import type { NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import { IReLoginErrorEvent, IReLoginEvent, ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
-import { EventsList } from '@adonisjs/core/types';
+import type {
+    ISessionExpiredErrorEvent,
+    ISessionExpiredEvent,
+    ITapErrorEvent,
+    ITapEvent,
+} from '#services/BaseClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
         'gemz:tap': ITapEvent;
         'gemz:tap:error': ITapErrorEvent<IReplicationError>;
-        'gemz:relogin:error': IReLoginErrorEvent<IReplicationError>;
+        'gemz:session-expired:error': ISessionExpiredErrorEvent<IReplicationError>;
     }
 }
 
@@ -198,36 +202,38 @@ export default class GemzGameService
             const response: IReplicationError | any = await error.response.json();
 
             let replicateError: boolean = true;
-            let emmitEvent: keyof EventsList;
-            let emmitOptions = {};
             let errorInstance:
                 | TapError<ITapErrorEvent<ITapEvent>>
-                | ReLoginError<IReLoginErrorEvent<IReLoginEvent>>;
+                | SessionExpiredError<ISessionExpiredErrorEvent<ISessionExpiredEvent>>;
 
             if (response.code === 'replication_error') {
                 replicateError = await this.retryFunction('GAME_SERVICE_TAP_RETRY', replicateTaps);
-                emmitEvent = 'gemz:tap:error';
-                emmitOptions = { quantity };
                 errorInstance = new TapError(response);
+
+                if (replicateError) {
+                    await emitter.emit<any>('gemz:tap:error', {
+                        self: this,
+                        userId: this.userId,
+                        quantity,
+                        error: errorInstance,
+                    });
+
+                    throw errorInstance;
+                }
             }
 
             if (response.code === 'session_desync_error') {
                 replicateError = await this.retryFunction('GAME_SERVICE_RE_LOGIN', this.reLogin.bind(this));
-                emmitEvent = 'gemz:relogin:error';
-                errorInstance = new ReLoginError(response);
-            }
+                errorInstance = new SessionExpiredError(response);
 
-            if (replicateError) {
-                if (emmitEvent!) {
-                    await emitter.emit<any>(emmitEvent, {
+                if (replicateError) {
+                    await emitter.emit<any>('gemz:session-expired:error', {
                         self: this,
                         userId: this.userId,
-                        ...emmitOptions,
-                        quantity,
-                        error: errorInstance!,
+                        error: errorInstance,
                     });
 
-                    throw errorInstance!;
+                    throw errorInstance;
                 }
             }
         }
@@ -295,9 +301,7 @@ export default class GemzGameService
     }
 
     private async reLogin(): Promise<void> {
-        this.token = null;
-        this.webView = null;
-        this.rev = null;
+        this.logout();
         return await this.login();
     }
 
@@ -321,5 +325,11 @@ export default class GemzGameService
         }
 
         return replicateError;
+    }
+
+    private logout(): void {
+        this.token = null;
+        this.webView = null;
+        this.rev = null;
     }
 }

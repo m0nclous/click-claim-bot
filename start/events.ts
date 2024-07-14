@@ -1,7 +1,12 @@
 import emitter from '@adonisjs/core/services/emitter';
 import app from '@adonisjs/core/services/app';
 import { TelegramBotService } from '#services/TelegramBotService';
-import { IReLoginErrorEvent, IReLoginEvent, ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import type {
+    ISessionExpiredErrorEvent,
+    ISessionExpiredEvent,
+    ITapErrorEvent,
+    ITapEvent,
+} from '#services/BaseClickBotService';
 
 export const notifyTap = async (data: ITapEvent) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
@@ -34,7 +39,7 @@ export const notifyTapError = async (data: ITapErrorEvent<ITapEvent>) => {
     );
 };
 
-export const notifyReLoginError = async (data: IReLoginErrorEvent<IReLoginEvent>) => {
+export const notifySessionExpiredError = async (data: ISessionExpiredErrorEvent<ISessionExpiredEvent>) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
 
     await telegramBot.bot.telegram.sendMessage(
@@ -54,4 +59,4 @@ emitter.on('mtk:tap', notifyTap);
 emitter.on('gemz:tap', notifyTap);
 
 emitter.on<any, any>('gemz:tap:error', notifyTapError);
-emitter.on<any, any>('gemz:relogin:error', notifyReLoginError);
+emitter.on<any, any>('gemz:session-expired:error', notifySessionExpiredError);
