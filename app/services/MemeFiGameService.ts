@@ -37,7 +37,8 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
     async tap(quantity: number, meta?: ITapMeta): Promise<void> {
         const operationName: string = 'MutationGameProcessTapsBatch';
 
-        const vector: string = meta?.vector ??
+        const vector: string =
+            meta?.vector ??
             Array.from({
                 length: quantity,
             })
