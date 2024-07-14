@@ -4,5 +4,26 @@ services:
             target: 'production'
         environment:
             NODE_ENV: 'production'
-volumes:
+
     redis:
+        command:
+            - /bin/sh
+            - -c
+            - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+        environment:
+            - ALLOW_EMPTY_PASSWORD=false
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+
+    elasticsearch:
+        image: 'elasticsearch:8.14.2'
+        environment:
+            ELASTIC_PASSWORD: '${ELASTIC_PASSWORD:-}'
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'curl --cacert /usr/share/elasticsearch/config/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health || exit 1',
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 50

@@ -20,6 +20,7 @@ COPY --from=deps /app/node_modules /app/node_modules
 ADD . .
 RUN node ace build --ignore-ts-errors
 COPY .env /app/build
+COPY .docker/elasticsearch/cert/http_ca.crt /app/build
 
 # Development stage
 FROM base as development
