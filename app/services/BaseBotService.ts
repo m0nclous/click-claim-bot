@@ -1,6 +1,7 @@
 import type { RedisService } from '@adonisjs/redis/types';
 import type { ApplicationService } from '@adonisjs/core/types';
 import type BaseGameService from '#services/BaseGameService';
+import { randomInt } from 'crypto';
 
 export abstract class BaseBotService {
     public constructor(
@@ -47,7 +48,9 @@ export abstract class BaseBotService {
             const userIds: string[] = await this.getUsers();
 
             for (const userId of userIds) {
-                this.execute(userId).then();
+                setTimeout(() => {
+                    this.execute(userId).then();
+                }, randomInt(0, 15_000));
             }
         }, this.getIntervalDelay());
     }
