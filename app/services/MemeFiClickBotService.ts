@@ -10,6 +10,6 @@ export class MemeFiClickBotService extends BaseClickBotService {
     }
 
     protected getIntervalDelay(): number {
-        return 60_000;
+        return 60_000 * 5;
     }
 }
