@@ -39,11 +39,12 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
 
         const vector: string =
             meta?.vector ??
-            Array.from({
-                length: quantity,
-            })
-                .map(() => randomInt(1, 5))
-                .join(',');
+            Array.from(
+                {
+                    length: quantity,
+                },
+                () => randomInt(1, 5),
+            ).join(',');
 
         const variables = {
             payload: {
