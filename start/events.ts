@@ -45,7 +45,7 @@ export const notifySessionExpiredError = async (data: ISessionExpiredErrorEvent<
     await telegramBot.bot.telegram.sendMessage(
         data.userId,
         [
-            '⚠️ Ошибка релогина',
+            '⚠️ Ошибка текущей сессии',
             `<pre><code class="json">${JSON.stringify(data.error.data, null, 4)}</code></pre>`,
             `#${data.self.getGameName()}`,
         ].join('\n'),
