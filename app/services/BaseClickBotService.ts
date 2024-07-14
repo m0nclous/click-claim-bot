@@ -41,12 +41,14 @@ export abstract class BaseClickBotService extends BaseBotService {
             return;
         }
 
-        await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
-            if (error instanceof TapError || error instanceof SessionExpiredError) {
-                return;
-            }
+        await gameService
+            .tap(tapQuantity)
+            .catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
+                if (error instanceof TapError || error instanceof SessionExpiredError) {
+                    return;
+                }
 
-            throw error;
-        });
+                throw error;
+            });
     }
 }
