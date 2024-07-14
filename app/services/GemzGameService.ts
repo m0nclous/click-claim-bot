@@ -159,7 +159,7 @@ export default class GemzGameService
     }
 
     protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.32.0';
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.38.4';
     }
 
     protected async getInitDataKey(): Promise<string> {
@@ -180,7 +180,26 @@ export default class GemzGameService
             return;
         }
 
-        await this.httpClient.post('loginOrCreate');
+        await this.getUserInfo();
+    }
+
+    public async logout(): Promise<void> {
+        this.token = null;
+        this.webView = null;
+        this.rev = null;
+    }
+
+    public async getUserInfo(): Promise<any> {
+        return await this.httpClient.post('loginOrCreate').json();
+    }
+
+    public async getTapQuantity(): Promise<number> {
+        // На данный момент запрашивать энергию можно только при входе в новую сессию
+        await this.logout();
+
+        const userInfo = await this.getUserInfo();
+
+        return userInfo.data.state.energy;
     }
 
     public async tap(quantity: number = 1): Promise<void> {
@@ -259,25 +278,16 @@ export default class GemzGameService
     }
 
     public generateTaps(quantity: number = 1) {
-        const taps: {
-            fn: 'tap';
-            async: false;
-            meta: {
-                now: number;
-            };
-        }[] = [];
-
-        for (let i = 0; i < quantity; i++) {
-            taps.unshift({
+        return [
+            {
                 fn: 'tap',
                 async: false,
                 meta: {
                     now: Date.now(),
                 },
-            });
-        }
-
-        return taps;
+                times: quantity,
+            },
+        ];
     }
 
     protected async replicate(queue: object[]): Promise<any> {
