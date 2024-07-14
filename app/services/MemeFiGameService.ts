@@ -1,6 +1,10 @@
 import BaseGameService, { HasTap } from '#services/BaseGameService';
 import randomString from '#helpers/randomString';
 
+export interface ITapMeta {
+    vector: string;
+}
+
 export default class MemeFiGameService extends BaseGameService implements HasTap {
     public constructor(userId: number) {
         super(userId);
@@ -28,14 +32,14 @@ export default class MemeFiGameService extends BaseGameService implements HasTap
         });
     }
 
-    async tap(quantity: number, opts: { vector: string }): Promise<void> {
+    async tap(quantity: number, meta: ITapMeta): Promise<void> {
         const operationName: string = 'MutationGameProcessTapsBatch';
 
         const variables = {
             payload: {
                 nonce: randomString(64),
                 tapsCount: quantity,
-                vector: opts.vector,
+                vector: meta.vector,
             },
         };
 
