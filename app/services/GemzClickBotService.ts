@@ -10,10 +10,6 @@ export class GemzClickBotService extends BaseClickBotService {
     }
 
     protected getIntervalDelay(): number {
-        return 60_000;
-    }
-
-    public async getTapQuantity(): Promise<number> {
-        return 180;
+        return 60_000 * 5;
     }
 }
