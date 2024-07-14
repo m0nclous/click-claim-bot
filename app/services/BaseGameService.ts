@@ -25,7 +25,7 @@ export interface HasTap {
      * @param meta Мета-информация
      * @throws TapError
      */
-    tap(quantity: number, meta: any): Promise<void>;
+    tap(quantity: number, meta?: any): Promise<void>;
 }
 
 export interface TapUpgradable extends HasTap {
