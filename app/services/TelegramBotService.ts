@@ -52,6 +52,9 @@ export class TelegramBotService {
         this.bot.command('bot_gemz_click_start', this.botGemzClickStart.bind(this));
         this.bot.command('bot_gemz_click_stop', this.botGemzClickStop.bind(this));
 
+        this.bot.command('bot_memefi_click_start', this.botMemeFiClickStart.bind(this));
+        this.bot.command('bot_memefi_click_stop', this.botMemeFiClickStop.bind(this));
+
         this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
         this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
 
@@ -94,6 +97,14 @@ export class TelegramBotService {
             {
                 command: 'bot_gemz_click_stop',
                 description: 'Остановить кликер Gemz',
+            },
+            {
+                command: 'bot_memefi_click_start',
+                description: 'Запустить кликер MemeFi',
+            },
+            {
+                command: 'bot_memefi_click_stop',
+                description: 'Остановить кликер MemeFi',
             },
             {
                 command: 'bot_mtk_daily_start',
@@ -456,6 +467,14 @@ export class TelegramBotService {
 
     public async botGemzClickStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'gemzClickBotService');
+    }
+
+    public async botMemeFiClickStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'memeFiClickBotService');
+    }
+
+    public async botMemeFiClickStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'memeFiClickBotService');
     }
 
     public async botMtkDailyStart(ctx: Context): Promise<void> {

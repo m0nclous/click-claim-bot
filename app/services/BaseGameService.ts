@@ -19,12 +19,13 @@ export class TapError<T> extends Error {
 
 export interface HasTap {
     /**
-     * Отправить тапы
+     * Послать в игру определенное количество тапов
      *
-     * @param quantity количество тапов
+     * @param quantity Количество
+     * @param meta Мета-информация
      * @throws TapError
      */
-    tap(quantity: number): Promise<void>;
+    tap(quantity: number, meta?: any): Promise<void>;
 }
 
 export interface TapUpgradable extends HasTap {

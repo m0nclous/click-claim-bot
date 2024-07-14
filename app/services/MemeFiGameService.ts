@@ -1,6 +1,13 @@
 import BaseGameService from '#services/BaseGameService';
+import randomString from '#helpers/randomString';
+import type { HasTap } from '#services/BaseGameService';
+import { randomInt } from 'node:crypto';
 
-export default class MemeFiGameService extends BaseGameService {
+export interface ITapMeta {
+    vector: string;
+}
+
+export default class MemeFiGameService extends BaseGameService implements HasTap {
     public constructor(userId: number) {
         super(userId);
 
@@ -25,6 +32,75 @@ export default class MemeFiGameService extends BaseGameService {
                 ],
             },
         });
+    }
+
+    async tap(quantity: number, meta?: ITapMeta): Promise<void> {
+        const operationName: string = 'MutationGameProcessTapsBatch';
+
+        const vector: string =
+            meta?.vector ??
+            Array.from(
+                {
+                    length: quantity,
+                },
+                () => randomInt(1, 5),
+            ).join(',');
+
+        const variables = {
+            payload: {
+                nonce: randomString(64),
+                tapsCount: quantity,
+                vector,
+            },
+        };
+
+        const query: string = `
+            mutation MutationGameProcessTapsBatch($payload: TelegramGameTapsBatchInput!) {
+                telegramGameProcessTapsBatch(payload: $payload) {
+                    ...FragmentBossFightConfig
+                    __typename
+                }
+            }
+
+            fragment FragmentBossFightConfig on TelegramGameConfigOutput {
+                _id
+                coinsAmount
+                currentEnergy
+                maxEnergy
+                weaponLevel
+                zonesCount
+                tapsReward
+                energyLimitLevel
+                energyRechargeLevel
+                tapBotLevel
+                currentBoss {
+                    _id
+                    level
+                    currentHealth
+                    maxHealth
+                    __typename
+                }
+                freeBoosts {
+                    _id
+                    currentTurboAmount
+                    maxTurboAmount
+                    turboLastActivatedAt
+                    turboAmountLastRechargeDate
+                    currentRefillEnergyAmount
+                    maxRefillEnergyAmount
+                    refillEnergyLastActivatedAt
+                    refillEnergyAmountLastRechargeDate
+                    __typename
+                }
+                bonusLeaderDamageEndAt
+                bonusLeaderDamageStartAt
+                bonusLeaderDamageMultiplier
+                nonce
+                __typename
+            }
+        `;
+
+        await this.graphql(operationName, variables, query);
     }
 
     public getGameName(): string {

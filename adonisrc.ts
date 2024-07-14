@@ -35,10 +35,12 @@ export default defineConfig({
         () => import('#providers/app_provider'),
         () => import('#providers/MtkGameProvider'),
         () => import('#providers/GemzGameProvider'),
+        () => import('#providers/MemeFiGameProvider'),
         () => import('#providers/MtkClickBotServiceProvider'),
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
         () => import('#providers/GemzDailyBotServiceProvider'),
+        () => import('#providers/MemeFiClickBotServiceProvider'),
     ],
 
     /*
