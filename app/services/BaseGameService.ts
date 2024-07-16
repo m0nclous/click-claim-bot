@@ -6,7 +6,7 @@ import TypeInputPeer = TelegramApi.TypeInputPeer;
 import logger from '@adonisjs/core/services/logger';
 import app from '@adonisjs/core/services/app';
 
-import type { HTTPError, KyInstance } from 'ky';
+import type { KyInstance } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import type { TgWebAppDataJson } from '../../types/telegram.js';
 import type { TelegramService } from '#services/TelegramService';
@@ -149,18 +149,18 @@ export default abstract class BaseGameService {
                     },
                 ],
 
-                beforeError: [
-                    (error: HTTPError): HTTPError => {
-                        logger.use('gameServiceRequest').error({
-                            event: 'GAME_SERVICE_HTTP',
-                            game: this.getGameName(),
-                            userId: this.userId,
-                            error,
-                        });
-
-                        return error;
-                    },
-                ],
+                // beforeError: [
+                //     (error: HTTPError): HTTPError => {
+                //         logger.use('gameServiceRequest').error({
+                //             event: 'GAME_SERVICE_HTTP',
+                //             game: this.getGameName(),
+                //             userId: this.userId,
+                //             error,
+                //         });
+                //
+                //         return error;
+                //     },
+                // ],
             },
         });
     }
