@@ -101,7 +101,7 @@ export default abstract class BaseGameService {
             credentials: 'omit',
             headers: {
                 'x-requested-with': 'org.telegram.messenger',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2207117BPG Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36',
+                // 'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2207117BPG Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36',
 
                 'accept': '*/*',
                 'cache-control': 'no-cache',

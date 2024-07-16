@@ -52,7 +52,7 @@ export abstract class BaseBotService {
                     () => {
                         this.execute(userId).then();
                     },
-                    randomInt(0, 15_000),
+                    randomInt(0, 60_000),
                 );
             }
         }, this.getIntervalDelay());
