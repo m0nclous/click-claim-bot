@@ -168,7 +168,7 @@ export default class GemzGameService
         const webAppDataParams = new URLSearchParams(webAppData);
         webAppDataParams.sort();
 
-        return webAppDataParams.toString().replaceAll('&', '\n');
+        return webAppDataParams.toString().replaceAll('+', '%20').replaceAll('&', '\n');
     }
 
     protected async getAuthKey(): Promise<string> {
