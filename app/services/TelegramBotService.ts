@@ -2,6 +2,7 @@ import app from '@adonisjs/core/services/app';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean, parseNumbers } from '#helpers/parse';
 import { callbackPromise } from '#helpers/promise';
+import { HTTPError } from 'ky';
 
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
@@ -497,8 +498,30 @@ export class TelegramBotService {
         const userId: string = ctx.from?.id.toString() || '';
 
         const service: BaseBotService = await app.container.make(serviceName);
+
+        try {
+            await service.execute(userId);
+        } catch (error) {
+            let errorJson = null;
+
+            if (error instanceof HTTPError) {
+                errorJson = await error.response.json();
+            }
+
+            const messageLines = [
+                'Не удалось активировать сервис',
+            ];
+
+            if (errorJson) {
+                messageLines.push(`<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`);
+            }
+
+            await ctx.react('👎');
+            await ctx.replyWithHTML(messageLines.join('\n'));
+            return;
+        }
+
         await service.addUser(userId);
-        await service.execute(userId);
 
         await ctx.react('👌');
     }
