@@ -3,6 +3,7 @@ import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean, parseNumbers } from '#helpers/parse';
 import { callbackPromise } from '#helpers/promise';
 import { HTTPError } from 'ky';
+import logger from '@adonisjs/core/services/logger';
 
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
@@ -506,6 +507,8 @@ export class TelegramBotService {
 
             if (error instanceof HTTPError) {
                 errorJson = await error.response.json();
+            } else {
+                logger.error(error);
             }
 
             const messageLines = [
