@@ -506,9 +506,7 @@ export class TelegramBotService {
             let errorJson = null;
 
             if (error instanceof HTTPError) {
-                errorJson = await error.response.json();
-            } else {
-                logger.error(error);
+                errorJson = await error.response.json().catch(() => null);
             }
 
             const messageLines = [
@@ -517,6 +515,8 @@ export class TelegramBotService {
 
             if (errorJson) {
                 messageLines.push(`<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`);
+            } else {
+                logger.error(error);
             }
 
             await ctx.react('👎');
