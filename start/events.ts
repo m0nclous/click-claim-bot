@@ -42,6 +42,7 @@ export const notifyTapError = async (data: ITapErrorEvent<any>) => {
 emitter.on('mtk:tap', notifyTap);
 emitter.on('gemz:tap', notifyTap);
 emitter.on('memeFi:tap', notifyTap);
+emitter.on('mine2mine:tap', notifyTap);
 
 emitter.on('bot:tap:error', notifyTapError);
 emitter.on('gemz:tap:error', notifyTapError);
