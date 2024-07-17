@@ -13,6 +13,14 @@ export interface ITapErrorEvent<T> extends ITapEvent {
     error: TapError<T>;
 }
 
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'bot:tap': ITapEvent;
+        'bot:tap:error': ITapErrorEvent<any>;
+    }
+}
+
 export abstract class BaseClickBotService extends BaseBotService {
     public getRedisSlug(): string {
         return 'click';

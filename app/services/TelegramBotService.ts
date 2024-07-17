@@ -509,12 +509,12 @@ export class TelegramBotService {
                 errorJson = await error.response.json().catch(() => null);
             }
 
-            const messageLines = [
-                'Не удалось активировать сервис',
-            ];
+            const messageLines = ['Не удалось активировать сервис'];
 
             if (errorJson) {
-                messageLines.push(`<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`);
+                messageLines.push(
+                    `<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`,
+                );
             } else {
                 logger.error(error);
             }
