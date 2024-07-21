@@ -17,6 +17,12 @@ export class TapError<T> extends Error {
     }
 }
 
+export class SessionExpiredError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка текущей сессии');
+    }
+}
+
 export interface HasTap {
     /**
      * Послать в игру определенное количество тапов

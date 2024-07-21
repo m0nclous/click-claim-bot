@@ -42,7 +42,10 @@
         "eslint": "^8.57.0",
         "prettier": "^3.2.5",
         "ts-node": "^10.9.2",
-        "typescript": "^5.4.5"
+        "typescript": "^5.4.5",
+        "@swc/core": "^1.6.13",
+        "@swc/wasm": "^1.6.7",
+        "@adonisjs/assembler": "^7.7.0"
     },
     "dependencies": {
         "@adonisjs/core": "^6.9.0",
