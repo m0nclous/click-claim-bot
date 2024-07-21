@@ -1,6 +1,7 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { TapError } from '#services/BaseGameService';
+import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
+import { sleep } from '#helpers/timer';
 
 export interface ITapEvent {
     self: BaseGameService;
@@ -12,9 +13,24 @@ export interface ITapErrorEvent<T> extends ITapEvent {
     error: TapError<T>;
 }
 
-export abstract class BaseClickBotService extends BaseBotService {
-    public abstract getTapQuantity(): Promise<number>;
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'bot:tap': ITapEvent;
+        'bot:tap:error': ITapErrorEvent<any>;
+    }
+}
 
+export interface ISessionExpiredEvent {
+    self: BaseGameService;
+    userId: number;
+}
+
+export interface ISessionExpiredErrorEvent<T> extends ISessionExpiredEvent {
+    error: SessionExpiredError<T>;
+}
+
+export abstract class BaseClickBotService extends BaseBotService {
     public getRedisSlug(): string {
         return 'click';
     }
@@ -26,15 +42,24 @@ export abstract class BaseClickBotService extends BaseBotService {
     public async execute(userId: string): Promise<void> {
         const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
 
-        const tapQuantity: number = await this.getTapQuantity();
-
         await gameService.login();
-        await gameService.tap(tapQuantity).catch((error: Error | TapError<unknown>) => {
-            if (error instanceof TapError) {
-                return;
-            }
+        await sleep(2_000);
 
-            throw error;
-        });
+        const tapQuantity: number = await gameService.getTapQuantity();
+
+        if (tapQuantity === 0) {
+            return;
+        }
+
+        await sleep(2_000);
+        await gameService
+            .tap(tapQuantity)
+            .catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
+                if (error instanceof TapError || error instanceof SessionExpiredError) {
+                    return;
+                }
+
+                throw error;
+            });
     }
 }

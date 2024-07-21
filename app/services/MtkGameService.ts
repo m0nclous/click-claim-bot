@@ -85,7 +85,11 @@ export default class MtkGameService
             return;
         }
 
-        await this.httpClient.get('api/user/info');
+        await this.getUserInfo();
+    }
+
+    async getUserInfo(): Promise<any> {
+        return await this.httpClient.get('api/user/info').json();
     }
 
     async tap(quantity: number = 1): Promise<any> {
@@ -101,6 +105,12 @@ export default class MtkGameService
             userId: this.userId,
             quantity,
         });
+    }
+
+    public async getTapQuantity(): Promise<number> {
+        const userInfo = await this.getUserInfo();
+
+        return userInfo.currentEnergy;
     }
 
     public async collectDaily(): Promise<void> {

@@ -1,17 +1,25 @@
 import { Api as TelegramApi, TelegramClient } from 'telegram';
 import { parseUrlHashParams } from '#helpers/url';
-import ky, { HTTPError, KyInstance } from 'ky';
+import ky from 'ky';
 import WebViewResultUrl = TelegramApi.WebViewResultUrl;
 import TypeInputPeer = TelegramApi.TypeInputPeer;
-import { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
-import { TgWebAppDataJson } from '../../types/telegram.js';
-import type { TelegramService } from '#services/TelegramService';
 import app from '@adonisjs/core/services/app';
+
+import type { KyInstance } from 'ky';
+import type { NormalizedOptions } from '../../types/ky.js';
+import type { TgWebAppDataJson } from '../../types/telegram.js';
+import type { TelegramService } from '#services/TelegramService';
 
 export class TapError<T> extends Error {
     constructor(public data: T) {
         super('Ошибка отправки тапов');
+    }
+}
+
+export class SessionExpiredError<T> extends Error {
+    constructor(public data: T) {
+        super('Ошибка текущей сессии');
     }
 }
 
@@ -23,12 +31,18 @@ export class ClaimError<T> extends Error {
 
 export interface HasTap {
     /**
-     * Отправить тапы
+     * Послать в игру определенное количество тапов
      *
-     * @param quantity количество тапов
+     * @param quantity Количество
+     * @param meta Мета-информация
      * @throws TapError
      */
-    tap(quantity: number): Promise<void>;
+    tap(quantity: number, meta?: any): Promise<void>;
+
+    /**
+     * Количество доступных тапов для отправки
+     */
+    getTapQuantity(): Promise<number>;
 }
 
 export interface TapUpgradable extends HasTap {
@@ -116,56 +130,72 @@ export default abstract class BaseGameService {
     protected makeHttpClient(): KyInstance {
         return ky.extend({
             prefixUrl: this.getBaseUrl(),
-
+            referrer: this.getWebViewUrl() + '/',
+            referrerPolicy: 'strict-origin-when-cross-origin',
+            mode: 'cors',
+            credentials: 'omit',
             headers: {
-                'origin': this.getWebViewUrl(),
-                'referer': this.getWebViewUrl() + '/',
-
                 'x-requested-with': 'org.telegram.messenger',
+                // 'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2207117BPG Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36',
 
                 'accept': '*/*',
                 'cache-control': 'no-cache',
                 'pragma': 'no-cache',
                 'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
 
-                'sec-ch-ua': '"Android WebView";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+                'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Android WebView";v="126"',
                 'sec-ch-ua-platform': '"Android"',
                 'sec-ch-ua-mobile': '?1',
-                'sec-fetch-site': 'same-site',
+                'sec-fetch-site': 'cross-site',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-dest': 'empty',
                 'priority': 'u=1, i',
             },
 
             hooks: {
-                beforeRequest: [
-                    (request: Request): void => {
-                        const { url, method } = request;
-
-                        logger.trace(`Запрос -> [${method}] ${url}`);
-                    },
-                ],
-
                 afterResponse: [
                     async (
-                        _request: Request,
-                        _options: NormalizedOptions,
+                        request: Request,
+                        options: NormalizedOptions,
                         response: Response,
                     ): Promise<void> => {
-                        const { url, status } = response;
-                        const json = await response.json().catch(() => null);
+                        response = response.clone();
+                        request = request.clone();
 
-                        logger.trace(json, `Ответ <- [${status}] ${url}`);
+                        const urlInstance = new URL(request.url);
+
+                        logger.use('gameServiceRequest').trace({
+                            event: 'GAME_SERVICE_HTTP',
+                            game: this.getGameName(),
+                            userId: this.userId,
+                            request: {
+                                method: request.method,
+                                url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
+                                search: Object.fromEntries(options.searchParams?.entries() ?? []),
+                                headers: Object.fromEntries(request.headers),
+                                json: await request.json().catch(() => null),
+                            },
+                            response: {
+                                status: response.status,
+                                headers: Object.fromEntries(response.headers),
+                                json: await response.json().catch(() => null),
+                            },
+                        });
                     },
                 ],
 
-                beforeError: [
-                    (error: HTTPError): HTTPError => {
-                        logger.error(error);
-
-                        return error;
-                    },
-                ],
+                // beforeError: [
+                //     (error: HTTPError): HTTPError => {
+                //         logger.use('gameServiceRequest').error({
+                //             event: 'GAME_SERVICE_HTTP',
+                //             game: this.getGameName(),
+                //             userId: this.userId,
+                //             error,
+                //         });
+                //
+                //         return error;
+                //     },
+                // ],
             },
         });
     }
@@ -182,7 +212,7 @@ export default abstract class BaseGameService {
                 peer: botEntity,
                 bot: botEntity,
                 url: this.getWebViewUrl(),
-                platform: 'android',
+                platform: 'Android',
             }),
         );
     }

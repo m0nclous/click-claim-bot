@@ -1,12 +1,12 @@
 import { BaseClickBotService } from '#services/BaseClickBotService';
 
-export class GemzClickBotService extends BaseClickBotService {
+export class Mine2MineClickBotService extends BaseClickBotService {
     public getServiceSlug(): string {
-        return 'gemz';
+        return 'mine2mine';
     }
 
     public getGameServiceName(): string {
-        return 'gemzGameService';
+        return 'mine2MineGameService';
     }
 
     protected getIntervalDelay(): number {

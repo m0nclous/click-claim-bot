@@ -1,7 +1,12 @@
 import emitter from '@adonisjs/core/services/emitter';
 import app from '@adonisjs/core/services/app';
 import { TelegramBotService } from '#services/TelegramBotService';
-import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import type {
+    ISessionExpiredErrorEvent,
+    ISessionExpiredEvent,
+    ITapErrorEvent,
+    ITapEvent,
+} from '#services/BaseClickBotService';
 
 export const notifyTap = async (data: ITapEvent) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
@@ -17,14 +22,35 @@ export const notifyTap = async (data: ITapEvent) => {
     );
 };
 
-export const notifyTapError = async (data: ITapErrorEvent<any>) => {
+export const notifyTapError = async (data: ITapErrorEvent<ITapEvent>) => {
+    const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
+
+    const messageLines = ['⚠️ Ошибка отправки тапов'];
+
+    if (data.quantity) {
+        messageLines.push(`Количество: <b>${data.quantity}</b>`);
+    }
+
+    if (data.error.data) {
+        messageLines.push(`<pre><code class="json">${JSON.stringify(data.error.data, null, 4)}</code></pre>`);
+    } else {
+        messageLines.push(`<pre>${data.error.message}</pre>`);
+    }
+
+    messageLines.push(`#${data.self.getGameName()}`);
+
+    await telegramBot.bot.telegram.sendMessage(data.userId, messageLines.join('\n'), {
+        parse_mode: 'HTML',
+    });
+};
+
+export const notifySessionExpiredError = async (data: ISessionExpiredErrorEvent<ISessionExpiredEvent>) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
 
     await telegramBot.bot.telegram.sendMessage(
         data.userId,
         [
-            '⚠️ Ошибка отправки тапов',
-            `Количество: <b>${data.quantity}</b>`,
+            '⚠️ Ошибка текущей сессии',
             `<pre><code class="json">${JSON.stringify(data.error.data, null, 4)}</code></pre>`,
             `#${data.self.getGameName()}`,
         ].join('\n'),
@@ -36,5 +62,9 @@ export const notifyTapError = async (data: ITapErrorEvent<any>) => {
 
 emitter.on('mtk:tap', notifyTap);
 emitter.on('gemz:tap', notifyTap);
+emitter.on('memeFi:tap', notifyTap);
+emitter.on('mine2mine:tap', notifyTap);
 
-emitter.on('gemz:tap:error', notifyTapError);
+emitter.on('bot:tap:error', notifyTapError);
+emitter.on<any, any>('gemz:tap:error', notifyTapError);
+emitter.on<any, any>('gemz:session-expired:error', notifySessionExpiredError);

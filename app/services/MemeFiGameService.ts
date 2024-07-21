@@ -1,6 +1,22 @@
 import BaseGameService from '#services/BaseGameService';
+import randomString from '#helpers/randomString';
+import type { HasTap } from '#services/BaseGameService';
+import { randomInt } from 'node:crypto';
+import type { ITapEvent } from '#services/BaseClickBotService';
+import emitter from '@adonisjs/core/services/emitter';
 
-export default class MemeFiGameService extends BaseGameService {
+export interface ITapMeta {
+    vector: string;
+}
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'memeFi:tap': ITapEvent;
+    }
+}
+
+export default class MemeFiGameService extends BaseGameService implements HasTap {
     public constructor(userId: number) {
         super(userId);
 
@@ -25,6 +41,101 @@ export default class MemeFiGameService extends BaseGameService {
                 ],
             },
         });
+    }
+
+    async tap(quantity: number, meta?: ITapMeta): Promise<void> {
+        const operationName: string = 'MutationGameProcessTapsBatch';
+
+        const vector: string =
+            meta?.vector ??
+            Array.from(
+                {
+                    length: quantity,
+                },
+                () => randomInt(1, 5),
+            ).join(',');
+
+        const variables = {
+            payload: {
+                nonce: randomString(64),
+                tapsCount: quantity,
+                vector,
+            },
+        };
+
+        const query: string = `
+            mutation MutationGameProcessTapsBatch($payload: TelegramGameTapsBatchInput!) {
+                telegramGameProcessTapsBatch(payload: $payload) {
+                    ...FragmentBossFightConfig
+                    __typename
+                }
+            }
+
+            fragment FragmentBossFightConfig on TelegramGameConfigOutput {
+                _id
+                coinsAmount
+                currentEnergy
+                maxEnergy
+                weaponLevel
+                zonesCount
+                tapsReward
+                energyLimitLevel
+                energyRechargeLevel
+                tapBotLevel
+                currentBoss {
+                    _id
+                    level
+                    currentHealth
+                    maxHealth
+                    __typename
+                }
+                freeBoosts {
+                    _id
+                    currentTurboAmount
+                    maxTurboAmount
+                    turboLastActivatedAt
+                    turboAmountLastRechargeDate
+                    currentRefillEnergyAmount
+                    maxRefillEnergyAmount
+                    refillEnergyLastActivatedAt
+                    refillEnergyAmountLastRechargeDate
+                    __typename
+                }
+                bonusLeaderDamageEndAt
+                bonusLeaderDamageStartAt
+                bonusLeaderDamageMultiplier
+                nonce
+                __typename
+            }
+        `;
+
+        await this.graphql(operationName, variables, query);
+
+        await emitter.emit('memeFi:tap', {
+            self: this,
+            userId: this.userId,
+            quantity,
+        });
+    }
+
+    public async getTapQuantity(): Promise<number> {
+        const operationName: string = 'QUERY_GAME_CONFIG';
+        const variables = {};
+
+        const query: string = `
+            query QUERY_GAME_CONFIG {
+                telegramGameGetConfig {
+                    currentEnergy
+                    weaponLevel
+                }
+            }
+        `;
+
+        const queryResult = await this.graphql(operationName, variables, query);
+        const energyPerTap = queryResult.data.telegramGameGetConfig.weaponLevel + 1;
+        const currentEnergy = queryResult.data.telegramGameGetConfig.currentEnergy;
+
+        return Math.floor(currentEnergy / energyPerTap);
     }
 
     public getGameName(): string {
@@ -56,6 +167,10 @@ export default class MemeFiGameService extends BaseGameService {
     }
 
     async login(): Promise<void> {
+        if (this.isAuthenticated()) {
+            return;
+        }
+
         const operationName: string = 'MutationTelegramUserLogin';
 
         const query: string = `mutation MutationTelegramUserLogin($webAppData: TelegramWebAppDataInput!) {

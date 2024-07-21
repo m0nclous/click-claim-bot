@@ -14,7 +14,12 @@ export default class AppProvider {
         if (this.app.getEnvironment() === 'web') {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
             telegramBot.run().then((botInfo: UserFromGetMe) => {
-                logger.info(botInfo, 'Чат-Бот успешно запущен');
+                logger.info({
+                    event: 'TELEGRAM_BOT_START',
+                    bot: {
+                        ...botInfo,
+                    },
+                });
             });
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
@@ -22,6 +27,8 @@ export default class AppProvider {
                 'mtkDailyBotService',
                 'gemzClickBotService',
                 'gemzDailyBotService',
+                'memeFiClickBotService',
+                'mine2MineClickBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {
@@ -33,7 +40,12 @@ export default class AppProvider {
                 }
 
                 service.run().then(() => {
-                    logger.info(`${service.constructor.name} started`);
+                    logger.info({
+                        event: 'GAME_SERVICE_START',
+                        service: {
+                            name: service.constructor.name,
+                        },
+                    });
                 });
             }
         }

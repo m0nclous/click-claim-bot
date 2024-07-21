@@ -1,4 +1,4 @@
-import BaseGameService, { TapError } from '#services/BaseGameService';
+import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
 import randomString from '../../helpers/randomString.js';
 import emitter from '@adonisjs/core/services/emitter';
 import { sleep } from '#helpers/timer';
@@ -6,13 +6,19 @@ import logger from '@adonisjs/core/services/logger';
 import { HTTPError } from 'ky';
 import type { NormalizedOptions } from 'ky';
 import type { HasDailyReward, HasEnergyRecharge, HasTap } from '#services/BaseGameService';
-import type { ITapErrorEvent, ITapEvent } from '#services/BaseClickBotService';
+import type {
+    ISessionExpiredErrorEvent,
+    ISessionExpiredEvent,
+    ITapErrorEvent,
+    ITapEvent,
+} from '#services/BaseClickBotService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
     interface EventsList {
         'gemz:tap': ITapEvent;
         'gemz:tap:error': ITapErrorEvent<IReplicationError>;
+        'gemz:session-expired:error': ISessionExpiredErrorEvent<IReplicationError>;
     }
 }
 
@@ -159,7 +165,7 @@ export default class GemzGameService
     }
 
     protected getBaseUrl(): string {
-        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.32.0';
+        return 'https://gemzcoin.us-east-1.replicant.gc-internal.net/gemzcoin/v2.38.4';
     }
 
     protected async getInitDataKey(): Promise<string> {
@@ -168,7 +174,7 @@ export default class GemzGameService
         const webAppDataParams = new URLSearchParams(webAppData);
         webAppDataParams.sort();
 
-        return webAppDataParams.toString().replaceAll('&', '\n');
+        return webAppDataParams.toString().replaceAll('+', '%20').replaceAll('&', '\n');
     }
 
     protected async getAuthKey(): Promise<string> {
@@ -180,7 +186,26 @@ export default class GemzGameService
             return;
         }
 
-        await this.httpClient.post('loginOrCreate');
+        await this.getUserInfo();
+    }
+
+    public async logout(): Promise<void> {
+        this.token = null;
+        this.webView = null;
+        this.rev = null;
+    }
+
+    public async getUserInfo(): Promise<any> {
+        return await this.httpClient.post('loginOrCreate').json();
+    }
+
+    public async getTapQuantity(): Promise<number> {
+        // На данный момент запрашивать энергию можно только при входе в новую сессию
+        await this.logout();
+
+        const userInfo = await this.getUserInfo();
+
+        return userInfo.data.state.energy;
     }
 
     public async tap(quantity: number = 1): Promise<void> {
@@ -195,36 +220,39 @@ export default class GemzGameService
 
             const response: IReplicationError | any = await error.response.json();
 
+            let replicateError: boolean = true;
+            let errorInstance:
+                | TapError<ITapErrorEvent<ITapEvent>>
+                | SessionExpiredError<ISessionExpiredErrorEvent<ISessionExpiredEvent>>;
+
             if (response.code === 'replication_error') {
-                let replicateError: boolean = true;
-
-                for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
-                    logger.debug({
-                        replicationError: response,
-                        attemptCount,
-                    });
-
-                    await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
-                    replicateError = await replicateTaps()
-                        .then(() => false)
-                        .catch(() => true);
-
-                    if (!replicateError) {
-                        break;
-                    }
-                }
+                replicateError = await this.retryFunction('GAME_SERVICE_TAP_RETRY', replicateTaps);
+                errorInstance = new TapError(response);
 
                 if (replicateError) {
-                    const tapError: TapError<IReplicationError> = new TapError(response);
-
-                    await emitter.emit('gemz:tap:error', {
+                    await emitter.emit<any>('gemz:tap:error', {
                         self: this,
                         userId: this.userId,
                         quantity,
-                        error: tapError,
+                        error: errorInstance,
                     });
 
-                    throw tapError;
+                    throw errorInstance;
+                }
+            }
+
+            if (response.code === 'session_desync_error') {
+                replicateError = await this.retryFunction('GAME_SERVICE_RE_LOGIN', this.reLogin.bind(this));
+                errorInstance = new SessionExpiredError(response);
+
+                if (replicateError) {
+                    await emitter.emit<any>('gemz:session-expired:error', {
+                        self: this,
+                        userId: this.userId,
+                        error: errorInstance,
+                    });
+
+                    throw errorInstance;
                 }
             }
         }
@@ -258,25 +286,16 @@ export default class GemzGameService
     }
 
     public generateTaps(quantity: number = 1) {
-        const taps: {
-            fn: 'tap';
-            async: false;
-            meta: {
-                now: number;
-            };
-        }[] = [];
-
-        for (let i = 0; i < quantity; i++) {
-            taps.unshift({
+        return [
+            {
                 fn: 'tap',
                 async: false,
                 meta: {
                     now: Date.now(),
                 },
-            });
-        }
-
-        return taps;
+                times: quantity,
+            },
+        ];
     }
 
     protected async replicate(queue: object[]): Promise<any> {
@@ -289,5 +308,32 @@ export default class GemzGameService
                 },
             })
             .json<any>();
+    }
+
+    private async reLogin(): Promise<void> {
+        await this.logout();
+        return await this.login();
+    }
+
+    private async retryFunction(event: string, retryFunc: () => Promise<void>) {
+        let replicateError: boolean = true;
+        for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
+            logger.debug({
+                event,
+                userId: this.userId,
+                attemptCount,
+            });
+
+            await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
+            replicateError = await retryFunc()
+                .then(() => false)
+                .catch(() => true);
+
+            if (!replicateError) {
+                break;
+            }
+        }
+
+        return replicateError;
     }
 }
