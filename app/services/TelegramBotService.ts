@@ -2,6 +2,8 @@ import app from '@adonisjs/core/services/app';
 import { Markup, Scenes, session, Telegraf } from 'telegraf';
 import { parseBoolean, parseNumbers } from '#helpers/parse';
 import { callbackPromise } from '#helpers/promise';
+import { HTTPError } from 'ky';
+import logger from '@adonisjs/core/services/logger';
 
 import type { Logger } from '@adonisjs/core/logger';
 import type { RedisService } from '@adonisjs/redis/types';
@@ -55,6 +57,9 @@ export class TelegramBotService {
         this.bot.command('bot_memefi_click_start', this.botMemeFiClickStart.bind(this));
         this.bot.command('bot_memefi_click_stop', this.botMemeFiClickStop.bind(this));
 
+        this.bot.command('bot_mine2mine_click_start', this.botMine2MineClickStart.bind(this));
+        this.bot.command('bot_mine2mine_click_stop', this.botMine2MineClickStop.bind(this));
+
         this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
         this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
 
@@ -105,6 +110,14 @@ export class TelegramBotService {
             {
                 command: 'bot_memefi_click_stop',
                 description: 'Остановить кликер MemeFi',
+            },
+            {
+                command: 'bot_mine2mine_click_start',
+                description: 'Запустить кликер Mine2Mine',
+            },
+            {
+                command: 'bot_mine2mine_click_stop',
+                description: 'Остановить кликер Mine2Mine',
             },
             {
                 command: 'bot_mtk_daily_start',
@@ -474,6 +487,14 @@ export class TelegramBotService {
     }
 
     public async botMemeFiClickStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'mine2MineClickBotService');
+    }
+
+    public async botMine2MineClickStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'mine2MineClickBotService');
+    }
+
+    public async botMine2MineClickStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'memeFiClickBotService');
     }
 
@@ -497,8 +518,32 @@ export class TelegramBotService {
         const userId: string = ctx.from?.id.toString() || '';
 
         const service: BaseBotService = await app.container.make(serviceName);
+
+        try {
+            await service.execute(userId);
+        } catch (error) {
+            let errorJson = null;
+
+            if (error instanceof HTTPError) {
+                errorJson = await error.response.json().catch(() => null);
+            }
+
+            const messageLines = ['Не удалось активировать сервис'];
+
+            if (errorJson) {
+                messageLines.push(
+                    `<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`,
+                );
+            } else {
+                logger.error(error);
+            }
+
+            await ctx.react('👎');
+            await ctx.replyWithHTML(messageLines.join('\n'));
+            return;
+        }
+
         await service.addUser(userId);
-        await service.execute(userId);
 
         await ctx.react('👌');
     }

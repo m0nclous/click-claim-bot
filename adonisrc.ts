@@ -36,11 +36,13 @@ export default defineConfig({
         () => import('#providers/MtkGameProvider'),
         () => import('#providers/GemzGameProvider'),
         () => import('#providers/MemeFiGameProvider'),
+        () => import('#providers/Mine2MineGameProvider'),
         () => import('#providers/MtkClickBotServiceProvider'),
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
         () => import('#providers/GemzDailyBotServiceProvider'),
         () => import('#providers/MemeFiClickBotServiceProvider'),
+        () => import('#providers/Mine2MineClickBotServiceProvider'),
     ],
 
     /*

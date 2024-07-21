@@ -9,6 +9,8 @@ declare module '@adonisjs/core/types' {
     }
 }
 
+const singletonById: Map<string, TelegramService> = new Map();
+
 export default class TelegramProvider {
     constructor(protected app: ApplicationService) {}
 
@@ -19,13 +21,18 @@ export default class TelegramProvider {
                 throw new Error('runtimeValues must be defined');
             }
 
-            const { TelegramService } = await import('#services/TelegramService');
-
             const userId = runtimeValues[0];
-            const config: TelegramConfig = this.app.config.get<TelegramConfig>('telegram');
-            const redis: RedisService = await resolver.make('redis');
 
-            return new TelegramService(userId, config, redis);
+            if (!singletonById.has(userId)) {
+                const { TelegramService } = await import('#services/TelegramService');
+
+                const config: TelegramConfig = this.app.config.get<TelegramConfig>('telegram');
+                const redis: RedisService = await resolver.make('redis');
+
+                singletonById.set(userId, new TelegramService(userId, config, redis));
+            }
+
+            return singletonById.get(userId) as TelegramService;
         });
     }
 }

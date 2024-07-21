@@ -1,6 +1,7 @@
 import { BaseBotService } from '#services/BaseBotService';
 import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
+import { sleep } from '#helpers/timer';
 
 export interface ITapEvent {
     self: BaseGameService;
@@ -10,6 +11,14 @@ export interface ITapEvent {
 
 export interface ITapErrorEvent<T> extends ITapEvent {
     error: TapError<T>;
+}
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'bot:tap': ITapEvent;
+        'bot:tap:error': ITapErrorEvent<any>;
+    }
 }
 
 export interface ISessionExpiredEvent {
@@ -34,6 +43,7 @@ export abstract class BaseClickBotService extends BaseBotService {
         const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
 
         await gameService.login();
+        await sleep(2_000);
 
         const tapQuantity: number = await gameService.getTapQuantity();
 
@@ -41,6 +51,7 @@ export abstract class BaseClickBotService extends BaseBotService {
             return;
         }
 
+        await sleep(2_000);
         await gameService
             .tap(tapQuantity)
             .catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {

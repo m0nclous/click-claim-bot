@@ -28,6 +28,7 @@ export default class AppProvider {
                 'gemzClickBotService',
                 'gemzDailyBotService',
                 'memeFiClickBotService',
+                'mine2MineClickBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {
