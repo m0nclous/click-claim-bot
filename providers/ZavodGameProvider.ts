@@ -11,7 +11,7 @@ declare module '@adonisjs/core/types' {
 
 export default class ZavodGameProvider extends GameProvider {
     constructor(protected app: ApplicationService) {
-       super(app);
+        super(app);
     }
 
     public async register(): Promise<void> {

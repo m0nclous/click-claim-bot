@@ -3,8 +3,8 @@ import ZavodGameService from '#services/ZavodGameService';
 import GemzGameService from '#services/GemzGameService';
 
 export interface HasServiceToken<SERVICE> {
-    serviceToken: keyof ContainerBindings,
-    new(userId: number): SERVICE;
+    serviceToken: keyof ContainerBindings;
+    new (userId: number): SERVICE;
 }
 
 type GenericTypes = ZavodGameService | GemzGameService;
@@ -12,7 +12,9 @@ type GenericTypes = ZavodGameService | GemzGameService;
 export default class GameProvider {
     constructor(protected app: ApplicationService) {}
 
-    public async register<GameService extends GenericTypes>(serviceInstance: HasServiceToken<GameService>): Promise<void> {
+    public async register<GameService extends GenericTypes>(
+        serviceInstance: HasServiceToken<GameService>,
+    ): Promise<void> {
         const singletonById: Map<string, GameService> = new Map();
 
         this.app.container.bind(serviceInstance.serviceToken, async (_resolver, runtimeValues) => {

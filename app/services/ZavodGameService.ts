@@ -33,7 +33,7 @@ export interface IFarm {
 export default class ZavodGameService extends BaseGameService implements HasClaim {
     public static serviceToken = 'zavodGameService' as keyof ContainerBindings;
 
-    protected profile: IProfile  | null = null;
+    protected profile: IProfile | null = null;
     protected farm: IFarm | null = null;
 
     public constructor(userId: number) {
@@ -82,7 +82,7 @@ export default class ZavodGameService extends BaseGameService implements HasClai
             const claimInterval = await this.claimInterval();
 
             if (claimStartedAt && claimFinishAt) {
-                if ((claimFinishAt.getTime() + claimInterval) < claimStartedAt.getTime()) {
+                if (claimFinishAt.getTime() + claimInterval < claimStartedAt.getTime()) {
                     return true;
                 }
             }
@@ -110,7 +110,7 @@ export default class ZavodGameService extends BaseGameService implements HasClai
         this.profile = await profileRes.json();
     }
 
-    private async getFarm(){
+    private async getFarm() {
         const farmRes = await this.httpClient.get('user/farm');
         if (!farmRes.ok) return logger.error(farmRes);
         this.farm = await farmRes.json();
