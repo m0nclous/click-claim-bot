@@ -13,6 +13,7 @@ import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
+import ZavodGameService from '#services/ZavodGameService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -65,6 +66,8 @@ export class TelegramBotService {
 
         this.bot.command('bot_gemz_daily_start', this.botGemzDailyStart.bind(this));
         this.bot.command('bot_gemz_daily_stop', this.botGemzDailyStop.bind(this));
+
+        this.bot.command('bot_zavod_test', this.botZavodTest.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -134,6 +137,10 @@ export class TelegramBotService {
             {
                 command: 'bot_gemz_daily_stop',
                 description: 'Остановить сбор ежедневной награды Gemz',
+            },
+            {
+                command: 'bot_zavod_test',
+                description: 'Test Zavod',
             },
         ]);
     }
@@ -512,6 +519,17 @@ export class TelegramBotService {
 
     public async botGemzDailyStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'gemzDailyBotService');
+    }
+
+    public async botZavodTest(ctx: Context): Promise<void> {
+        const userId: string = ctx.from?.id.toString() || '';
+
+        const service: ZavodGameService = await app.container.make('zavodGameService', [ userId ]);
+
+        console.log(await service.login());
+        console.log(await service.getUserProfile());
+        console.log(await service.getUserFarm());
+        console.log(await service.canClaim());
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
