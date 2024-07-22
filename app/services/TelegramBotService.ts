@@ -66,6 +66,9 @@ export class TelegramBotService {
         this.bot.command('bot_gemz_daily_start', this.botGemzDailyStart.bind(this));
         this.bot.command('bot_gemz_daily_stop', this.botGemzDailyStop.bind(this));
 
+        this.bot.command('bot_zavod_claim_start', this.botZavodClaimStart.bind(this));
+        this.bot.command('bot_zavod_claim_stop', this.botZavodClaimStop.bind(this));
+
         return this.bot.telegram.setMyCommands([
             {
                 command: 'login',
@@ -134,6 +137,14 @@ export class TelegramBotService {
             {
                 command: 'bot_gemz_daily_stop',
                 description: 'Остановить сбор ежедневной награды Gemz',
+            },
+            {
+                command: 'bot_zavod_claim_start',
+                description: 'Запустить сбор награды Zavod',
+            },
+            {
+                command: 'bot_zavod_claim_stop',
+                description: 'Остановить сбор награды Zavod',
             },
         ]);
     }
@@ -512,6 +523,14 @@ export class TelegramBotService {
 
     public async botGemzDailyStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'gemzDailyBotService');
+    }
+
+    public async botZavodClaimStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'zavodClaimBotService');
+    }
+
+    public async botZavodClaimStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'zavodClaimBotService');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {

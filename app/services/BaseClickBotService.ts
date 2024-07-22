@@ -1,7 +1,9 @@
 import { BaseBotService } from '#services/BaseBotService';
-import BaseGameService, { SessionExpiredError, TapError } from '#services/BaseGameService';
+import type BaseGameService from '#services/BaseGameService';
+import { SessionExpiredError, TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
 import { sleep } from '#helpers/timer';
+import emitter from '@adonisjs/core/services/emitter';
 
 export interface ITapEvent {
     self: BaseGameService;
@@ -40,26 +42,37 @@ export abstract class BaseClickBotService extends BaseBotService {
     }
 
     public async execute(userId: string): Promise<void> {
-        const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
+        try {
+            const gameService: BaseGameService & HasTap = await this.getGameService([userId]);
 
-        await gameService.login();
-        await sleep(2_000);
+            await gameService.login();
+            await sleep(2_000);
 
-        const tapQuantity: number = await gameService.getTapQuantity();
+            const tapQuantity: number = await gameService.getTapQuantity();
 
-        if (tapQuantity === 0) {
-            return;
-        }
+            if (tapQuantity === 0) {
+                return;
+            }
 
-        await sleep(2_000);
-        await gameService
-            .tap(tapQuantity)
-            .catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
-                if (error instanceof TapError || error instanceof SessionExpiredError) {
-                    return;
-                }
+            await sleep(2_000);
+            await gameService
+                .tap(tapQuantity)
+                .catch((error: Error | TapError<unknown> | SessionExpiredError<unknown>) => {
+                    if (error instanceof TapError || error instanceof SessionExpiredError) {
+                        return;
+                    }
 
-                throw error;
+                    throw error;
+                });
+        } catch (error) {
+            await emitter.emit('bot:tap:error', {
+                self: await this.getGameService([userId]),
+                userId: parseInt(userId),
+                error,
+                quantity: 0,
             });
+
+            throw error;
+        }
     }
 }
