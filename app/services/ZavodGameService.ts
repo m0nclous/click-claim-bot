@@ -32,7 +32,7 @@ export interface IUserFarm {
 }
 
 export default class ZavodGameService extends BaseGameService implements HasClaim {
-    public profile: any = null;
+    public userProfile: IUserProfile | null = null;
 
     public userFarm: IUserFarm | null = null;
 
@@ -79,16 +79,24 @@ export default class ZavodGameService extends BaseGameService implements HasClai
     }
 
     async getUserProfile(refresh: boolean = false): Promise<IUserProfile> {
-        if (refresh || this.profile === null) {
-            this.profile = await this.httpClient.get('user/profile').json();
+        if (refresh || this.userProfile === null) {
+            this.userProfile = await this.httpClient.get('user/profile').json() as IUserProfile;
+
+            setTimeout(() => {
+                this.userProfile = null;
+            }, 10_000);
         }
 
-        return this.profile;
+        return this.userProfile;
     }
 
     async getUserFarm(refresh: boolean = false): Promise<IUserFarm> {
         if (refresh || this.userFarm === null) {
             this.userFarm = (await this.httpClient.get('user/farm').json()) as IUserFarm;
+
+            setTimeout(() => {
+                this.userFarm = null;
+            }, 10_000);
         }
 
         return this.userFarm;
