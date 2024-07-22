@@ -13,7 +13,6 @@ import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
-import ZavodGameService from '#services/ZavodGameService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -67,7 +66,8 @@ export class TelegramBotService {
         this.bot.command('bot_gemz_daily_start', this.botGemzDailyStart.bind(this));
         this.bot.command('bot_gemz_daily_stop', this.botGemzDailyStop.bind(this));
 
-        this.bot.command('bot_zavod_test', this.botZavodTest.bind(this));
+        this.bot.command('bot_zavod_claim_start', this.botZavodClaimStart.bind(this));
+        this.bot.command('bot_zavod_claim_stop', this.botZavodClaimStop.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -139,8 +139,12 @@ export class TelegramBotService {
                 description: 'Остановить сбор ежедневной награды Gemz',
             },
             {
-                command: 'bot_zavod_test',
-                description: 'Test Zavod',
+                command: 'bot_zavod_claim_start',
+                description: 'Запустить сбор награды Zavod',
+            },
+            {
+                command: 'bot_zavod_claim_stop',
+                description: 'Остановить сбор награды Zavod',
             },
         ]);
     }
@@ -521,15 +525,12 @@ export class TelegramBotService {
         await this.stopServiceByUserId(ctx, 'gemzDailyBotService');
     }
 
-    public async botZavodTest(ctx: Context): Promise<void> {
-        const userId: string = ctx.from?.id.toString() || '';
+    public async botZavodClaimStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'zavodClaimBotService');
+    }
 
-        const service: ZavodGameService = await app.container.make('zavodGameService', [ userId ]);
-
-        console.log(await service.login());
-        console.log(await service.getUserProfile());
-        console.log(await service.getUserFarm());
-        console.log(await service.canClaim());
+    public async botZavodClaimStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'zavodClaimBotService');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {

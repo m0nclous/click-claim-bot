@@ -44,6 +44,7 @@ export default defineConfig({
         () => import('#providers/GemzDailyBotServiceProvider'),
         () => import('#providers/MemeFiClickBotServiceProvider'),
         () => import('#providers/Mine2MineClickBotServiceProvider'),
+        () => import('#providers/ZavodClaimBotServiceProvider'),
     ],
 
     /*

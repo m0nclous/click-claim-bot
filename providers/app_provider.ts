@@ -24,6 +24,7 @@ export default class AppProvider {
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
                 'mtkClickBotService',
+                'zavodClaimBotService',
                 'mtkDailyBotService',
                 'gemzClickBotService',
                 'gemzDailyBotService',

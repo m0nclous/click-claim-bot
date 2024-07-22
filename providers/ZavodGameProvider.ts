@@ -1,5 +1,5 @@
 import type { ApplicationService } from '@adonisjs/core/types';
-import ZavodGameService from '#services/ZavodGameService';
+import type ZavodGameService from '#services/ZavodGameService';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols

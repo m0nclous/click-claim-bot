@@ -1,22 +1,22 @@
 import BaseGameService, { HasClaim } from '#services/BaseGameService';
 
 export interface IUserProfile {
-      telegramId: string;
-      username: string;
-      tokens: number;
-      burnedTokens: number;
-      multiplier: number;
-      refLink: string;
-      invitedBy: string;
-      lastAuth: string;
-      claims: number;
-      language: string;
-      guildId: number;
-      icon: string;
-      timestamp: string;
-      refSyncAttempts: number;
-      achievements: null;
-      serverTime: string;
+    telegramId: string;
+    username: string;
+    tokens: number;
+    burnedTokens: number;
+    multiplier: number;
+    refLink: string;
+    invitedBy: string;
+    lastAuth: string;
+    claims: number;
+    language: string;
+    guildId: number;
+    icon: string;
+    timestamp: string;
+    refSyncAttempts: number;
+    achievements: null;
+    serverTime: string;
 }
 
 export interface IUserFarm {
@@ -66,6 +66,10 @@ export default class ZavodGameService extends BaseGameService implements HasClai
         return 'https://zavod-api.mdaowallet.com';
     }
 
+    public isAuthenticated(): boolean {
+        return this.webView !== null;
+    }
+
     async login(): Promise<void> {
         if (this.isAuthenticated()) {
             return;
@@ -84,7 +88,7 @@ export default class ZavodGameService extends BaseGameService implements HasClai
 
     async getUserFarm(refresh: boolean = false): Promise<IUserFarm> {
         if (refresh || this.userFarm === null) {
-            this.userFarm = await this.httpClient.get('user/farm').json() as IUserFarm;
+            this.userFarm = (await this.httpClient.get('user/farm').json()) as IUserFarm;
         }
 
         return this.userFarm;
