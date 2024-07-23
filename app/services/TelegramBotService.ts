@@ -69,6 +69,9 @@ export class TelegramBotService {
         this.bot.command('bot_zavod_claim_start', this.botZavodClaimStart.bind(this));
         this.bot.command('bot_zavod_claim_stop', this.botZavodClaimStop.bind(this));
 
+        this.bot.command('bot_toon_claim_start', this.botToonClaimStart.bind(this));
+        this.bot.command('bot_toon_claim_stop', this.botToonClaimStop.bind(this));
+
         return this.bot.telegram.setMyCommands([
             {
                 command: 'login',
@@ -145,6 +148,14 @@ export class TelegramBotService {
             {
                 command: 'bot_zavod_claim_stop',
                 description: 'Остановить сбор награды Zavod',
+            },
+            {
+                command: 'bot_toon_claim_start',
+                description: 'Запустить сбор награды ToON',
+            },
+            {
+                command: 'bot_toon_claim_stop',
+                description: 'Остановить сбор награды ToON',
             },
         ]);
     }
@@ -531,6 +542,14 @@ export class TelegramBotService {
 
     public async botZavodClaimStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'zavodClaimBotService');
+    }
+
+    public async botToonClaimStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'toonClaimBotService');
+    }
+
+    public async botToonClaimStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'toonClaimBotService');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
