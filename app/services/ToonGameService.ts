@@ -125,12 +125,14 @@ export default class ToonGameService extends BaseGameService {
 
     async getUser(refresh: boolean = false): Promise<IUser> {
         if (refresh || this.user === null) {
-            const data: any = await this.httpClient.post('', {
-                json: {
-                    action: 'user.get',
-                    initData: await this.getInitDataKey(),
-                },
-            }).json();
+            const data: any = await this.httpClient
+                .post('', {
+                    json: {
+                        action: 'user.get',
+                        initData: await this.getInitDataKey(),
+                    },
+                })
+                .json();
 
             this.user = data.user as IUser;
 
