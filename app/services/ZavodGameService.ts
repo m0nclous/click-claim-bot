@@ -80,7 +80,7 @@ export default class ZavodGameService extends BaseGameService implements HasClai
 
     async getUserProfile(refresh: boolean = false): Promise<IUserProfile> {
         if (refresh || this.userProfile === null) {
-            this.userProfile = await this.httpClient.get('user/profile').json() as IUserProfile;
+            this.userProfile = (await this.httpClient.get('user/profile').json()) as IUserProfile;
 
             setTimeout(() => {
                 this.userProfile = null;
