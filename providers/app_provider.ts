@@ -24,12 +24,13 @@ export default class AppProvider {
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
                 'mtkClickBotService',
-                'zavodClaimBotService',
                 'mtkDailyBotService',
                 'gemzClickBotService',
                 'gemzDailyBotService',
                 'memeFiClickBotService',
                 'mine2MineClickBotService',
+                'zavodClaimBotService',
+                'toonClaimBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {

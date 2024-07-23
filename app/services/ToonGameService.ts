@@ -1,4 +1,4 @@
-import BaseGameService from '#services/BaseGameService';
+import BaseGameService, { HasClaim } from '#services/BaseGameService';
 
 export interface IPersonage {
     id: number;
@@ -88,11 +88,30 @@ export interface IUser {
     status: number;
 }
 
-export default class ToonGameService extends BaseGameService {
+export default class ToonGameService extends BaseGameService implements HasClaim {
     public user: IUser | null = null;
 
     public constructor(userId: number) {
         super(userId);
+
+        this.httpClient = this.httpClient.extend({
+            hooks: {
+                beforeRequest: [
+                    async (request: Request) => {
+                        const json: any = await request
+                            .clone()
+                            .json()
+                            .catch(() => ({}));
+
+                        json.initData = await this.getInitDataKey();
+
+                        return new Request(request, {
+                            body: JSON.stringify(json),
+                        });
+                    },
+                ],
+            },
+        });
     }
 
     public getGameName(): string {
@@ -129,7 +148,6 @@ export default class ToonGameService extends BaseGameService {
                 .post('', {
                     json: {
                         action: 'user.get',
-                        initData: await this.getInitDataKey(),
                     },
                 })
                 .json();
@@ -142,5 +160,37 @@ export default class ToonGameService extends BaseGameService {
         }
 
         return this.user;
+    }
+
+    async getWallet(): Promise<IWallet> {
+        return (await this.getUser()).wallet;
+    }
+
+    async canClaim(): Promise<boolean> {
+        return true;
+    }
+
+    async claim(): Promise<void> {
+        await this.httpClient.post('', {
+            json: {
+                action: 'wallet.save.balance',
+            },
+        });
+    }
+
+    async claimFinishAt(): Promise<Date | null> {
+        const wallet: IWallet = await this.getWallet();
+
+        return new Date(wallet.fill_date);
+    }
+
+    async claimInterval(): Promise<number> {
+        return 1;
+    }
+
+    async claimStartedAt(): Promise<Date | null> {
+        const wallet: IWallet = await this.getWallet();
+
+        return new Date(wallet.started_at);
     }
 }
