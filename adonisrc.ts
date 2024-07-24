@@ -48,6 +48,7 @@ export default defineConfig({
         () => import('#providers/Mine2MineClickBotServiceProvider'),
         () => import('#providers/ZavodClaimBotServiceProvider'),
         () => import('#providers/ToonClaimBotServiceProvider'),
+        () => import('#providers/TimeFarmClaimBotServiceProvider'),
     ],
 
     /*

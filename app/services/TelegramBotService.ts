@@ -72,6 +72,9 @@ export class TelegramBotService {
         this.bot.command('bot_toon_claim_start', this.botToonClaimStart.bind(this));
         this.bot.command('bot_toon_claim_stop', this.botToonClaimStop.bind(this));
 
+        this.bot.command('bot_time_farm_claim_start', this.botTimeFarmClaimStart.bind(this));
+        this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
+
         return this.bot.telegram.setMyCommands([
             {
                 command: 'login',
@@ -156,6 +159,14 @@ export class TelegramBotService {
             {
                 command: 'bot_toon_claim_stop',
                 description: 'Остановить сбор награды ToON',
+            },
+            {
+                command: 'bot_time_farm_claim_start',
+                description: 'Запустить сбор награды TimeFarm',
+            },
+            {
+                command: 'bot_time_farm_claim_stop',
+                description: 'Остановить сбор награды TimeFarm',
             },
         ]);
     }
@@ -550,6 +561,14 @@ export class TelegramBotService {
 
     public async botToonClaimStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'toonClaimBotService');
+    }
+
+    public async botTimeFarmClaimStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'timeFarmClaimBotService');
+    }
+
+    public async botTimeFarmClaimStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
