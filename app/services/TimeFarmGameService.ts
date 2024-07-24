@@ -36,7 +36,7 @@ export default class TimeFarmGameService extends BaseGameService {
     }
 
     protected getWebViewUrl(): string {
-        return 'https://tg-tap-miniapp.laborx.io';
+        return 'https://timefarm.app';
     }
 
     protected getBaseUrl(): string {
@@ -44,8 +44,15 @@ export default class TimeFarmGameService extends BaseGameService {
     }
 
     async login(): Promise<void> {
-        await this.httpClient.post('api/v1/auth/validate-init', {
-            body: await this.getInitDataKey(),
+        if (this.isAuthenticated()) {
+            return;
+        }
+
+        await this.httpClient.post('api/v1/auth/validate-init/v2', {
+            json: {
+                initData: await this.getInitDataKey(),
+                platform: 'android',
+            },
         });
     }
 }
