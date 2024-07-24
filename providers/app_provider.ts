@@ -31,6 +31,7 @@ export default class AppProvider {
                 'mine2MineClickBotService',
                 'zavodClaimBotService',
                 'toonClaimBotService',
+                'timeFarmClaimBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {
