@@ -39,6 +39,7 @@ export default defineConfig({
         () => import('#providers/Mine2MineGameProvider'),
         () => import('#providers/ZavodGameProvider'),
         () => import('#providers/ToonGameProvider'),
+        () => import('#providers/TimeFarmGameProvider'),
         () => import('#providers/MtkClickBotServiceProvider'),
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
