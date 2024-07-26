@@ -10,6 +10,6 @@ export class ToonClaimBotService extends BaseClaimBotService {
     }
 
     protected getIntervalDelay(): number {
-        return 1_000 * 60 * 10;
+        return 1_000 * 60 * 5;
     }
 }
