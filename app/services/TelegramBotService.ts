@@ -60,6 +60,9 @@ export class TelegramBotService {
         this.bot.command('bot_mine2mine_click_start', this.botMine2MineClickStart.bind(this));
         this.bot.command('bot_mine2mine_click_stop', this.botMine2MineClickStop.bind(this));
 
+        this.bot.command('bot_city_holders_click_start', this.botCityHoldersClickStart.bind(this));
+        this.bot.command('bot_city_holders_click_stop', this.botCityHoldersClickStop.bind(this));
+
         this.bot.command('bot_mtk_daily_start', this.botMtkDailyStart.bind(this));
         this.bot.command('bot_mtk_daily_stop', this.botMtkDailyStop.bind(this));
 
@@ -127,6 +130,14 @@ export class TelegramBotService {
             {
                 command: 'bot_mine2mine_click_stop',
                 description: 'Остановить кликер Mine2Mine',
+            },
+            {
+                command: 'bot_city_holders_click_start',
+                description: 'Запустить кликер CityHolders',
+            },
+            {
+                command: 'bot_city_holders_click_stop',
+                description: 'Остановить кликер CityHolders',
             },
             {
                 command: 'bot_mtk_daily_start',
@@ -529,6 +540,14 @@ export class TelegramBotService {
 
     public async botMine2MineClickStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'memeFiClickBotService');
+    }
+
+    public async botCityHoldersClickStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'cityHoldersClickBotService');
+    }
+
+    public async botCityHoldersClickStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'cityHoldersClickBotService');
     }
 
     public async botMtkDailyStart(ctx: Context): Promise<void> {

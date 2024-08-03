@@ -95,6 +95,7 @@ emitter.on('mtk:tap', notifyTap);
 emitter.on('gemz:tap', notifyTap);
 emitter.on('memeFi:tap', notifyTap);
 emitter.on('mine2mine:tap', notifyTap);
+emitter.on('city-holders:tap', notifyTap);
 
 emitter.on('bot:claim', notifyClaim);
 
