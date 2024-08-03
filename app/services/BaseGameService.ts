@@ -105,7 +105,7 @@ export default abstract class BaseGameService {
 
     protected httpClient: KyInstance = this.makeHttpClient();
 
-    protected constructor(public userId: number) {}
+    public constructor(public userId: number) {}
 
     public abstract getGameName(): string;
 

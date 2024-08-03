@@ -26,6 +26,7 @@ export default class AppProvider {
                 'mtkClickBotService',
                 'mtkDailyBotService',
                 'gemzClickBotService',
+                'cityHoldersClickBotService',
                 'gemzDailyBotService',
                 'memeFiClickBotService',
                 'mine2MineClickBotService',

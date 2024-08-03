@@ -41,6 +41,7 @@ export default defineConfig({
         () => import('#providers/ToonGameProvider'),
         () => import('#providers/TimeFarmGameProvider'),
         () => import('#providers/CityHoldersGameProvider'),
+        () => import('#providers/CityHoldersClickBotServiceProvider'),
         () => import('#providers/MtkClickBotServiceProvider'),
         () => import('#providers/GemzClickBotServiceProvider'),
         () => import('#providers/MtkDailyBotServiceProvider'),
