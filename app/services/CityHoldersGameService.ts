@@ -367,7 +367,9 @@ export default class CityHoldersGameService extends BaseGameService implements H
 
             if (this.wsCallbackPromise !== null) {
                 if (response.is_ok) {
-                    return this.wsCallbackPromise.resolve(response.content ? Buffer.from(response.content) : null);
+                    return this.wsCallbackPromise.resolve(
+                        response.content ? Buffer.from(response.content) : null,
+                    );
                 } else {
                     return this.wsCallbackPromise.reject(response.error.message);
                 }
@@ -392,11 +394,13 @@ export default class CityHoldersGameService extends BaseGameService implements H
             return;
         }
 
-        const response: IAuthResponse = await this.httpClient.post('auth', {
-            json: {
-                auth: await this.getInitDataKey(),
-            },
-        }).json();
+        const response: IAuthResponse = await this.httpClient
+            .post('auth', {
+                json: {
+                    auth: await this.getInitDataKey(),
+                },
+            })
+            .json();
 
         this.token = response.token;
         await this.makeWebSocket(response.shard_url);
@@ -409,11 +413,13 @@ export default class CityHoldersGameService extends BaseGameService implements H
     async getTapQuantity(): Promise<number> {
         const responseBuffer = await this.websocketRequest({
             auth: null,
-            content: [...SyncRequestMessage.toBuffer({
-                action: 'sync',
-                id: 1,
-                timestamp: new Date().getTime() / 1000,
-            })],
+            content: [
+                ...SyncRequestMessage.toBuffer({
+                    action: 'sync',
+                    id: 1,
+                    timestamp: new Date().getTime() / 1000,
+                }),
+            ],
         });
 
         if (responseBuffer === null) {
@@ -428,12 +434,14 @@ export default class CityHoldersGameService extends BaseGameService implements H
     async tap(quantity: number): Promise<void> {
         await this.websocketRequest({
             auth: null,
-            content: [...TapType.toBuffer({
-                action: 'tap',
-                count_of_taps: quantity,
-                timestamp: new Date().getTime() / 1000,
-                id: 2,
-            })],
+            content: [
+                ...TapType.toBuffer({
+                    action: 'tap',
+                    count_of_taps: quantity,
+                    timestamp: new Date().getTime() / 1000,
+                    id: 2,
+                }),
+            ],
         });
 
         await emitter.emit('city-holders:tap', {
