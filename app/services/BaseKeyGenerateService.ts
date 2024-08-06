@@ -87,10 +87,10 @@ export abstract class BaseKeyGenerateService {
 
     public async processKey(): Promise<boolean> {
         const payload: {
-            promoId: string,
-            eventId: UUID,
-            eventType?: string,
-            eventOrigin: 'undefined',
+            promoId: string;
+            eventId: UUID;
+            eventType?: string;
+            eventOrigin: 'undefined';
         } = {
             promoId: this.getPromoId(),
             eventId: crypto.randomUUID(),
