@@ -80,6 +80,7 @@ export class TelegramBotService {
 
         this.bot.command('get_keys_clones', this.getKeysClones.bind(this));
         this.bot.command('get_keys_rider', this.getKeysRider.bind(this));
+        this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -189,6 +190,10 @@ export class TelegramBotService {
             {
                 command: 'get_keys_rider',
                 description: 'Получить ключи для игры Riding Extreme 3D',
+            },
+            {
+                command: 'get_keys_cube',
+                description: 'Получить ключи для игры Chain Cube',
             },
         ]);
     }
@@ -620,6 +625,19 @@ export class TelegramBotService {
             (await app.container.make('riderKeyGenerate')).generateKey(),
             (await app.container.make('riderKeyGenerate')).generateKey(),
             (await app.container.make('riderKeyGenerate')).generateKey(),
+        ]).then(async (codes) => {
+            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+        });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+    }
+
+    public async getKeysCube(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('cubeKeyGenerate')).generateKey(),
+            (await app.container.make('cubeKeyGenerate')).generateKey(),
+            (await app.container.make('cubeKeyGenerate')).generateKey(),
+            (await app.container.make('cubeKeyGenerate')).generateKey(),
         ]).then(async (codes) => {
             await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
         });
