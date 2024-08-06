@@ -78,6 +78,8 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_start', this.botTimeFarmClaimStart.bind(this));
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
+        this.bot.command('get_keys_clones', this.getKeysClones.bind(this));
+
         return this.bot.telegram.setMyCommands([
             {
                 command: 'login',
@@ -178,6 +180,10 @@ export class TelegramBotService {
             {
                 command: 'bot_time_farm_claim_stop',
                 description: 'Остановить сбор награды TimeFarm',
+            },
+            {
+                command: 'get_keys_clones',
+                description: 'Получить ключи для игры Clones',
             },
         ]);
     }
@@ -588,6 +594,19 @@ export class TelegramBotService {
 
     public async botTimeFarmClaimStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
+    }
+
+    public async getKeysClones(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('clonesKeyGenerate')).generateKey(),
+            (await app.container.make('clonesKeyGenerate')).generateKey(),
+            (await app.container.make('clonesKeyGenerate')).generateKey(),
+            (await app.container.make('clonesKeyGenerate')).generateKey(),
+        ]).then(async (codes) => {
+            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+        });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт 2 минуты...');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
