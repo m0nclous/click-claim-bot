@@ -59,6 +59,17 @@ const loggerConfig = defineConfig({
                     .toArray(),
             },
         },
+        keyGenerateServiceRequest: {
+            enabled: true,
+            name: 'key-generate-service-request',
+            level: env.get('LOG_LEVEL'),
+            transport: {
+                targets: targets()
+                    .pushIf(!app.inProduction, targets.pretty())
+                    .push(elasticsearchConfig)
+                    .toArray(),
+            },
+        },
     },
 });
 

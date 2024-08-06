@@ -51,6 +51,7 @@ export default defineConfig({
         () => import('#providers/ZavodClaimBotServiceProvider'),
         () => import('#providers/ToonClaimBotServiceProvider'),
         () => import('#providers/TimeFarmClaimBotServiceProvider'),
+        () => import('#providers/ClonesKeyGenerateProvider'),
     ],
 
     /*
