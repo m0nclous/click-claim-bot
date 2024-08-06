@@ -2,6 +2,7 @@ import ky, { KyInstance } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
 import { sleep } from '#helpers/timer';
+import { UUID } from 'node:crypto';
 
 export abstract class BaseKeyGenerateService {
     protected clientToken: string | null = null;
@@ -85,13 +86,23 @@ export abstract class BaseKeyGenerateService {
     }
 
     public async processKey(): Promise<boolean> {
+        const payload: {
+            promoId: string,
+            eventId: UUID,
+            eventType?: string,
+            eventOrigin: 'undefined',
+        } = {
+            promoId: this.getPromoId(),
+            eventId: crypto.randomUUID(),
+            eventOrigin: 'undefined',
+        };
+
+        if (this.getEventType()) {
+            payload.eventType = this.getEventType();
+        }
+
         const response = await this.httpClient.post('promo/register-event', {
-            json: {
-                promoId: this.getPromoId(),
-                eventId: crypto.randomUUID(),
-                eventType: this.getEventType(),
-                eventOrigin: 'undefined',
-            },
+            json: payload,
         });
 
         const data: any = await response.json();

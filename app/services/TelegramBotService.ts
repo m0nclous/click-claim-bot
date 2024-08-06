@@ -79,6 +79,7 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
         this.bot.command('get_keys_clones', this.getKeysClones.bind(this));
+        this.bot.command('get_keys_rider', this.getKeysRider.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -184,6 +185,10 @@ export class TelegramBotService {
             {
                 command: 'get_keys_clones',
                 description: 'Получить ключи для игры Clones',
+            },
+            {
+                command: 'get_keys_rider',
+                description: 'Получить ключи для игры Riding Extreme 3D',
             },
         ]);
     }
@@ -607,6 +612,19 @@ export class TelegramBotService {
         });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт 2 минуты...');
+    }
+
+    public async getKeysRider(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('riderKeyGenerate')).generateKey(),
+            (await app.container.make('riderKeyGenerate')).generateKey(),
+            (await app.container.make('riderKeyGenerate')).generateKey(),
+            (await app.container.make('riderKeyGenerate')).generateKey(),
+        ]).then(async (codes) => {
+            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+        });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
