@@ -53,6 +53,7 @@ export default defineConfig({
         () => import('#providers/TimeFarmClaimBotServiceProvider'),
         () => import('#providers/ClonesKeyGenerateProvider'),
         () => import('#providers/RiderKeyGenerateProvider'),
+        () => import('#providers/CubeKeyGenerateProvider'),
     ],
 
     /*
