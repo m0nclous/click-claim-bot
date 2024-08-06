@@ -54,6 +54,7 @@ export default defineConfig({
         () => import('#providers/ClonesKeyGenerateProvider'),
         () => import('#providers/RiderKeyGenerateProvider'),
         () => import('#providers/CubeKeyGenerateProvider'),
+        () => import('#providers/TrainKeyGenerateProvider'),
     ],
 
     /*
