@@ -617,9 +617,15 @@ export class TelegramBotService {
             (await app.container.make('clonesKeyGenerate')).generateKey(),
             (await app.container.make('clonesKeyGenerate')).generateKey(),
             (await app.container.make('clonesKeyGenerate')).generateKey(),
-        ]).then(async (codes) => {
-            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-        });
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.reply('Не удалось сгенерировать ключи Clones');
+            });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт 2 минуты...');
     }
@@ -630,9 +636,15 @@ export class TelegramBotService {
             (await app.container.make('riderKeyGenerate')).generateKey(),
             (await app.container.make('riderKeyGenerate')).generateKey(),
             (await app.container.make('riderKeyGenerate')).generateKey(),
-        ]).then(async (codes) => {
-            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-        });
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.reply('Не удалось сгенерировать ключи Rider');
+            });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
@@ -643,9 +655,15 @@ export class TelegramBotService {
             (await app.container.make('cubeKeyGenerate')).generateKey(),
             (await app.container.make('cubeKeyGenerate')).generateKey(),
             (await app.container.make('cubeKeyGenerate')).generateKey(),
-        ]).then(async (codes) => {
-            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-        });
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.reply('Не удалось сгенерировать ключи Cube');
+            });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
@@ -656,9 +674,15 @@ export class TelegramBotService {
             (await app.container.make('trainKeyGenerate')).generateKey(),
             (await app.container.make('trainKeyGenerate')).generateKey(),
             (await app.container.make('trainKeyGenerate')).generateKey(),
-        ]).then(async (codes) => {
-            await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-        });
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.reply('Не удалось сгенерировать ключи Train');
+            });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
