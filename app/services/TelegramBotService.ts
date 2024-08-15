@@ -82,6 +82,7 @@ export class TelegramBotService {
         this.bot.command('get_keys_rider', this.getKeysRider.bind(this));
         this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
         this.bot.command('get_keys_train', this.getKeysTrain.bind(this));
+        this.bot.command('get_keys_merge', this.getKeysMerge.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -199,6 +200,10 @@ export class TelegramBotService {
             {
                 command: 'get_keys_train',
                 description: 'Получить ключи для игры Train Miner',
+            },
+            {
+                command: 'get_keys_merge',
+                description: 'Получить ключи для игры Merge Away',
             },
         ]);
     }
@@ -682,6 +687,25 @@ export class TelegramBotService {
                 logger.error(error);
 
                 await ctx.reply('Не удалось сгенерировать ключи Train');
+            });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+    }
+
+    public async getKeysMerge(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('mergeKeyGenerate')).generateKey(),
+            (await app.container.make('mergeKeyGenerate')).generateKey(),
+            (await app.container.make('mergeKeyGenerate')).generateKey(),
+            (await app.container.make('mergeKeyGenerate')).generateKey(),
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.reply('Не удалось сгенерировать ключи Merge Away');
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
