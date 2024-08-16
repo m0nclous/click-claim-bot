@@ -69,21 +69,23 @@ export abstract class BaseKeyGenerateService {
     }
 
     public async login(): Promise<void> {
-        const response = await this.httpClient.post('promo/login-client', {
-            json: {
-                appToken: this.getAppToken(),
-                clientId: this.clientId,
-                clientOrigin: 'android',
-            },
-        }).catch(async (error: HTTPError) => {
-            const json: any = await error.response.json();
+        const response = await this.httpClient
+            .post('promo/login-client', {
+                json: {
+                    appToken: this.getAppToken(),
+                    clientId: this.clientId,
+                    clientOrigin: 'android',
+                },
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
 
-            if (json.error_message) {
-                throw new Error(json.error_message);
-            }
+                if (json.error_message) {
+                    throw new Error(json.error_message);
+                }
 
-            throw error;
-        });
+                throw error;
+            });
 
         const data: any = await response.json();
 
@@ -106,17 +108,19 @@ export abstract class BaseKeyGenerateService {
             payload.eventType = this.getEventType();
         }
 
-        const response = await this.httpClient.post('promo/register-event', {
-            json: payload,
-        }).catch(async (error: HTTPError) => {
-            const json: any = await error.response.json();
+        const response = await this.httpClient
+            .post('promo/register-event', {
+                json: payload,
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
 
-            if (json.error_code === 'TooManyRegister') {
-                throw new TooManyRegisterException(json.error_message, error);
-            }
+                if (json.error_code === 'TooManyRegister') {
+                    throw new TooManyRegisterException(json.error_message, error);
+                }
 
-            throw error;
-        });
+                throw error;
+            });
 
         const data: any = await response.json();
 
@@ -124,19 +128,21 @@ export abstract class BaseKeyGenerateService {
     }
 
     public async getKey(): Promise<string> {
-        const response = await this.httpClient.post('promo/create-code', {
-            json: {
-                promoId: this.getPromoId(),
-            },
-        }).catch(async (error: HTTPError) => {
-            const json: any = await error.response.json();
+        const response = await this.httpClient
+            .post('promo/create-code', {
+                json: {
+                    promoId: this.getPromoId(),
+                },
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
 
-            if (json.error_message) {
-                throw new Error(json.error_message);
-            }
+                if (json.error_message) {
+                    throw new Error(json.error_message);
+                }
 
-            throw error;
-        });
+                throw error;
+            });
 
         const data: any = await response.json();
 

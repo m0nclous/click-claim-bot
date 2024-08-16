@@ -5,4 +5,4 @@ export default class TooManyRegisterException extends Error {
     ) {
         super(message);
     }
-};
+}

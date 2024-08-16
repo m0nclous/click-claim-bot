@@ -648,7 +648,9 @@ export class TelegramBotService {
             .catch(async (error) => {
                 logger.error(error);
 
-                await ctx.replyWithHTML('Не удалось сгенерировать ключи Rider\n' + `<code>${error.message}</code>`);
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Rider\n' + `<code>${error.message}</code>`,
+                );
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
@@ -667,7 +669,9 @@ export class TelegramBotService {
             .catch(async (error) => {
                 logger.error(error);
 
-                await ctx.replyWithHTML('Не удалось сгенерировать ключи Cube\n' + `<code>${error.message}</code>`);
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Cube\n' + `<code>${error.message}</code>`,
+                );
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
@@ -686,7 +690,9 @@ export class TelegramBotService {
             .catch(async (error) => {
                 logger.error(error);
 
-                await ctx.replyWithHTML('Не удалось сгенерировать ключи Train\n' + `<code>${error.message}</code>`);
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Train\n' + `<code>${error.message}</code>`,
+                );
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
@@ -705,7 +711,9 @@ export class TelegramBotService {
             .catch(async (error) => {
                 logger.error(error);
 
-                await ctx.replyWithHTML('Не удалось сгенерировать ключи Merge Away\n' + `<code>${error.message}</code>`);
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Merge Away\n' + `<code>${error.message}</code>`,
+                );
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
