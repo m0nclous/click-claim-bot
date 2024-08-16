@@ -7,7 +7,7 @@ services:
         environment:
             APP_KEY: '${APP_KEY}'
 
-            TZ: '${UTC:-TZ}'
+            TZ: '${TZ:-UTC}'
             LOG_LEVEL: '${LOG_LEVEL:-trace}'
             NODE_ENV: '${NODE_ENV:-production}'
 
