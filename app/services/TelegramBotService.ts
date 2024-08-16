@@ -83,6 +83,7 @@ export class TelegramBotService {
         this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
         this.bot.command('get_keys_train', this.getKeysTrain.bind(this));
         this.bot.command('get_keys_merge', this.getKeysMerge.bind(this));
+        this.bot.command('get_keys_twerk', this.getKeysTwerk.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -204,6 +205,10 @@ export class TelegramBotService {
             {
                 command: 'get_keys_merge',
                 description: 'Получить ключи для игры Merge Away',
+            },
+            {
+                command: 'get_keys_twerk',
+                description: 'Получить ключи для игры Twerk',
             },
         ]);
     }
@@ -713,6 +718,27 @@ export class TelegramBotService {
 
                 await ctx.replyWithHTML(
                     'Не удалось сгенерировать ключи Merge Away\n' + `<code>${error.message}</code>`,
+                );
+            });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+    }
+
+    public async getKeysTwerk(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('twerkKeyGenerate')).generateKey(),
+            (await app.container.make('twerkKeyGenerate')).generateKey(),
+            (await app.container.make('twerkKeyGenerate')).generateKey(),
+            (await app.container.make('twerkKeyGenerate')).generateKey(),
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Twerk\n' + `<code>${error.message}</code>`,
                 );
             });
 

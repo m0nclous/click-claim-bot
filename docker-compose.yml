@@ -1,6 +1,6 @@
 services:
     app:
-        image: m0nclous/click-claim-bot:v1.0.2
+        image: m0nclous/click-claim-bot:v1.0.3
         restart: unless-stopped
         volumes:
             - './storage/logs:/app/storage/logs'
@@ -33,7 +33,7 @@ services:
         volumes:
             - 'redis-data:/data'
         environment:
-            - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+            REDIS_PASSWORD: '${REDIS_PASSWORD:-}'
         healthcheck:
             test:
                 - CMD
