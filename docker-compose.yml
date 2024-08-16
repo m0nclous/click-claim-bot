@@ -33,7 +33,7 @@ services:
         volumes:
             - 'redis-data:/data'
         environment:
-            - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+            REDIS_PASSWORD: '${REDIS_PASSWORD:-}'
         healthcheck:
             test:
                 - CMD
