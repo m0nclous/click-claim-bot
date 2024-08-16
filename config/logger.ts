@@ -1,33 +1,5 @@
 import env from '#start/env';
-import app from '@adonisjs/core/services/app';
 import { defineConfig, targets } from '@adonisjs/core/logger';
-import { readFileSync } from 'node:fs';
-
-const elasticsearchConfig = app.inProduction
-    ? {
-          target: 'pino-elasticsearch',
-          level: env.get('LOG_LEVEL'),
-          options: {
-              node: `https://${env.get('ELASTIC_HOST')}:${env.get('ELASTIC_PORT')}`,
-              esVersion: 8,
-              auth: {
-                  username: 'elastic',
-                  password: env.get('ELASTIC_PASSWORD'),
-              },
-              tls: {
-                  ca: readFileSync('./http_ca.crt'),
-                  rejectUnauthorized: false,
-              },
-          },
-      }
-    : {
-          target: 'pino-elasticsearch',
-          level: env.get('LOG_LEVEL'),
-          options: {
-              node: `http://${env.get('ELASTIC_HOST')}:${env.get('ELASTIC_PORT')}`,
-              esVersion: 8,
-          },
-      };
 
 const loggerConfig = defineConfig({
     default: 'app',
@@ -43,8 +15,15 @@ const loggerConfig = defineConfig({
             level: env.get('LOG_LEVEL'),
             transport: {
                 targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .push(elasticsearchConfig)
+                    .push(targets.pretty())
+                    .push({
+                        target: 'pino-roll',
+                        options: {
+                            file: 'storage/logs/app.log',
+                            frequency: 'daily',
+                            mkdir: true,
+                        },
+                    })
                     .toArray(),
             },
         },
@@ -54,8 +33,15 @@ const loggerConfig = defineConfig({
             level: env.get('LOG_LEVEL'),
             transport: {
                 targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .push(elasticsearchConfig)
+                    .push(targets.pretty())
+                    .push({
+                        target: 'pino-roll',
+                        options: {
+                            file: 'storage/logs/game-service-requests.log',
+                            frequency: 'daily',
+                            mkdir: true,
+                        },
+                    })
                     .toArray(),
             },
         },
@@ -65,8 +51,15 @@ const loggerConfig = defineConfig({
             level: env.get('LOG_LEVEL'),
             transport: {
                 targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .push(elasticsearchConfig)
+                    .push(targets.pretty())
+                    .push({
+                        target: 'pino-roll',
+                        options: {
+                            file: 'storage/logs/key-generate-service-requests.log',
+                            frequency: 'daily',
+                            mkdir: true,
+                        },
+                    })
                     .toArray(),
             },
         },

@@ -1,26 +1,37 @@
 services:
     app:
-        build:
-            context: .
-        restart: always
-        networks:
-            - elasticsearch
-            - redis
+        image: m0nclous/click-claim-bot:v1.0.0
+        restart: unless-stopped
+        environment:
+            APP_KEY: '${APP_KEY}'
+
+            TZ: '${UTC:-TZ}'
+            LOG_LEVEL: '${LOG_LEVEL:-trace}'
+            NODE_ENV: '${NODE_ENV:-production}'
+
+            REDIS_HOST: '${REDIS_HOST:-redis}'
+            REDIS_PORT: '${REDIS_PORT:-6379}'
+            REDIS_PASSWORD:
+
+            TELEGRAM_API_ID: '${TELEGRAM_API_ID}'
+            TELEGRAM_API_HASH: '${TELEGRAM_API_HASH}'
+
+            TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN}'
+            TELEGRAM_BOT_NAME: '${TELEGRAM_BOT_NAME}'
+
         depends_on:
             redis:
                 condition: service_healthy
-            elasticsearch:
-                condition: service_healthy
 
     redis:
-        image: 'redis:alpine'
-        restart: always
+        image: 'redis:7.2.5-alpine'
+        restart: unless-stopped
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
             - 'redis-data:/data'
-        networks:
-            - redis
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD:-}
         healthcheck:
             test:
                 - CMD
@@ -29,46 +40,5 @@ services:
             retries: 3
             timeout: 5s
 
-    elasticsearch:
-        image: 'elasticsearch:8.14.2'
-        restart: always
-        environment:
-            discovery.type: 'single-node'
-            ES_JAVA_OPTS: '-Xms2g -Xmx2g'
-            ELASTIC_PASSWORD: '${ELASTIC_PASSWORD:-}'
-        ports:
-            - '${FORWARD_ELASTIC_PORT:-9200}:9200'
-        volumes:
-            - elasticsearch-data:/usr/share/elasticsearch/data
-            - elasticsearch-config:/usr/share/elasticsearch/config
-        networks:
-            - elasticsearch
-        healthcheck:
-            test:
-                [
-                    'CMD-SHELL',
-                    'curl --cacert /usr/share/elasticsearch/config/certs/http_ca.crt -u elastic:$ELASTIC_PASSWORD https://localhost:9200/_cluster/health || exit 1',
-                ]
-            interval: 30s
-            timeout: 10s
-            retries: 50
-
-    kibana:
-        image: 'kibana:8.14.2'
-        restart: always
-        ports:
-            - '${FORWARD_KIBANA_PORT:-5601}:5601'
-        environment:
-            SERVER_NAME: '${KIBANA_SERVER_NAME:-0.0.0.0}'
-        networks:
-            - elasticsearch
-        depends_on:
-            elasticsearch:
-                condition: service_healthy
-networks:
-    elasticsearch:
-    redis:
 volumes:
     redis-data:
-    elasticsearch-data:
-    elasticsearch-config:
