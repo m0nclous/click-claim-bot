@@ -1,8 +1,9 @@
-import ky, { KyInstance } from 'ky';
+import ky, { HTTPError, KyInstance } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
 import { sleep } from '#helpers/timer';
 import { UUID } from 'node:crypto';
+import TooManyRegisterException from '#exceptions/TooManyRegisterException';
 
 export abstract class BaseKeyGenerateService {
     protected clientToken: string | null = null;
@@ -68,19 +69,25 @@ export abstract class BaseKeyGenerateService {
     }
 
     public async login(): Promise<void> {
-        const response = await this.httpClient.post('promo/login-client', {
-            json: {
-                appToken: this.getAppToken(),
-                clientId: this.clientId,
-                clientOrigin: 'android',
-            },
-        });
+        const response = await this.httpClient
+            .post('promo/login-client', {
+                json: {
+                    appToken: this.getAppToken(),
+                    clientId: this.clientId,
+                    clientOrigin: 'android',
+                },
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
+
+                if (json.error_message) {
+                    throw new Error(json.error_message);
+                }
+
+                throw error;
+            });
 
         const data: any = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Не удалось войти');
-        }
 
         this.clientToken = data.clientToken;
     }
@@ -101,31 +108,43 @@ export abstract class BaseKeyGenerateService {
             payload.eventType = this.getEventType();
         }
 
-        const response = await this.httpClient.post('promo/register-event', {
-            json: payload,
-        });
+        const response = await this.httpClient
+            .post('promo/register-event', {
+                json: payload,
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
+
+                if (json.error_code === 'TooManyRegister') {
+                    throw new TooManyRegisterException(json.error_message, error);
+                }
+
+                throw error;
+            });
 
         const data: any = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Не удалось зарегистрировать событие');
-        }
 
         return data.hasCode;
     }
 
     public async getKey(): Promise<string> {
-        const response = await this.httpClient.post('promo/create-code', {
-            json: {
-                promoId: this.getPromoId(),
-            },
-        });
+        const response = await this.httpClient
+            .post('promo/create-code', {
+                json: {
+                    promoId: this.getPromoId(),
+                },
+            })
+            .catch(async (error: HTTPError) => {
+                const json: any = await error.response.json();
+
+                if (json.error_message) {
+                    throw new Error(json.error_message);
+                }
+
+                throw error;
+            });
 
         const data: any = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Не удалось сгенерировать ключ');
-        }
 
         return data.promoCode;
     }
@@ -133,9 +152,17 @@ export abstract class BaseKeyGenerateService {
     public async generateKey(): Promise<string> {
         await this.login();
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 20; i++) {
             await sleep(60_000);
-            const hasCode = await this.processKey();
+
+            const hasCode = await this.processKey().catch((error: TooManyRegisterException | Error) => {
+                if (error instanceof TooManyRegisterException) {
+                    return false;
+                }
+
+                throw error;
+            });
+
             if (hasCode) {
                 break;
             }
