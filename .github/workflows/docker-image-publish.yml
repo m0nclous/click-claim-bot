@@ -2,7 +2,6 @@ name: Docker Image Publish
 
 on:
     push:
-        branches: ['master']
         tags: ['v*.*.*']
 
 jobs:
@@ -23,5 +22,5 @@ jobs:
               with:
                   push: true
                   tags: |
-                      ${{ secrets.DOCKERHUB_USERNAME }}/click-claim-bot:${{ steps.vars.outputs.tag }}
+                      ${{ secrets.DOCKERHUB_USERNAME }}/click-claim-bot:${{ github.ref_name }}
                       ${{ secrets.DOCKERHUB_USERNAME }}/click-claim-bot:latest
