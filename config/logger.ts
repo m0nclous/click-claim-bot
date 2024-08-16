@@ -15,9 +15,7 @@ const loggerConfig = defineConfig({
             name: env.get('APP_NAME'),
             level: env.get('LOG_LEVEL'),
             transport: {
-                targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .toArray(),
+                targets: targets().pushIf(!app.inProduction, targets.pretty()).toArray(),
             },
         },
         gameServiceRequest: {
@@ -25,9 +23,7 @@ const loggerConfig = defineConfig({
             name: 'game-service-request',
             level: env.get('LOG_LEVEL'),
             transport: {
-                targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .toArray(),
+                targets: targets().pushIf(!app.inProduction, targets.pretty()).toArray(),
             },
         },
         keyGenerateServiceRequest: {
@@ -35,9 +31,7 @@ const loggerConfig = defineConfig({
             name: 'key-generate-service-request',
             level: env.get('LOG_LEVEL'),
             transport: {
-                targets: targets()
-                    .pushIf(!app.inProduction, targets.pretty())
-                    .toArray(),
+                targets: targets().pushIf(!app.inProduction, targets.pretty()).toArray(),
             },
         },
     },
