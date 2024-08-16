@@ -1,6 +1,8 @@
 import env from '#start/env';
 import { defineConfig, targets } from '@adonisjs/core/logger';
 
+const logtailSourceToken = env.get('LOGTAIL_SOURCE_TOKEN');
+
 const loggerConfig = defineConfig({
     default: 'app',
 
@@ -24,6 +26,10 @@ const loggerConfig = defineConfig({
                             mkdir: true,
                         },
                     })
+                    .pushIf(!!logtailSourceToken, {
+                        target: '@logtail/pino',
+                        options: { sourceToken: logtailSourceToken },
+                    })
                     .toArray(),
             },
         },
@@ -42,6 +48,10 @@ const loggerConfig = defineConfig({
                             mkdir: true,
                         },
                     })
+                    .pushIf(!!logtailSourceToken, {
+                        target: '@logtail/pino',
+                        options: { sourceToken: logtailSourceToken },
+                    })
                     .toArray(),
             },
         },
@@ -59,6 +69,10 @@ const loggerConfig = defineConfig({
                             frequency: 'daily',
                             mkdir: true,
                         },
+                    })
+                    .pushIf(!!logtailSourceToken, {
+                        target: '@logtail/pino',
+                        options: { sourceToken: logtailSourceToken },
                     })
                     .toArray(),
             },

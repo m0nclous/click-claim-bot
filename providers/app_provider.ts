@@ -15,11 +15,8 @@ export default class AppProvider {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
             telegramBot.run().then((botInfo: UserFromGetMe) => {
                 logger.info({
-                    event: 'TELEGRAM_BOT_START',
-                    bot: {
-                        ...botInfo,
-                    },
-                });
+                    botInfo,
+                }, 'Telegram бот запущен');
             });
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
@@ -44,12 +41,7 @@ export default class AppProvider {
                 }
 
                 service.run().then(() => {
-                    logger.info({
-                        event: 'GAME_SERVICE_START',
-                        service: {
-                            name: service.constructor.name,
-                        },
-                    });
+                    logger.info(`${service.constructor.name} запущен`);
                 });
             }
         }
