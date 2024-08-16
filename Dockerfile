@@ -1,8 +1,7 @@
 FROM node:20.10.0-alpine AS base
-WORKDIR /app
-
-ENV HOST=0.0.0.0
 ENV PORT=80
+ENV HOST=0.0.0.0
+WORKDIR /app
 EXPOSE 80
 
 # All deps stage
