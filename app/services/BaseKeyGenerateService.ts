@@ -133,8 +133,8 @@ export abstract class BaseKeyGenerateService {
     public async generateKey(): Promise<string> {
         await this.login();
 
-        for (let i = 0; i < 7; i++) {
-            await sleep(120_000);
+        for (let i = 0; i < 10; i++) {
+            await sleep(60_000);
             const hasCode = await this.processKey();
             if (hasCode) {
                 break;

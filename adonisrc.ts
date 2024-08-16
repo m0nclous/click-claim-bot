@@ -55,6 +55,7 @@ export default defineConfig({
         () => import('#providers/RiderKeyGenerateProvider'),
         () => import('#providers/CubeKeyGenerateProvider'),
         () => import('#providers/TrainKeyGenerateProvider'),
+        () => import('#providers/MergeKeyGenerateProvider'),
     ],
 
     /*
