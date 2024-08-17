@@ -8,7 +8,6 @@ services:
             APP_KEY: '${APP_KEY}'
 
             TZ: '${TZ:-UTC}'
-            LOG_LEVEL: '${LOG_LEVEL:-trace}'
             NODE_ENV: '${NODE_ENV:-production}'
 
             REDIS_HOST: '${REDIS_HOST:-redis}'
@@ -20,6 +19,9 @@ services:
 
             TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN}'
             TELEGRAM_BOT_NAME: '${TELEGRAM_BOT_NAME}'
+
+            LOG_LEVEL: '${LOG_LEVEL:-trace}'
+            LOGTAIL_SOURCE_TOKEN: '${LOGTAIL_SOURCE_TOKEN:-}'
 
         depends_on:
             redis:
