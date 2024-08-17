@@ -14,9 +14,12 @@ export default class AppProvider {
         if (this.app.getEnvironment() === 'web') {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
             telegramBot.run().then((botInfo: UserFromGetMe) => {
-                logger.info({
-                    botInfo,
-                }, 'Telegram бот запущен');
+                logger.info(
+                    {
+                        botInfo,
+                    },
+                    'Telegram бот запущен',
+                );
             });
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
