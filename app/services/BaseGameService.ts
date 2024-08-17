@@ -197,7 +197,10 @@ export default abstract class BaseGameService {
     protected async requestWebView(): Promise<WebViewResultUrl> {
         const telegram: TelegramService = await app.container.make('telegram', [this.userId]);
         const client: TelegramClient = await telegram.getClient();
-        await client.connect();
+
+        if (!client.connected) {
+            await client.connect();
+        }
 
         const botEntity: TypeInputPeer = await client.getInputEntity(this.getBotName());
 
