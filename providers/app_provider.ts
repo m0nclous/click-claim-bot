@@ -14,12 +14,12 @@ export default class AppProvider {
         if (this.app.getEnvironment() === 'web') {
             const telegramBot: TelegramBotService = await this.app.container.make('telegramBot');
             telegramBot.run().then((botInfo: UserFromGetMe) => {
-                logger.info({
-                    event: 'TELEGRAM_BOT_START',
-                    bot: {
-                        ...botInfo,
+                logger.info(
+                    {
+                        botInfo,
                     },
-                });
+                    'Telegram бот запущен',
+                );
             });
 
             const gameBotServicesToRun: GameBotServiceBinding[] = [
@@ -44,12 +44,7 @@ export default class AppProvider {
                 }
 
                 service.run().then(() => {
-                    logger.info({
-                        event: 'GAME_SERVICE_START',
-                        service: {
-                            name: service.constructor.name,
-                        },
-                    });
+                    logger.info(`${service.constructor.name} запущен`);
                 });
             }
         }
