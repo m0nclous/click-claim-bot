@@ -333,7 +333,7 @@ export class TelegramBotService {
                                 ctxUpdate: ctx.update,
                                 error,
                             },
-                            `Ошибка входа в Telegram`,
+                            'Ошибка входа в Telegram',
                         );
 
                         await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
