@@ -5,6 +5,10 @@ export class TwerkKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Twerk';
+    }
+
     protected getAppToken(): string {
         return '61308365-9d16-4040-8bb0-2f4a4c69074c';
     }

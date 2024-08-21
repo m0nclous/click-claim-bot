@@ -130,7 +130,6 @@ export default abstract class BaseGameService {
             credentials: 'omit',
             headers: {
                 'x-requested-with': 'org.telegram.messenger',
-                // 'user-agent': 'Mozilla/5.0 (Linux; Android 13; 2207117BPG Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/126.0.6478.134 Mobile Safari/537.36',
 
                 'accept': '*/*',
                 'cache-control': 'no-cache',
@@ -158,38 +157,26 @@ export default abstract class BaseGameService {
 
                         const urlInstance = new URL(request.url);
 
-                        logger.use('gameServiceRequest').trace({
-                            event: 'GAME_SERVICE_HTTP',
-                            game: this.getGameName(),
-                            userId: this.userId,
-                            request: {
-                                method: request.method,
-                                url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
-                                search: Object.fromEntries(options.searchParams?.entries() ?? []),
-                                headers: Object.fromEntries(request.headers),
-                                json: await request.json().catch(() => null),
+                        logger.use('gameServiceRequest').trace(
+                            {
+                                userId: this.userId,
+                                request: {
+                                    method: request.method,
+                                    url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
+                                    search: Object.fromEntries(options.searchParams?.entries() ?? []),
+                                    headers: Object.fromEntries(request.headers),
+                                    json: await request.json().catch(() => null),
+                                },
+                                response: {
+                                    status: response.status,
+                                    headers: Object.fromEntries(response.headers),
+                                    json: await response.json().catch(() => null),
+                                },
                             },
-                            response: {
-                                status: response.status,
-                                headers: Object.fromEntries(response.headers),
-                                json: await response.json().catch(() => null),
-                            },
-                        });
+                            `Game HTTP Request - ${this.getGameName()}`,
+                        );
                     },
                 ],
-
-                // beforeError: [
-                //     (error: HTTPError): HTTPError => {
-                //         logger.use('gameServiceRequest').error({
-                //             event: 'GAME_SERVICE_HTTP',
-                //             game: this.getGameName(),
-                //             userId: this.userId,
-                //             error,
-                //         });
-                //
-                //         return error;
-                //     },
-                // ],
             },
         });
     }

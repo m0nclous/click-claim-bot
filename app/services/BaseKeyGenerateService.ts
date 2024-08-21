@@ -12,6 +12,8 @@ export abstract class BaseKeyGenerateService {
 
     protected constructor(protected clientId: string) {}
 
+    public abstract getAppName(): string;
+
     protected abstract getAppToken(): string;
 
     protected abstract getPromoId(): string;
@@ -45,23 +47,23 @@ export abstract class BaseKeyGenerateService {
 
                         const urlInstance = new URL(request.url);
 
-                        logger.use('keyGenerateServiceRequest').trace({
-                            event: 'KEY_GENERATE_HTTP',
-                            appToken: this.getAppToken(),
-                            clientId: this.clientId,
-                            request: {
-                                method: request.method,
-                                url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
-                                search: Object.fromEntries(options.searchParams?.entries() ?? []),
-                                headers: Object.fromEntries(request.headers),
-                                json: await request.json().catch(() => null),
+                        logger.use('keyGenerateServiceRequest').trace(
+                            {
+                                request: {
+                                    method: request.method,
+                                    url: `${urlInstance.protocol}//${urlInstance.host}${urlInstance.pathname}`,
+                                    search: Object.fromEntries(options.searchParams?.entries() ?? []),
+                                    headers: Object.fromEntries(request.headers),
+                                    json: await request.json().catch(() => null),
+                                },
+                                response: {
+                                    status: response.status,
+                                    headers: Object.fromEntries(response.headers),
+                                    json: await response.json().catch(() => null),
+                                },
                             },
-                            response: {
-                                status: response.status,
-                                headers: Object.fromEntries(response.headers),
-                                json: await response.json().catch(() => null),
-                            },
-                        });
+                            `Generate Key - HTTP Request - ${this.getAppName()}`,
+                        );
                     },
                 ],
             },

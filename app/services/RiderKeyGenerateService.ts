@@ -5,6 +5,10 @@ export class RiderKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Riding Extreme 3D';
+    }
+
     protected getAppToken(): string {
         return 'd28721be-fd2d-4b45-869e-9f253b554e50';
     }

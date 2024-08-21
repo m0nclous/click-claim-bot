@@ -5,6 +5,10 @@ export class ClonesKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'My clone army';
+    }
+
     protected getAppToken(): string {
         return '74ee0b5b-775e-4bee-974f-63e7f4d5bacb';
     }

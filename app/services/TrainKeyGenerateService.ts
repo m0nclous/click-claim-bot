@@ -5,6 +5,10 @@ export class TrainKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Train Miner';
+    }
+
     protected getAppToken(): string {
         return '82647f43-3f87-402d-88dd-09a90025313f';
     }
