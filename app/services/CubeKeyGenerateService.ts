@@ -5,6 +5,10 @@ export class CubeKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Chain Cube';
+    }
+
     protected getAppToken(): string {
         return 'd1690a07-3780-4068-810f-9b5bbf2931b2';
     }

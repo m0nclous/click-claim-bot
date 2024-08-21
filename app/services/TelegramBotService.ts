@@ -327,12 +327,14 @@ export class TelegramBotService {
                         onLoginResolve(true);
                     })
                     .catch(async (error: Error) => {
-                        this.logger.error({
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 2,
-                            ctxUpdate: ctx.update,
-                            error,
-                        });
+                        this.logger.error(
+                            {
+                                step: 2,
+                                ctxUpdate: ctx.update,
+                                error,
+                            },
+                            `Ошибка входа в Telegram`,
+                        );
 
                         await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
                         await ctx.scene.leave();
@@ -434,10 +436,12 @@ export class TelegramBotService {
                 await state.telegram?.saveSession();
                 await ctx.reply('Telegram аккаунт успешно привязан');
 
-                this.logger.info({
-                    event: 'TELEGRAM_LOGIN_SUCCESS',
-                    userId: ctx.message.from.id,
-                });
+                this.logger.info(
+                    {
+                        userId: ctx.message.from.id,
+                    },
+                    'Успешный вход в Telegram',
+                );
 
                 return await ctx.scene.leave();
             },
@@ -448,18 +452,22 @@ export class TelegramBotService {
             if ('my_chat_member' in ctx.update) {
                 // Обработка случаев, когда пользователь остановил бота
                 if (['kicked', 'left'].includes(ctx.update.my_chat_member.new_chat_member.status)) {
-                    this.logger.debug({
-                        event: 'TELEGRAM_BOT_KICKED',
-                        ctxUpdate: ctx.update,
-                    });
+                    this.logger.debug(
+                        {
+                            ctxUpdate: ctx.update,
+                        },
+                        'Бот остановлен',
+                    );
 
                     // Выход со сцены и остановка дальнейших middleware
                     return ctx.scene.leave();
                 } else {
-                    this.logger.trace({
-                        event: 'TELEGRAM_BOT_ADD',
-                        ctxUpdate: ctx.update,
-                    });
+                    this.logger.trace(
+                        {
+                            ctxUpdate: ctx.update,
+                        },
+                        'Бот добавлен',
+                    );
 
                     return;
                 }

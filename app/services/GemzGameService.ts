@@ -318,11 +318,13 @@ export default class GemzGameService
     private async retryFunction(event: string, retryFunc: () => Promise<void>) {
         let replicateError: boolean = true;
         for (let attemptCount = 1; attemptCount < 4; attemptCount++) {
-            logger.debug({
-                event,
-                userId: this.userId,
-                attemptCount,
-            });
+            logger.debug(
+                {
+                    userId: this.userId,
+                    attemptCount,
+                },
+                `Gemz retry ${event}`,
+            );
 
             await sleep(0.3 * Math.pow(2, attemptCount - 1) * 1000);
             replicateError = await retryFunc()

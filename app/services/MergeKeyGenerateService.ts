@@ -5,6 +5,10 @@ export class MergeKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Merge Away!';
+    }
+
     protected getAppToken(): string {
         return '8d1cc2ad-e097-4b86-90ef-7a27e19fb833';
     }

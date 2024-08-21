@@ -5,6 +5,10 @@ export class PolysphereKeyGenerateService extends BaseKeyGenerateService {
         super(clientId);
     }
 
+    public getAppName(): string {
+        return 'Polysphere';
+    }
+
     protected getAppToken(): string {
         return '2aaf5aee-2cbc-47ec-8a3f-0962cc14bc71';
     }
