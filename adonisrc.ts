@@ -57,6 +57,7 @@ export default defineConfig({
         () => import('#providers/TrainKeyGenerateProvider'),
         () => import('#providers/MergeKeyGenerateProvider'),
         () => import('#providers/TwerkKeyGenerateProvider'),
+        () => import('#providers/PolysphereKeyGenerateProvider'),
     ],
 
     /*
