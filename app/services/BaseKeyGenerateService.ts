@@ -152,8 +152,8 @@ export abstract class BaseKeyGenerateService {
     public async generateKey(): Promise<string> {
         await this.login();
 
-        for (let i = 0; i < 20; i++) {
-            await sleep(60_000);
+        for (let i = 0; i < 40; i++) {
+            await sleep(30_000);
 
             const hasCode = await this.processKey().catch((error: TooManyRegisterException | Error) => {
                 if (error instanceof TooManyRegisterException) {
