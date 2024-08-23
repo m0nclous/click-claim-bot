@@ -58,6 +58,8 @@ export default defineConfig({
         () => import('#providers/MergeKeyGenerateProvider'),
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
+        () => import('#providers/MowAndTrimKeyGenerateProvider'),
+        () => import('#providers/MudRacingKeyGenerateProvider'),
     ],
 
     /*
