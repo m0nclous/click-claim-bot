@@ -388,16 +388,16 @@ interface TapRequest {
 }
 
 interface IHolderStateMessage {
-    id: number,
-    balance: number,
-    total_balance: number,
-    energy: number,
-    holder_power: number,
-    last_collection_time: number,
-    accumulated_ref_balance: number,
-    all_first_level_ref_balance: number,
-    all_second_level_ref_balance: number,
-    all_third_level_ref_balance: number
+    id: number;
+    balance: number;
+    total_balance: number;
+    energy: number;
+    holder_power: number;
+    last_collection_time: number;
+    accumulated_ref_balance: number;
+    all_first_level_ref_balance: number;
+    all_second_level_ref_balance: number;
+    all_third_level_ref_balance: number;
 }
 
 const ResponseType = avro.Type.forSchema({
@@ -590,13 +590,16 @@ export default class CityHoldersGameService extends BaseGameService implements H
         const response: GameSyncData = await this.getGameSyncData();
         const energy: number = response.energy;
 
-        logger.info({
-            user: {
-                telegram: {
-                    id: this.userId,
+        logger.info(
+            {
+                user: {
+                    telegram: {
+                        id: this.userId,
+                    },
                 },
             },
-        }, `[${this.getGameName()}] Get energy: ${energy}`);
+            `[${this.getGameName()}] Get energy: ${energy}`,
+        );
 
         return energy;
     }
@@ -620,14 +623,17 @@ export default class CityHoldersGameService extends BaseGameService implements H
 
         const response: IHolderStateMessage = HolderStateMessage.fromBuffer(responseBuffer);
 
-        logger.info({
-            response: response,
-            user: {
-                telegram: {
-                    id: this.userId,
+        logger.info(
+            {
+                response: response,
+                user: {
+                    telegram: {
+                        id: this.userId,
+                    },
                 },
             },
-        }, `[${this.getGameName()}] Send taps: ${quantity}`);
+            `[${this.getGameName()}] Send taps: ${quantity}`,
+        );
 
         await emitter.emit('city-holders:tap', {
             self: this,
