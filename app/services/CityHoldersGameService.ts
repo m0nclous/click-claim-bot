@@ -576,6 +576,7 @@ export default class CityHoldersGameService extends BaseGameService implements H
 
         setTimeout(() => {
             this.token = null;
+            this.ws = null;
             this.requestCounter = 0;
         }, 60_000 * 5);
 

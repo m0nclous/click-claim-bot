@@ -1,6 +1,6 @@
 services:
     app:
-        image: m0nclous/click-claim-bot:v1.2.1
+        image: m0nclous/click-claim-bot:v1.2.2
         restart: unless-stopped
         volumes:
             - './storage/logs:/app/storage/logs'
