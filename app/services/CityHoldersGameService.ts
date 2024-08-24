@@ -4,6 +4,7 @@ import WebSocket from 'ws';
 import { callbackPromise, ICallbackPromise } from '#helpers/promise';
 import type { ITapEvent } from '#services/BaseClickBotService';
 import emitter from '@adonisjs/core/services/emitter';
+import logger from '@adonisjs/core/services/logger';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
@@ -267,6 +268,138 @@ const SyncResponseMessage = avro.Type.forSchema({
     ],
 });
 
+const HolderStateMessage = avro.Type.forSchema({
+    type: 'record',
+    namespace: 'HolderStateMessage',
+    name: 'HolderStateMessage',
+    fields: [
+        {
+            type: 'long',
+            name: 'id',
+        },
+        {
+            type: 'long',
+            name: 'balance',
+        },
+        {
+            type: 'long',
+            name: 'total_balance',
+        },
+        {
+            type: 'long',
+            name: 'energy',
+        },
+        {
+            type: 'long',
+            name: 'holder_power',
+        },
+        {
+            type: ['double', 'null'],
+            name: 'last_collection_time',
+        },
+        {
+            type: 'long',
+            name: 'accumulated_ref_balance',
+        },
+        {
+            type: 'long',
+            name: 'all_first_level_ref_balance',
+        },
+        {
+            type: 'long',
+            name: 'all_second_level_ref_balance',
+        },
+        {
+            type: 'long',
+            name: 'all_third_level_ref_balance',
+        },
+    ],
+});
+
+interface Building {
+    id: string;
+    level: number;
+    build_at: number;
+}
+
+interface City {
+    name: string;
+    level: number;
+    created_at: number;
+    buildings: Building[];
+}
+
+interface TurboBoost {
+    attempts: number;
+    last_use_timestamp: number | null;
+}
+
+interface InstantRecoveryBoost {
+    attempts: number;
+    last_use_timestamp: number | null;
+}
+
+interface EnergyBoost {
+    level: number;
+}
+
+interface EnergyRecoveryRateBoost {
+    level: number;
+}
+
+interface GameSyncData {
+    id: number;
+    holder_power: number;
+    balance: number;
+    total_balance: number;
+    earned_money: number;
+    energy: number;
+    daily_energy_restored: number;
+    max_energy: number;
+    city: City;
+    turbo_boost: TurboBoost;
+    instant_recovery_boost: InstantRecoveryBoost;
+    energy_boost: EnergyBoost;
+    energy_recovery_rate_boost: EnergyRecoveryRateBoost;
+    last_collection_time: number;
+    missions: number[];
+    daily_reward_counter: number;
+    time_between_last_online_and_now: number;
+    is_daily_reward: boolean;
+    is_early: boolean;
+    early_friends: number;
+    accumulated_ref_balance: number;
+    all_first_level_ref_balance: number;
+    all_second_level_ref_balance: number;
+    all_third_level_ref_balance: number;
+}
+
+interface GetSyncDataRequest {
+    action: 'sync';
+    id: number;
+    timestamp: number;
+}
+
+interface TapRequest {
+    action: 'tap';
+    count_of_taps: number;
+    timestamp: number;
+    id: number;
+}
+
+interface IHolderStateMessage {
+    id: number,
+    balance: number,
+    total_balance: number,
+    energy: number,
+    holder_power: number,
+    last_collection_time: number,
+    accumulated_ref_balance: number,
+    all_first_level_ref_balance: number,
+    all_second_level_ref_balance: number,
+    all_third_level_ref_balance: number
+}
+
 const ResponseType = avro.Type.forSchema({
     name: 'Response',
     type: 'record',
@@ -337,6 +470,8 @@ export default class CityHoldersGameService extends BaseGameService implements H
 
     protected wsCallbackPromise: ICallbackPromise<any> | null = null;
 
+    protected requestCounter: number = 0;
+
     public getGameName(): string {
         return 'CityHolders';
     }
@@ -376,6 +511,10 @@ export default class CityHoldersGameService extends BaseGameService implements H
             }
         });
 
+        this.ws.on('error', (error) => {
+            logger.error(error);
+        });
+
         return new Promise<WebSocket>((resolve) => {
             this.ws!.on('open', () => {
                 resolve(this.ws!);
@@ -384,9 +523,40 @@ export default class CityHoldersGameService extends BaseGameService implements H
     }
 
     async websocketRequest(data: any): Promise<Buffer | null> {
+        logger.trace(
+            {
+                data,
+                user: {
+                    telegram: {
+                        id: this.userId,
+                    },
+                },
+            },
+            'Websocket request',
+        );
+
         this.wsCallbackPromise = callbackPromise();
         this.ws!.send(RequestType.toBuffer(data));
         return this.wsCallbackPromise.promise;
+    }
+
+    async getGameSyncData(): Promise<GameSyncData> {
+        const data: GetSyncDataRequest = {
+            action: 'sync',
+            id: ++this.requestCounter,
+            timestamp: new Date().getTime() / 1000,
+        };
+
+        const responseBuffer = await this.websocketRequest({
+            auth: null,
+            content: [...SyncRequestMessage.toBuffer(data)],
+        });
+
+        if (responseBuffer === null) {
+            throw new Error('Buffer is empty');
+        }
+
+        return SyncResponseMessage.fromBuffer(responseBuffer);
     }
 
     async login(): Promise<void> {
@@ -403,6 +573,12 @@ export default class CityHoldersGameService extends BaseGameService implements H
             .json();
 
         this.token = response.token;
+
+        setTimeout(() => {
+            this.token = null;
+            this.requestCounter = 0;
+        }, 60_000 * 5);
+
         await this.makeWebSocket(response.shard_url);
         await this.websocketRequest({
             auth: this.token,
@@ -411,38 +587,47 @@ export default class CityHoldersGameService extends BaseGameService implements H
     }
 
     async getTapQuantity(): Promise<number> {
+        const response: GameSyncData = await this.getGameSyncData();
+        const energy: number = response.energy;
+
+        logger.info({
+            user: {
+                telegram: {
+                    id: this.userId,
+                },
+            },
+        }, `[${this.getGameName()}] Get energy: ${energy}`);
+
+        return energy;
+    }
+
+    async tap(quantity: number): Promise<void> {
+        const data: TapRequest = {
+            action: 'tap',
+            count_of_taps: quantity,
+            timestamp: new Date().getTime() / 1000,
+            id: ++this.requestCounter,
+        };
+
         const responseBuffer = await this.websocketRequest({
             auth: null,
-            content: [
-                ...SyncRequestMessage.toBuffer({
-                    action: 'sync',
-                    id: 1,
-                    timestamp: new Date().getTime() / 1000,
-                }),
-            ],
+            content: [...TapType.toBuffer(data)],
         });
 
         if (responseBuffer === null) {
             throw new Error('Buffer is empty');
         }
 
-        const response = SyncResponseMessage.fromBuffer(responseBuffer);
+        const response: IHolderStateMessage = HolderStateMessage.fromBuffer(responseBuffer);
 
-        return response.energy;
-    }
-
-    async tap(quantity: number): Promise<void> {
-        await this.websocketRequest({
-            auth: null,
-            content: [
-                ...TapType.toBuffer({
-                    action: 'tap',
-                    count_of_taps: quantity,
-                    timestamp: new Date().getTime() / 1000,
-                    id: 2,
-                }),
-            ],
-        });
+        logger.info({
+            response: response,
+            user: {
+                telegram: {
+                    id: this.userId,
+                },
+            },
+        }, `[${this.getGameName()}] Send taps: ${quantity}`);
 
         await emitter.emit('city-holders:tap', {
             self: this,

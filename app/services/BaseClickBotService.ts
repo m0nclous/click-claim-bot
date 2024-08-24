@@ -50,7 +50,7 @@ export abstract class BaseClickBotService extends BaseBotService {
 
             const tapQuantity: number = await gameService.getTapQuantity();
 
-            if (tapQuantity === 0) {
+            if (tapQuantity <= 0) {
                 return;
             }
 
