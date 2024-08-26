@@ -33,6 +33,7 @@ export default class AppProvider {
                 'zavodClaimBotService',
                 'toonClaimBotService',
                 'timeFarmClaimBotService',
+                'zavodCraftBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {
