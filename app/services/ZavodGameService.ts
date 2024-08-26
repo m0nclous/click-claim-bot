@@ -17,6 +17,8 @@ export interface IUserProfile {
     refSyncAttempts: number;
     achievements: null;
     serverTime: string;
+    craftGameAvailableAt: string;
+    craftGameId: number;
 }
 
 export interface IUserFarm {
@@ -29,6 +31,71 @@ export interface IUserFarm {
     workbenchLevel: number;
     helmetLevel: number;
     lastClaim: string;
+}
+
+export interface ICraftGamePart {
+    id: number;
+    type: string;
+    price: number;
+    icon: string;
+}
+
+export interface ICraftGamePartTrash extends ICraftGamePart {
+    id: 1;
+    type: 'TRASH';
+}
+
+export interface ICraftGamePartCooler extends ICraftGamePart {
+    id: 2;
+    type: 'COOLER';
+}
+
+export interface ICraftGamePartSpring extends ICraftGamePart {
+    id: 3;
+    type: 'SPRING';
+}
+
+export interface ICraftGamePartGear extends ICraftGamePart {
+    id: 4;
+    type: 'GEAR';
+}
+
+export interface ICraftGamePartBolt extends ICraftGamePart {
+    id: 5;
+    type: 'BOLT';
+}
+
+export interface ICraftGamePartScrew extends ICraftGamePart {
+    id: 6;
+    type: 'SCREW';
+}
+
+export interface ICraftGame {
+    id: number;
+    userTelegramId: string;
+    level: number;
+    board: ICraftGamePart['id'][];
+    startTimestamp: string;
+    gameOverTimestamp: string | null;
+    seed: number;
+    savedParts: ICraftGamePart['id'][];
+    soldParts: ICraftGamePart['id'][];
+    helmet2Active: boolean;
+    parts: (
+        | ICraftGamePartTrash
+        | ICraftGamePartBolt
+        | ICraftGamePartCooler
+        | ICraftGamePartGear
+        | ICraftGamePartScrew
+        | ICraftGamePartSpring
+    )[];
+    baseMultiplier: number;
+    comboMultiplier: number;
+}
+
+export interface ICraftGameFinish {
+    action: 'SAVE' | 'SELL';
+    selectedSells: ICraftGamePart['id'][];
 }
 
 export default class ZavodGameService extends BaseGameService implements HasClaim {
@@ -138,5 +205,46 @@ export default class ZavodGameService extends BaseGameService implements HasClai
         const userFarm: IUserFarm = await this.getUserFarm();
 
         return new Date(userFarm.lastClaim);
+    }
+
+    async canStartCraftGame(): Promise<boolean> {
+        const userProfile: IUserProfile = await this.getUserProfile();
+        const craftGameAvailableAt = new Date(userProfile.craftGameAvailableAt);
+
+        return new Date() >= craftGameAvailableAt;
+    }
+
+    async getCraftGame(): Promise<ICraftGame> {
+        return this.httpClient.get('craftGame').json();
+    }
+
+    async finishCraftGame(
+        action: ICraftGameFinish['action'],
+        cells: ICraftGameFinish['selectedSells'],
+    ): Promise<ICraftGame> {
+        return this.httpClient
+            .post('craftGame/finishLevel', {
+                json: {
+                    action,
+                    selectedSells: cells,
+                },
+            })
+            .json();
+    }
+
+    public makeCraftGameBoard(board: ICraftGame['board'], seed: ICraftGame['seed']): ICraftGame['board'] {
+        for (let i = 20; i > 0; i) {
+            const step1 = 10_000 * Math.sin(seed);
+            const step2 = step1 - Math.floor(step1);
+            const step3 = Math.floor(step2 * i--);
+
+            const tempItem = board[i];
+            board[i] = board[step3];
+            board[step3] = tempItem;
+
+            seed++;
+        }
+
+        return board;
     }
 }

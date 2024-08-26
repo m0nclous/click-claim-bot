@@ -49,6 +49,7 @@ export default defineConfig({
         () => import('#providers/MemeFiClickBotServiceProvider'),
         () => import('#providers/Mine2MineClickBotServiceProvider'),
         () => import('#providers/ZavodClaimBotServiceProvider'),
+        () => import('#providers/ZavodCraftBotServiceProvider'),
         () => import('#providers/ToonClaimBotServiceProvider'),
         () => import('#providers/TimeFarmClaimBotServiceProvider'),
         () => import('#providers/ClonesKeyGenerateProvider'),
