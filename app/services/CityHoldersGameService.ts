@@ -485,7 +485,7 @@ export default class CityHoldersGameService extends BaseGameService implements H
     }
 
     protected getBaseUrl(): string {
-        return 'https://api.city-holder.com';
+        return 'https://api-reserve.city-holder.com';
     }
 
     async makeWebSocket(url: string): Promise<WebSocket> {
