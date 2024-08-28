@@ -61,6 +61,7 @@ export default defineConfig({
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
         () => import('#providers/MudRacingKeyGenerateProvider'),
+        () => import('#providers/CafeDashKeyGenerateProvider'),
     ],
 
     /*
