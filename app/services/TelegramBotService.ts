@@ -90,6 +90,7 @@ export class TelegramBotService {
         this.bot.command('get_keys_polysphere', this.getKeysPolysphere.bind(this));
         this.bot.command('get_keys_mow_and_trim', this.getKeysMowAndTrim.bind(this));
         this.bot.command('get_keys_mud_racing', this.getKeysMudRacing.bind(this));
+        this.bot.command('get_keys_cafe_dash', this.getKeysCafeDash.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -235,6 +236,10 @@ export class TelegramBotService {
             {
                 command: 'get_keys_mud_racing',
                 description: 'Получить ключи для игры Mud Racing',
+            },
+            {
+                command: 'get_keys_cafe_dash',
+                description: 'Получить ключи для игры Cafe Dash',
             },
         ]);
     }
@@ -844,6 +849,27 @@ export class TelegramBotService {
 
                 await ctx.replyWithHTML(
                     'Не удалось сгенерировать ключи Mud Racing\n' + `<code>${error.message}</code>`,
+                );
+            });
+
+        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+    }
+
+    public async getKeysCafeDash(ctx: Context): Promise<void> {
+        Promise.all([
+            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
+            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
+            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
+            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
+        ])
+            .then(async (codes) => {
+                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+            })
+            .catch(async (error) => {
+                logger.error(error);
+
+                await ctx.replyWithHTML(
+                    'Не удалось сгенерировать ключи Cafe Dash\n' + `<code>${error.message}</code>`,
                 );
             });
 
