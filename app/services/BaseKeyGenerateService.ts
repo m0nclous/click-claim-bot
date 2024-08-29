@@ -114,8 +114,16 @@ export abstract class BaseKeyGenerateService {
             .post('promo/register-event', {
                 json: payload,
             })
-            .catch(async (error: HTTPError) => {
-                const json: any = await error.response.json();
+            .catch(async (error: HTTPError | Error) => {
+                if (!('response' in error)) {
+                    throw error;
+                }
+
+                const json: any | null = await error.response.json().catch(() => null);
+
+                if (json === null) {
+                    throw error;
+                }
 
                 if (json.error_code === 'TooManyRegister') {
                     throw new TooManyRegisterException(json.error_message, error);
