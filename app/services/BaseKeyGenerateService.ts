@@ -119,7 +119,10 @@ export abstract class BaseKeyGenerateService {
                     throw error;
                 }
 
-                const json: any | null = await error.response.clone().json().catch(() => null);
+                const json: any | null = await error.response
+                    .clone()
+                    .json()
+                    .catch(() => null);
 
                 if (json === null) {
                     logger.error(error, error.response.clone().body as unknown as string);
@@ -150,7 +153,10 @@ export abstract class BaseKeyGenerateService {
                     throw error;
                 }
 
-                const json: any | null = await error.response.clone().json().catch(() => null);
+                const json: any | null = await error.response
+                    .clone()
+                    .json()
+                    .catch(() => null);
 
                 if (json === null) {
                     logger.error(error, error.response.clone().body as unknown as string);
