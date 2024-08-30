@@ -52,7 +52,6 @@ export default defineConfig({
         () => import('#providers/ZavodCraftBotServiceProvider'),
         () => import('#providers/ToonClaimBotServiceProvider'),
         () => import('#providers/TimeFarmClaimBotServiceProvider'),
-        () => import('#providers/ClonesKeyGenerateProvider'),
         () => import('#providers/CubeKeyGenerateProvider'),
         () => import('#providers/TrainKeyGenerateProvider'),
         () => import('#providers/MergeKeyGenerateProvider'),
