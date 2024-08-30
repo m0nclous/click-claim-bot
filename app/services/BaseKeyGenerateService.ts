@@ -119,9 +119,13 @@ export abstract class BaseKeyGenerateService {
                     throw error;
                 }
 
-                const json: any | null = await error.response.json().catch(() => null);
+                const json: any | null = await error.response
+                    .clone()
+                    .json()
+                    .catch(() => null);
 
                 if (json === null) {
+                    logger.error(error, error.response.clone().body as unknown as string);
                     throw error;
                 }
 
@@ -144,8 +148,20 @@ export abstract class BaseKeyGenerateService {
                     promoId: this.getPromoId(),
                 },
             })
-            .catch(async (error: HTTPError) => {
-                const json: any = await error.response.json();
+            .catch(async (error: HTTPError | Error) => {
+                if (!(error instanceof HTTPError)) {
+                    throw error;
+                }
+
+                const json: any | null = await error.response
+                    .clone()
+                    .json()
+                    .catch(() => null);
+
+                if (json === null) {
+                    logger.error(error, error.response.clone().body as unknown as string);
+                    throw error;
+                }
 
                 if (json.error_message) {
                     throw new Error(json.error_message);
@@ -172,6 +188,12 @@ export abstract class BaseKeyGenerateService {
 
                 if (error instanceof TimeoutError) {
                     return false;
+                }
+
+                if (error instanceof HTTPError) {
+                    if (error.response.status === 503) {
+                        return false;
+                    }
                 }
 
                 throw error;

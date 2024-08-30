@@ -1,6 +1,6 @@
 import emitter from '@adonisjs/core/services/emitter';
 import app from '@adonisjs/core/services/app';
-import { TelegramBotService } from '#services/TelegramBotService';
+import telegramBot, { TelegramBotService } from '#services/TelegramBotService';
 import type {
     ISessionExpiredErrorEvent,
     ISessionExpiredEvent,
@@ -9,6 +9,8 @@ import type {
 } from '#services/BaseClickBotService';
 import type { IClaimErrorEvent, IClaimEvent } from '#services/BaseClaimBotService';
 import { IZavodCraftErrorEvent, IZavodCraftEvent } from '#services/ZavodCraftBotService';
+import { IUnauthenticatedErrorEvent } from '#services/BaseBotService';
+import type { TelegramService } from '#services/TelegramService';
 
 export const notifyTap = async (data: ITapEvent) => {
     const telegramBot: TelegramBotService = await app.container.make('telegramBot', [data.userId]);
@@ -137,3 +139,13 @@ emitter.on('bot:zavod:craft:error', notifyZavodCraftFinishError);
 
 emitter.on<any, any>('gemz:tap:error', notifyTapError);
 emitter.on<any, any>('gemz:session-expired:error', notifySessionExpiredError);
+
+emitter.on('bot:error:unauthenticated', async (data: IUnauthenticatedErrorEvent) => {
+    await telegramBot.bot.telegram.sendMessage(
+        data.userId,
+        'Не удалось получить доступ к сессии Telegram!\nПроизведена очистка настроек бота.\nДля продолжения необходимо повторно войти /login',
+    );
+
+    const telegram: TelegramService = await app.container.make('telegram', [data.userId]);
+    await telegram.forgetSession();
+});
