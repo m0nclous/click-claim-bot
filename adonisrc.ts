@@ -59,7 +59,6 @@ export default defineConfig({
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
-        () => import('#providers/MudRacingKeyGenerateProvider'),
         () => import('#providers/CafeDashKeyGenerateProvider'),
         () => import('#providers/GangsWarsKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
