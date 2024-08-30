@@ -25,8 +25,18 @@ export class TelegramService {
         protected redis: RedisService,
     ) {}
 
+    public async hasAuthKey(): Promise<boolean> {
+        const authKey: string | null = await this.getAuthKey();
+
+        return authKey !== null;
+    }
+
+    public async getAuthKey(): Promise<string | null> {
+        return this.redis.hget(`user:${this.userId}`, 'auth-key');
+    }
+
     public async getSession(): Promise<StringSession> {
-        const authKey: string | null = await this.redis.hget(`user:${this.userId}`, 'auth-key');
+        const authKey: string | null = await this.getAuthKey();
 
         const session: StringSession = new StringSession(authKey ?? '');
         session.setDC(this.config.dc.id, this.config.dc.ip, this.config.dc.port);

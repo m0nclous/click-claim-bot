@@ -3,6 +3,8 @@ import emitter from '@adonisjs/core/services/emitter';
 import ZavodGameService, { ICraftGame, ICraftGameFinish } from '#services/ZavodGameService';
 import { sleep } from '#helpers/timer';
 import { randomInt } from 'crypto';
+import logger from '@adonisjs/core/services/logger';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 
 export interface IZavodCraftEvent {
     self: ZavodGameService;
@@ -94,11 +96,19 @@ export class ZavodCraftBotService extends BaseBotService {
                 });
             }
         } catch (error) {
-            await emitter.emit('bot:zavod:craft:error', {
-                self: gameService,
-                userId: parseInt(userId),
-                error,
-            });
+            if (error instanceof UnauthenticatedException) {
+                await emitter.emit('bot:error:unauthenticated', {
+                    userId: parseInt(userId),
+                });
+            } else {
+                logger.error(error);
+
+                await emitter.emit('bot:zavod:craft:error', {
+                    self: gameService,
+                    userId: parseInt(userId),
+                    error,
+                });
+            }
 
             throw error;
         }

@@ -13,6 +13,7 @@ import type { TelegramClient } from 'telegram';
 import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -872,6 +873,8 @@ export class TelegramBotService {
                 messageLines.push(
                     `<pre><code class="json">${JSON.stringify(errorJson, null, 4)}</code></pre>`,
                 );
+            } else if (error instanceof UnauthenticatedException) {
+                logger.debug(error);
             } else {
                 logger.error(error);
             }

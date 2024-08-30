@@ -4,6 +4,8 @@ import { SessionExpiredError, TapError } from '#services/BaseGameService';
 import type { HasTap } from '#services/BaseGameService';
 import { sleep } from '#helpers/timer';
 import emitter from '@adonisjs/core/services/emitter';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import logger from '@adonisjs/core/services/logger';
 
 export interface ITapEvent {
     self: BaseGameService;
@@ -65,12 +67,20 @@ export abstract class BaseClickBotService extends BaseBotService {
                     throw error;
                 });
         } catch (error) {
-            await emitter.emit('bot:tap:error', {
-                self: await this.getGameService([userId]),
-                userId: parseInt(userId),
-                error,
-                quantity: 0,
-            });
+            if (error instanceof UnauthenticatedException) {
+                await emitter.emit('bot:error:unauthenticated', {
+                    userId: parseInt(userId),
+                });
+            } else {
+                logger.error(error);
+
+                await emitter.emit('bot:tap:error', {
+                    self: await this.getGameService([userId]),
+                    userId: parseInt(userId),
+                    error,
+                    quantity: 0,
+                });
+            }
 
             throw error;
         }

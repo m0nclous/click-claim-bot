@@ -4,6 +4,17 @@ import type BaseGameService from '#services/BaseGameService';
 import { randomInt } from 'node:crypto';
 import logger from '@adonisjs/core/services/logger';
 
+export interface IUnauthenticatedErrorEvent {
+    userId: number;
+}
+
+declare module '@adonisjs/core/types' {
+    // noinspection JSUnusedGlobalSymbols
+    interface EventsList {
+        'bot:error:unauthenticated': IUnauthenticatedErrorEvent;
+    }
+}
+
 export abstract class BaseBotService {
     public constructor(
         protected app: ApplicationService,
