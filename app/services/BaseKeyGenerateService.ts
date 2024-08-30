@@ -174,6 +174,12 @@ export abstract class BaseKeyGenerateService {
                     return false;
                 }
 
+                if (error instanceof HTTPError) {
+                    if (error.response.status === 503) {
+                        return false;
+                    }
+                }
+
                 throw error;
             });
 
