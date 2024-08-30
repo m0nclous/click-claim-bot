@@ -10,6 +10,8 @@ import type { KyInstance } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import type { TgWebAppDataJson } from '../../types/telegram.js';
 import type { TelegramService } from '#services/TelegramService';
+import type { RPCError } from 'telegram/errors';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 
 export class TapError<T> extends Error {
     constructor(public data: T) {
@@ -181,8 +183,16 @@ export default abstract class BaseGameService {
         });
     }
 
+    /**
+     * @throws UnauthenticatedException
+     */
     protected async requestWebView(): Promise<WebViewResultUrl> {
         const telegram: TelegramService = await app.container.make('telegram', [this.userId]);
+
+        if (!(await telegram.hasAuthKey())) {
+            throw new UnauthenticatedException('Сессия Telegram недоступна');
+        }
+
         const client: TelegramClient = await telegram.getClient();
 
         if (!client.connected) {
@@ -201,9 +211,24 @@ export default abstract class BaseGameService {
         );
     }
 
+    /**
+     * @throws UnauthenticatedException
+     */
     public async getWebViewParams(): Promise<{ [key: string]: string }> {
         if (this.webView === null) {
-            this.webView = await this.requestWebView();
+            try {
+                this.webView = await this.requestWebView();
+            } catch (error) {
+                if (error.constructor.name === 'RPCError') {
+                    const rpcError: RPCError = error;
+
+                    if (rpcError.code === 401) {
+                        throw new UnauthenticatedException('Сессия Telegram недоступна', rpcError);
+                    }
+                }
+
+                throw error;
+            }
 
             setTimeout(() => {
                 this.webView = null;
