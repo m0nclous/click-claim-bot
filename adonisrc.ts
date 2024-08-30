@@ -62,6 +62,7 @@ export default defineConfig({
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
         () => import('#providers/MudRacingKeyGenerateProvider'),
         () => import('#providers/CafeDashKeyGenerateProvider'),
+        () => import('#providers/GangsWarsKeyGenerateProvider'),
     ],
 
     /*
