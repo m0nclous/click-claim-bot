@@ -82,7 +82,6 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
         this.bot.command('get_keys_clones', this.getKeysClones.bind(this));
-        this.bot.command('get_keys_rider', this.getKeysRider.bind(this));
         this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
         this.bot.command('get_keys_train', this.getKeysTrain.bind(this));
         this.bot.command('get_keys_merge', this.getKeysMerge.bind(this));
@@ -206,10 +205,6 @@ export class TelegramBotService {
             {
                 command: 'get_keys_clones',
                 description: 'Получить ключи для игры Clones',
-            },
-            {
-                command: 'get_keys_rider',
-                description: 'Получить ключи для игры Riding Extreme 3D',
             },
             {
                 command: 'get_keys_cube',
@@ -695,27 +690,6 @@ export class TelegramBotService {
             });
 
         await ctx.reply('Начинаю генерацию.\nЭто займёт 2 минуты...');
-    }
-
-    public async getKeysRider(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('riderKeyGenerate')).generateKey(),
-            (await app.container.make('riderKeyGenerate')).generateKey(),
-            (await app.container.make('riderKeyGenerate')).generateKey(),
-            (await app.container.make('riderKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Rider\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
 
     public async getKeysCube(ctx: Context): Promise<void> {
