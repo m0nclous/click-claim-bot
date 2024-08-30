@@ -1,4 +1,4 @@
-import ky, { HTTPError, KyInstance } from 'ky';
+import ky, { HTTPError, KyInstance, TimeoutError } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
 import { sleep } from '#helpers/timer';
@@ -167,6 +167,10 @@ export abstract class BaseKeyGenerateService {
 
             const hasCode = await this.processKey().catch((error: TooManyRegisterException | Error) => {
                 if (error instanceof TooManyRegisterException) {
+                    return false;
+                }
+
+                if (error instanceof TimeoutError) {
                     return false;
                 }
 

@@ -1,22 +1,22 @@
 import { BaseKeyGenerateService } from '#services/BaseKeyGenerateService';
 
-export class MudRacingKeyGenerateService extends BaseKeyGenerateService {
+export class GangsWarsKeyGenerateService extends BaseKeyGenerateService {
     public constructor(protected clientId: string) {
         super(clientId);
     }
 
     public getAppName(): string {
-        return 'Mud Racing';
+        return 'Gangs Wars';
     }
 
     protected getAppToken(): string {
-        return '8814a785-97fb-4177-9193-ca4180ff9da8';
+        return 'b6de60a0-e030-48bb-a551-548372493523';
     }
 
     protected getPromoId(): string {
-        return '8814a785-97fb-4177-9193-ca4180ff9da8';
+        return 'c7821fa7-6632-482c-9635-2bd5798585f9';
     }
     protected getEventType(): string {
-        return 'test';
+        return '';
     }
 }

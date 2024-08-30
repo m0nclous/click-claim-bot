@@ -52,16 +52,15 @@ export default defineConfig({
         () => import('#providers/ZavodCraftBotServiceProvider'),
         () => import('#providers/ToonClaimBotServiceProvider'),
         () => import('#providers/TimeFarmClaimBotServiceProvider'),
-        () => import('#providers/ClonesKeyGenerateProvider'),
-        () => import('#providers/RiderKeyGenerateProvider'),
         () => import('#providers/CubeKeyGenerateProvider'),
         () => import('#providers/TrainKeyGenerateProvider'),
         () => import('#providers/MergeKeyGenerateProvider'),
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
-        () => import('#providers/MudRacingKeyGenerateProvider'),
         () => import('#providers/CafeDashKeyGenerateProvider'),
+        () => import('#providers/GangsWarsKeyGenerateProvider'),
+        () => import('#providers/ZoopolisKeyGenerateProvider'),
     ],
 
     /*
