@@ -63,6 +63,7 @@ export default defineConfig({
         () => import('#providers/MudRacingKeyGenerateProvider'),
         () => import('#providers/CafeDashKeyGenerateProvider'),
         () => import('#providers/GangsWarsKeyGenerateProvider'),
+        () => import('#providers/ZoopolisKeyGenerateProvider'),
     ],
 
     /*
