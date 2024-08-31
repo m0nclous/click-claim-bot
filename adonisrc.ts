@@ -67,6 +67,7 @@ export default defineConfig({
         () => import('#providers/TrainKeyBufferProvider'),
         () => import('#providers/GangsWarsKeyBufferProvider'),
         () => import('#providers/CafeDashKeyBufferProvider'),
+        () => import('#providers/MowAndTrimKeyBufferProvider'),
     ],
 
     /*
