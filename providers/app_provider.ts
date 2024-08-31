@@ -53,7 +53,10 @@ export default class AppProvider {
 
             // Key generate
 
-            const keyBufferServicesToRun: KeyGenerateServiceBinding[] = ['zoopolisKeyBuffer'];
+            const keyBufferServicesToRun: KeyGenerateServiceBinding[] = [
+                'zoopolisKeyBuffer',
+                'trainKeyBuffer',
+            ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {
                 const service: ContainerBindings[keyof ContainerBindings] =

@@ -62,6 +62,7 @@ export default defineConfig({
         () => import('#providers/GangsWarsKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyBufferProvider'),
+        () => import('#providers/TrainKeyBufferProvider'),
     ],
 
     /*

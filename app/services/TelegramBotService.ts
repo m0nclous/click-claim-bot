@@ -14,6 +14,7 @@ import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
 import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import BaseKeyBufferService from '#services/BaseKeyBufferService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -685,27 +686,6 @@ export class TelegramBotService {
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
 
-    public async getKeysTrain(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Train\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
     public async getKeysMerge(ctx: Context): Promise<void> {
         Promise.all([
             (await app.container.make('mergeKeyGenerate')).generateKey(),
@@ -833,12 +813,20 @@ export class TelegramBotService {
     }
 
     public async getKeysZoopolis(ctx: Context): Promise<void> {
-        const zoopolisKeyBuffer = await app.container.make('zoopolisKeyBuffer');
+        this.getKeys(ctx, 'zoopolisKeyBuffer').then();
+    }
 
-        zoopolisKeyBuffer
+    public async getKeysTrain(ctx: Context): Promise<void> {
+        this.getKeys(ctx, 'trainKeyBuffer').then();
+    }
+
+    public async getKeys(ctx: Context, serviceBinding: 'zoopolisKeyBuffer' | 'trainKeyBuffer') {
+        const serviceKeyBuffer: BaseKeyBufferService = await app.container.make(serviceBinding);
+
+        serviceKeyBuffer
             .getKeys(4)
             .then(async (keys) => {
-                const countKeysInBuffer = await zoopolisKeyBuffer.countKeys();
+                const countKeysInBuffer = await serviceKeyBuffer.countKeys();
 
                 const messageLines = keys.map((key: string) => `<code>${key}</code>`);
                 messageLines.push('');
