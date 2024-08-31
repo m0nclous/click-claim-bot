@@ -167,31 +167,47 @@ export abstract class BaseKeyGenerateService {
             payload.eventType = this.getEventType();
         }
 
-        const response = await this.httpClient
-            .post('promo/register-event', {
+        const request = async () =>
+            this.httpClient.post('promo/register-event', {
                 json: payload,
-            })
-            .catch(async (error: HTTPError | Error) => {
-                if (!('response' in error)) {
-                    throw error;
-                }
-
-                const json: any | null = await error.response
-                    .clone()
-                    .json()
-                    .catch(() => null);
-
-                if (json === null) {
-                    logger.error(error, error.response.clone().body as unknown as string);
-                    throw error;
-                }
-
-                if (json.error_code === 'TooManyRegister') {
-                    throw new TooManyRegisterException(json.error_message, error);
-                }
-
-                throw error;
             });
+
+        const response = await request().catch(async (error: HTTPError | Error) => {
+            if (error.message === 'fetch failed') {
+                this.logger.error(error);
+                this.logger.error(error.cause);
+
+                if (
+                    error.cause &&
+                    typeof error.cause === 'object' &&
+                    'message' in error.cause &&
+                    error.cause.message === 'Socket closed'
+                ) {
+                    return await request();
+                }
+            }
+
+            if (!('response' in error)) {
+                logger.error(error);
+                throw error;
+            }
+
+            const json: any | null = await error.response
+                .clone()
+                .json()
+                .catch(() => null);
+
+            if (json === null) {
+                logger.error(error, error.response.clone().body as unknown as string);
+                throw error;
+            }
+
+            if (json.error_code === 'TooManyRegister') {
+                throw new TooManyRegisterException(json.error_message, error);
+            }
+
+            throw error;
+        });
 
         const data: any = await response.json();
 
