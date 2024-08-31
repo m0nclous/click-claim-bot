@@ -60,6 +60,7 @@ export default class AppProvider {
                 'cafeDashKeyBuffer',
                 'mowAndTrimKeyBuffer',
                 'cubeKeyBuffer',
+                'mergeKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {
