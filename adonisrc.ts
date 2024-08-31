@@ -71,6 +71,7 @@ export default defineConfig({
         () => import('#providers/CubeKeyBufferProvider'),
         () => import('#providers/MergeKeyBufferProvider'),
         () => import('#providers/TwerkKeyBufferProvider'),
+        () => import('#providers/PolysphereKeyBufferProvider'),
     ],
 
     /*
