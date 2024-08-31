@@ -57,6 +57,7 @@ export default class AppProvider {
                 'zoopolisKeyBuffer',
                 'trainKeyBuffer',
                 'gangsWarsKeyBuffer',
+                'cafeDashKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {

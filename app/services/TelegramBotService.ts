@@ -770,27 +770,6 @@ export class TelegramBotService {
         await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
     }
 
-    public async getKeysCafeDash(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Cafe Dash\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
     public async getKeysZoopolis(ctx: Context): Promise<void> {
         this.getKeys(ctx, 'zoopolisKeyBuffer').then();
     }
@@ -799,13 +778,17 @@ export class TelegramBotService {
         this.getKeys(ctx, 'gangsWarsKeyBuffer').then();
     }
 
+    public async getKeysCafeDash(ctx: Context): Promise<void> {
+        this.getKeys(ctx, 'cafeDashKeyBuffer').then();
+    }
+
     public async getKeysTrain(ctx: Context): Promise<void> {
         this.getKeys(ctx, 'trainKeyBuffer').then();
     }
 
     public async getKeys(
         ctx: Context,
-        serviceBinding: 'zoopolisKeyBuffer' | 'trainKeyBuffer' | 'gangsWarsKeyBuffer',
+        serviceBinding: 'zoopolisKeyBuffer' | 'trainKeyBuffer' | 'gangsWarsKeyBuffer' | 'cafeDashKeyBuffer',
     ) {
         const serviceKeyBuffer: BaseKeyBufferService = await app.container.make(serviceBinding);
 
