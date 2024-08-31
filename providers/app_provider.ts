@@ -1,8 +1,10 @@
 import type { ApplicationService, ContainerBindings, LoggerService } from '@adonisjs/core/types';
 import type { TelegramBotService } from '#services/TelegramBotService';
 import type { UserFromGetMe } from '@telegraf/types/manage.js';
+import { sleep } from '#helpers/timer';
 
 type GameBotServiceBinding = keyof ContainerBindings;
+type KeyGenerateServiceBinding = keyof ContainerBindings;
 
 export default class AppProvider {
     constructor(protected app: ApplicationService) {}
@@ -47,6 +49,35 @@ export default class AppProvider {
                 service.run().then(() => {
                     logger.info(`${service.constructor.name} запущен`);
                 });
+            }
+
+            // Key generate
+
+            const keyBufferServicesToRun: KeyGenerateServiceBinding[] = ['zoopolisKeyBuffer'];
+
+            for (const keyBufferServiceBinding of keyBufferServicesToRun) {
+                const service: ContainerBindings[keyof ContainerBindings] =
+                    await this.app.container.make(keyBufferServiceBinding);
+
+                if (!('countKeys' in service)) {
+                    throw new Error('countKeys method is not implemented');
+                }
+
+                if (!('topUpKeys' in service)) {
+                    throw new Error('topUpKeys method is not implemented');
+                }
+
+                (async () => {
+                    // eslint-disable-next-line no-constant-condition
+                    while (true) {
+                        if ((await service.countKeys()) >= 50) {
+                            await sleep(60_000);
+                            continue;
+                        }
+
+                        await service.topUpKeys();
+                    }
+                })().then();
             }
         }
     }

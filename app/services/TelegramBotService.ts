@@ -833,24 +833,35 @@ export class TelegramBotService {
     }
 
     public async getKeysZoopolis(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
+        const zoopolisKeyBuffer = await app.container.make('zoopolisKeyBuffer');
+
+        zoopolisKeyBuffer
+            .getKeys(4)
+            .then(async (keys) => {
+                const countKeysInBuffer = await zoopolisKeyBuffer.countKeys();
+
+                const messageLines = keys.map((key: string) => `<code>${key}</code>`);
+                messageLines.push('');
+                messageLines.push(`Количество ключей в буфере: ${countKeysInBuffer}`);
+
+                ctx.replyWithHTML(messageLines.join('\n')).then();
             })
-            .catch(async (error) => {
+            .catch(async (error: Error) => {
                 logger.error(error);
 
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Zoopolis\n' + `<code>${error.message}</code>`,
-                );
-            });
+                if (ctx.message === undefined) {
+                    logger.info(ctx);
+                    throw new Error('Message not found in context');
+                }
 
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+                await ctx.replyWithHTML('Не удалось получить ключи\n' + `<code>${error.message}</code>`, {
+                    reply_parameters: {
+                        message_id: ctx.message.message_id,
+                    },
+                });
+
+                await ctx.react('👎');
+            });
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {

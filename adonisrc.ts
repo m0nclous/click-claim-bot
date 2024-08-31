@@ -61,6 +61,7 @@ export default defineConfig({
         () => import('#providers/CafeDashKeyGenerateProvider'),
         () => import('#providers/GangsWarsKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
+        () => import('#providers/ZoopolisKeyBufferProvider'),
     ],
 
     /*
