@@ -59,6 +59,7 @@ export default class AppProvider {
                 'gangsWarsKeyBuffer',
                 'cafeDashKeyBuffer',
                 'mowAndTrimKeyBuffer',
+                'cubeKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {

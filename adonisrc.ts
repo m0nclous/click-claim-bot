@@ -68,6 +68,7 @@ export default defineConfig({
         () => import('#providers/GangsWarsKeyBufferProvider'),
         () => import('#providers/CafeDashKeyBufferProvider'),
         () => import('#providers/MowAndTrimKeyBufferProvider'),
+        () => import('#providers/CubeKeyBufferProvider'),
     ],
 
     /*
