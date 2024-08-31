@@ -4,6 +4,7 @@ services:
         restart: unless-stopped
         volumes:
             - './storage/logs:/app/storage/logs'
+            - './proxy-list.txt:/app/proxy-list.txt'
         environment:
             APP_KEY: '${APP_KEY}'
 
