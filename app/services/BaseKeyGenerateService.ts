@@ -232,7 +232,7 @@ export abstract class BaseKeyGenerateService {
                     .catch(() => null);
 
                 if (json === null) {
-                    logger.error(error, error.response.clone().body as unknown as string);
+                    this.logger.error(error, error.response.clone().body as unknown as string);
                     throw error;
                 }
 
