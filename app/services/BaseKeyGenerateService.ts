@@ -1,21 +1,46 @@
-import ky, { HTTPError, KyInstance, TimeoutError } from 'ky';
+import ky, { HTTPError, Input, KyInstance, TimeoutError } from 'ky';
 import type { NormalizedOptions } from '../../types/ky.js';
 import logger from '@adonisjs/core/services/logger';
 import { sleep } from '#helpers/timer';
 import { UUID } from 'node:crypto';
 import TooManyRegisterException from '#exceptions/TooManyRegisterException';
 import type { ApplicationService, LoggerService } from '@adonisjs/core/types';
+import { socksDispatcher } from 'fetch-socks';
+import { getRandomLine } from '#helpers/file';
+import { Agent } from 'undici';
+import env from '#start/env';
 
 export abstract class BaseKeyGenerateService {
     protected clientToken: string | null = null;
 
     protected httpClient: KyInstance = this.makeHttpClient();
 
+    protected socksDispatcher: Agent | null = null;
+
     protected constructor(
         protected app: ApplicationService,
         protected logger: LoggerService,
         protected clientId: string = BaseKeyGenerateService.MakeUniqueClientId(),
-    ) {}
+    ) {
+        if (env.get('KEY_GENERATE_USE_PROXY', false)) {
+            const proxyLine = getRandomLine('proxy-list.txt');
+            const [host, port] = proxyLine.split(':');
+
+            this.socksDispatcher = socksDispatcher(
+                {
+                    type: 5,
+                    host,
+                    port: parseInt(port),
+
+                    userId: env.get('KEY_GENERATE_PROXY_USER'),
+                    password: env.get('KEY_GENERATE_PROXY_PASSWORD'),
+                },
+                {
+                    connectTimeout: 30_000,
+                },
+            );
+        }
+    }
 
     public abstract getAppName(): string;
 
@@ -32,8 +57,18 @@ export abstract class BaseKeyGenerateService {
     protected makeHttpClient(): KyInstance {
         return ky.extend({
             prefixUrl: 'https://api.gamepromo.io',
+            timeout: 30_000,
             headers: {
                 'Content-Type': 'application/json',
+            },
+
+            fetch: (input: Input, requestInit: RequestInit = {}) => {
+                if (this.socksDispatcher) {
+                    // @ts-expect-error проблема с типами
+                    requestInit.dispatcher = this.socksDispatcher;
+                }
+
+                return fetch(input, requestInit);
             },
 
             hooks: {
@@ -94,7 +129,15 @@ export abstract class BaseKeyGenerateService {
                     throw error;
                 }
 
-                const json: any = await error.response.json();
+                const json: any | null = await error.response
+                    .clone()
+                    .json()
+                    .catch(() => null);
+
+                if (json === null) {
+                    logger.error(error, error.response.clone().body as unknown as string);
+                    throw error;
+                }
 
                 if (json.error_message) {
                     throw new Error(json.error_message);
