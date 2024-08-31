@@ -61,6 +61,7 @@ export default class AppProvider {
                 'mowAndTrimKeyBuffer',
                 'cubeKeyBuffer',
                 'mergeKeyBuffer',
+                'twerkKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {

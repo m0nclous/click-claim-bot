@@ -665,27 +665,6 @@ export class TelegramBotService {
         await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
     }
 
-    public async getKeysTwerk(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Twerk\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
     public async getKeysPolysphere(ctx: Context): Promise<void> {
         Promise.all([
             (await app.container.make('polysphereKeyGenerate')).generateKey(),
@@ -735,6 +714,10 @@ export class TelegramBotService {
         this.getKeys(ctx, 'mergeKeyBuffer').then();
     }
 
+    public async getKeysTwerk(ctx: Context): Promise<void> {
+        this.getKeys(ctx, 'twerkKeyBuffer').then();
+    }
+
     public async getKeys(
         ctx: Context,
         serviceBinding:
@@ -744,7 +727,8 @@ export class TelegramBotService {
             | 'cafeDashKeyBuffer'
             | 'mowAndTrimKeyBuffer'
             | 'cubeKeyBuffer'
-            | 'mergeKeyBuffer',
+            | 'mergeKeyBuffer'
+            | 'twerkKeyBuffer',
     ) {
         const serviceKeyBuffer: BaseKeyBufferService = await app.container.make(serviceBinding);
 

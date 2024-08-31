@@ -70,6 +70,7 @@ export default defineConfig({
         () => import('#providers/MowAndTrimKeyBufferProvider'),
         () => import('#providers/CubeKeyBufferProvider'),
         () => import('#providers/MergeKeyBufferProvider'),
+        () => import('#providers/TwerkKeyBufferProvider'),
     ],
 
     /*
