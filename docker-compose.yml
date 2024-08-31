@@ -24,6 +24,10 @@ services:
             LOG_LEVEL: '${LOG_LEVEL:-trace}'
             LOGTAIL_SOURCE_TOKEN: '${LOGTAIL_SOURCE_TOKEN:-}'
 
+            KEY_GENERATE_USE_PROXY: '${KEY_GENERATE_USE_PROXY:-false}'
+            KEY_GENERATE_PROXY_USER: '${KEY_GENERATE_PROXY_USER:-}'
+            KEY_GENERATE_PROXY_PASSWORD: '${KEY_GENERATE_PROXY_PASSWORD:-}'
+
         depends_on:
             redis:
                 condition: service_healthy
