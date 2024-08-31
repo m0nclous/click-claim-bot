@@ -11,7 +11,7 @@ export class GangsWarsKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<GangsWarsKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<GangsWarsKeyGenerateService> {
         return this.app.container.make('gangsWarsKeyGenerate');
     }
 

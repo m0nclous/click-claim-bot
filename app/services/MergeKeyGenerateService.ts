@@ -10,7 +10,7 @@ export class MergeKeyGenerateService extends BaseKeyGenerateService {
     }
 
     public getAppName(): string {
-        return 'Merge Away!';
+        return 'Merge Away';
     }
 
     protected getAppToken(): string {

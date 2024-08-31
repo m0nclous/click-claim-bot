@@ -11,7 +11,7 @@ export class TrainKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<TrainKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<TrainKeyGenerateService> {
         return this.app.container.make('trainKeyGenerate');
     }
 

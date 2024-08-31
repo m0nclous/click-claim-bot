@@ -10,7 +10,7 @@ export class CubeKeyGenerateService extends BaseKeyGenerateService {
     }
 
     public getAppName(): string {
-        return 'Chain Cube';
+        return 'Chain Cube 2048';
     }
 
     protected getAppToken(): string {

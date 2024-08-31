@@ -8,7 +8,7 @@ export default abstract class BaseKeyBufferService {
         protected redis: RedisService,
     ) {}
 
-    protected abstract getKeyGenerateService(): Promise<BaseKeyGenerateService>;
+    public abstract getKeyGenerateService(): Promise<BaseKeyGenerateService>;
 
     protected abstract getRedisSlug(): string;
 

@@ -11,7 +11,7 @@ export class MowAndTrimKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<MowAndTrimKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<MowAndTrimKeyGenerateService> {
         return this.app.container.make('mowAndTrimKeyGenerate');
     }
 

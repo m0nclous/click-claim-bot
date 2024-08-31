@@ -11,7 +11,7 @@ export class ZoopolisKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<ZoopolisKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<ZoopolisKeyGenerateService> {
         return this.app.container.make('zoopolisKeyGenerate');
     }
 

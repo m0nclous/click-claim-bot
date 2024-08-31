@@ -11,7 +11,7 @@ export class TwerkKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<TwerkKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<TwerkKeyGenerateService> {
         return this.app.container.make('twerkKeyGenerate');
     }
 

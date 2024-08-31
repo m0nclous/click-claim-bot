@@ -11,7 +11,7 @@ export class PolysphereKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<PolysphereKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<PolysphereKeyGenerateService> {
         return this.app.container.make('polysphereKeyGenerate');
     }
 

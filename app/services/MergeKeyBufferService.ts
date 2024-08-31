@@ -11,7 +11,7 @@ export class MergeKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<MergeKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<MergeKeyGenerateService> {
         return this.app.container.make('mergeKeyGenerate');
     }
 

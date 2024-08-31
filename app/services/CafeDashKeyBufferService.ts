@@ -11,7 +11,7 @@ export class CafeDashKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<CafeDashKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<CafeDashKeyGenerateService> {
         return this.app.container.make('cafeDashKeyGenerate');
     }
 

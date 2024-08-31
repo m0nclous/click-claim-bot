@@ -11,7 +11,7 @@ export class CubeKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    protected async getKeyGenerateService(): Promise<CubeKeyGenerateService> {
+    public async getKeyGenerateService(): Promise<CubeKeyGenerateService> {
         return this.app.container.make('cubeKeyGenerate');
     }
 

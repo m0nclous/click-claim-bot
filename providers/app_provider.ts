@@ -80,7 +80,7 @@ export default class AppProvider {
                 (async () => {
                     // eslint-disable-next-line no-constant-condition
                     while (true) {
-                        if ((await service.countKeys()) >= 50) {
+                        if ((await service.countKeys()) >= 40) {
                             await sleep(60_000);
                             continue;
                         }

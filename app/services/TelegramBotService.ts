@@ -83,15 +83,7 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_start', this.botTimeFarmClaimStart.bind(this));
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
-        this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
-        this.bot.command('get_keys_train', this.getKeysTrain.bind(this));
-        this.bot.command('get_keys_merge', this.getKeysMerge.bind(this));
-        this.bot.command('get_keys_twerk', this.getKeysTwerk.bind(this));
-        this.bot.command('get_keys_polysphere', this.getKeysPolysphere.bind(this));
-        this.bot.command('get_keys_mow_and_trim', this.getKeysMowAndTrim.bind(this));
-        this.bot.command('get_keys_cafe_dash', this.getKeysCafeDash.bind(this));
-        this.bot.command('get_keys_gangs_wars', this.getKeysGangsWars.bind(this));
-        this.bot.command('get_keys_zoopolis', this.getKeysZoopolis.bind(this));
+        this.bot.command('get_keys_hamster_combat', this.getKeysHamsterCombat.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -203,40 +195,8 @@ export class TelegramBotService {
                 description: 'Остановить сбор награды TimeFarm',
             },
             {
-                command: 'get_keys_cube',
-                description: 'Получить ключи для игры Chain Cube',
-            },
-            {
-                command: 'get_keys_train',
-                description: 'Получить ключи для игры Train Miner',
-            },
-            {
-                command: 'get_keys_merge',
-                description: 'Получить ключи для игры Merge Away',
-            },
-            {
-                command: 'get_keys_twerk',
-                description: 'Получить ключи для игры Twerk',
-            },
-            {
-                command: 'get_keys_polysphere',
-                description: 'Получить ключи для игры Polysphere',
-            },
-            {
-                command: 'get_keys_mow_and_trim',
-                description: 'Получить ключи для игры Mow And Trim',
-            },
-            {
-                command: 'get_keys_cafe_dash',
-                description: 'Получить ключи для игры Cafe Dash',
-            },
-            {
-                command: 'get_keys_gangs_wars',
-                description: 'Получить ключи для игры Gangs Wars',
-            },
-            {
-                command: 'get_keys_zoopolis',
-                description: 'Получить ключи для игры Zoopolis',
+                command: 'get_keys_hamster_combat',
+                description: 'Получить все ключи для игры Hamster Combat',
             },
         ]);
     }
@@ -665,84 +625,36 @@ export class TelegramBotService {
         await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
     }
 
-    public async getKeysZoopolis(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'zoopolisKeyBuffer').then();
-    }
+    public async getKeysHamsterCombat(ctx: Context): Promise<void> {
+        Promise.all(
+            [
+                'zoopolisKeyBuffer',
+                'gangsWarsKeyBuffer',
+                'cafeDashKeyBuffer',
+                'mowAndTrimKeyBuffer',
+                'cubeKeyBuffer',
+                'trainKeyBuffer',
+                'mergeKeyBuffer',
+                'twerkKeyBuffer',
+                'polysphereKeyBuffer',
+            ].map(async (serviceBinding) => {
+                const service: BaseKeyBufferService = await app.container.make(serviceBinding);
+                const keys = await service.getKeys(4);
+                const game = (await service.getKeyGenerateService()).getAppName();
 
-    public async getKeysGangsWars(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'gangsWarsKeyBuffer').then();
-    }
+                return { game, keys };
+            }),
+        ).then(async (result) => {
+            const messageLines = [];
 
-    public async getKeysCafeDash(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'cafeDashKeyBuffer').then();
-    }
-
-    public async getKeysMowAndTrim(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'mowAndTrimKeyBuffer').then();
-    }
-
-    public async getKeysCube(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'cubeKeyBuffer').then();
-    }
-
-    public async getKeysTrain(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'trainKeyBuffer').then();
-    }
-
-    public async getKeysMerge(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'mergeKeyBuffer').then();
-    }
-
-    public async getKeysTwerk(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'twerkKeyBuffer').then();
-    }
-
-    public async getKeysPolysphere(ctx: Context): Promise<void> {
-        this.getKeys(ctx, 'polysphereKeyBuffer').then();
-    }
-
-    public async getKeys(
-        ctx: Context,
-        serviceBinding:
-            | 'zoopolisKeyBuffer'
-            | 'trainKeyBuffer'
-            | 'gangsWarsKeyBuffer'
-            | 'cafeDashKeyBuffer'
-            | 'mowAndTrimKeyBuffer'
-            | 'cubeKeyBuffer'
-            | 'mergeKeyBuffer'
-            | 'twerkKeyBuffer'
-            | 'polysphereKeyBuffer',
-    ) {
-        const serviceKeyBuffer: BaseKeyBufferService = await app.container.make(serviceBinding);
-
-        serviceKeyBuffer
-            .getKeys(4)
-            .then(async (keys) => {
-                const countKeysInBuffer = await serviceKeyBuffer.countKeys();
-
-                const messageLines = keys.map((key: string) => `<code>${key}</code>`);
+            for (const generated of result) {
+                messageLines.push(`— ${generated.game} —`);
+                messageLines.push(...generated.keys.map((key) => `<code>${key}</code>`));
                 messageLines.push('');
-                messageLines.push(`Количество ключей в буфере: ${countKeysInBuffer}`);
+            }
 
-                ctx.replyWithHTML(messageLines.join('\n')).then();
-            })
-            .catch(async (error: Error) => {
-                logger.error(error);
-
-                if (ctx.message === undefined) {
-                    logger.info(ctx);
-                    throw new Error('Message not found in context');
-                }
-
-                await ctx.replyWithHTML('Не удалось получить ключи\n' + `<code>${error.message}</code>`, {
-                    reply_parameters: {
-                        message_id: ctx.message.message_id,
-                    },
-                });
-
-                await ctx.react('👎');
-            });
+            await ctx.replyWithHTML(messageLines.join('\n').trim());
+        });
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
