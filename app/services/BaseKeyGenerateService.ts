@@ -4,13 +4,18 @@ import logger from '@adonisjs/core/services/logger';
 import { sleep } from '#helpers/timer';
 import { UUID } from 'node:crypto';
 import TooManyRegisterException from '#exceptions/TooManyRegisterException';
+import type { ApplicationService, LoggerService } from '@adonisjs/core/types';
 
 export abstract class BaseKeyGenerateService {
     protected clientToken: string | null = null;
 
     protected httpClient: KyInstance = this.makeHttpClient();
 
-    protected constructor(protected clientId: string) {}
+    protected constructor(
+        protected app: ApplicationService,
+        protected logger: LoggerService,
+        protected clientId: string = BaseKeyGenerateService.MakeUniqueClientId(),
+    ) {}
 
     public abstract getAppName(): string;
 
@@ -19,6 +24,10 @@ export abstract class BaseKeyGenerateService {
     protected abstract getPromoId(): string;
 
     protected abstract getEventType(): string;
+
+    public static MakeUniqueClientId(): string {
+        return crypto.randomUUID();
+    }
 
     protected makeHttpClient(): KyInstance {
         return ky.extend({
@@ -47,7 +56,7 @@ export abstract class BaseKeyGenerateService {
 
                         const urlInstance = new URL(request.url);
 
-                        logger.use('keyGenerateServiceRequest').trace(
+                        this.logger.use('keyGenerateServiceRequest').trace(
                             {
                                 request: {
                                     method: request.method,
@@ -79,7 +88,12 @@ export abstract class BaseKeyGenerateService {
                     clientOrigin: 'android',
                 },
             })
-            .catch(async (error: HTTPError) => {
+            .catch(async (error: HTTPError | Error) => {
+                if (!('response' in error)) {
+                    this.logger.error(error);
+                    throw error;
+                }
+
                 const json: any = await error.response.json();
 
                 if (json.error_message) {

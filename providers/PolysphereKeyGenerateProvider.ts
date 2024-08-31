@@ -14,11 +14,9 @@ export default class PolysphereKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('polysphereKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { PolysphereKeyGenerateService } = await import('#services/PolysphereKeyGenerateService');
 
-            return new PolysphereKeyGenerateService(clientId);
+            return new PolysphereKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

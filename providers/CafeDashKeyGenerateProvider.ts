@@ -14,11 +14,9 @@ export default class CafeDashKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('cafeDashKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { CafeDashKeyGenerateService } = await import('#services/CafeDashKeyGenerateService');
 
-            return new CafeDashKeyGenerateService(clientId);
+            return new CafeDashKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

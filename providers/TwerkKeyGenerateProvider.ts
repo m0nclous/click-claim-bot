@@ -14,11 +14,9 @@ export default class TwerkKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('twerkKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { TwerkKeyGenerateService } = await import('#services/TwerkKeyGenerateService');
 
-            return new TwerkKeyGenerateService(clientId);
+            return new TwerkKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }
