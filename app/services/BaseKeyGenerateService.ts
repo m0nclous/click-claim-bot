@@ -71,6 +71,10 @@ export abstract class BaseKeyGenerateService {
                 return fetch(input, requestInit);
             },
 
+            retry: {
+                limit: 10,
+            },
+
             hooks: {
                 beforeRequest: [
                     async (request: Request) => {
