@@ -14,11 +14,9 @@ export default class ZoopolisKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('zoopolisKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { ZoopolisKeyGenerateService } = await import('#services/ZoopolisKeyGenerateService');
 
-            return new ZoopolisKeyGenerateService(clientId);
+            return new ZoopolisKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

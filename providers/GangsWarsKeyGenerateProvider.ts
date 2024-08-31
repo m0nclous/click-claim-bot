@@ -14,11 +14,9 @@ export default class GangsWarsKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('gangsWarsKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { GangsWarsKeyGenerateService } = await import('#services/GangsWarsKeyGenerateService');
 
-            return new GangsWarsKeyGenerateService(clientId);
+            return new GangsWarsKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

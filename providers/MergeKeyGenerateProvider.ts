@@ -14,11 +14,9 @@ export default class MergeKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('mergeKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { MergeKeyGenerateService } = await import('#services/MergeKeyGenerateService');
 
-            return new MergeKeyGenerateService(clientId);
+            return new MergeKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

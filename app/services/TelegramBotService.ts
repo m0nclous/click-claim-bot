@@ -14,6 +14,7 @@ import type { TelegramService } from '#services/TelegramService';
 import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
 import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import BaseKeyBufferService from '#services/BaseKeyBufferService';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -82,15 +83,7 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_start', this.botTimeFarmClaimStart.bind(this));
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
-        this.bot.command('get_keys_cube', this.getKeysCube.bind(this));
-        this.bot.command('get_keys_train', this.getKeysTrain.bind(this));
-        this.bot.command('get_keys_merge', this.getKeysMerge.bind(this));
-        this.bot.command('get_keys_twerk', this.getKeysTwerk.bind(this));
-        this.bot.command('get_keys_polysphere', this.getKeysPolysphere.bind(this));
-        this.bot.command('get_keys_mow_and_trim', this.getKeysMowAndTrim.bind(this));
-        this.bot.command('get_keys_cafe_dash', this.getKeysCafeDash.bind(this));
-        this.bot.command('get_keys_gangs_wars', this.getKeysGangsWars.bind(this));
-        this.bot.command('get_keys_zoopolis', this.getKeysZoopolis.bind(this));
+        this.bot.command('get_keys_hamster_combat', this.getKeysHamsterCombat.bind(this));
 
         return this.bot.telegram.setMyCommands([
             {
@@ -202,40 +195,8 @@ export class TelegramBotService {
                 description: 'Остановить сбор награды TimeFarm',
             },
             {
-                command: 'get_keys_cube',
-                description: 'Получить ключи для игры Chain Cube',
-            },
-            {
-                command: 'get_keys_train',
-                description: 'Получить ключи для игры Train Miner',
-            },
-            {
-                command: 'get_keys_merge',
-                description: 'Получить ключи для игры Merge Away',
-            },
-            {
-                command: 'get_keys_twerk',
-                description: 'Получить ключи для игры Twerk',
-            },
-            {
-                command: 'get_keys_polysphere',
-                description: 'Получить ключи для игры Polysphere',
-            },
-            {
-                command: 'get_keys_mow_and_trim',
-                description: 'Получить ключи для игры Mow And Trim',
-            },
-            {
-                command: 'get_keys_cafe_dash',
-                description: 'Получить ключи для игры Cafe Dash',
-            },
-            {
-                command: 'get_keys_gangs_wars',
-                description: 'Получить ключи для игры Gangs Wars',
-            },
-            {
-                command: 'get_keys_zoopolis',
-                description: 'Получить ключи для игры Zoopolis',
+                command: 'get_keys_hamster_combat',
+                description: 'Получить все ключи для игры Hamster Combat',
             },
         ]);
     }
@@ -664,193 +625,36 @@ export class TelegramBotService {
         await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
     }
 
-    public async getKeysCube(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('cubeKeyGenerate')).generateKey(),
-            (await app.container.make('cubeKeyGenerate')).generateKey(),
-            (await app.container.make('cubeKeyGenerate')).generateKey(),
-            (await app.container.make('cubeKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
+    public async getKeysHamsterCombat(ctx: Context): Promise<void> {
+        Promise.all(
+            [
+                'zoopolisKeyBuffer',
+                'gangsWarsKeyBuffer',
+                'cafeDashKeyBuffer',
+                'mowAndTrimKeyBuffer',
+                'cubeKeyBuffer',
+                'trainKeyBuffer',
+                'mergeKeyBuffer',
+                'twerkKeyBuffer',
+                'polysphereKeyBuffer',
+            ].map(async (serviceBinding) => {
+                const service: BaseKeyBufferService = await app.container.make(serviceBinding);
+                const keys = await service.getKeys(4);
+                const game = (await service.getKeyGenerateService()).getAppName();
 
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Cube\n' + `<code>${error.message}</code>`,
-                );
-            });
+                return { game, keys };
+            }),
+        ).then(async (result) => {
+            const messageLines = [];
 
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
+            for (const generated of result) {
+                messageLines.push(`— ${generated.game} —`);
+                messageLines.push(...generated.keys.map((key) => `<code>${key}</code>`));
+                messageLines.push('');
+            }
 
-    public async getKeysTrain(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-            (await app.container.make('trainKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Train\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysMerge(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('mergeKeyGenerate')).generateKey(),
-            (await app.container.make('mergeKeyGenerate')).generateKey(),
-            (await app.container.make('mergeKeyGenerate')).generateKey(),
-            (await app.container.make('mergeKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Merge Away\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysTwerk(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-            (await app.container.make('twerkKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Twerk\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysPolysphere(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('polysphereKeyGenerate')).generateKey(),
-            (await app.container.make('polysphereKeyGenerate')).generateKey(),
-            (await app.container.make('polysphereKeyGenerate')).generateKey(),
-            (await app.container.make('polysphereKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Polysphere\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysMowAndTrim(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('mowAndTrimKeyGenerate')).generateKey(),
-            (await app.container.make('mowAndTrimKeyGenerate')).generateKey(),
-            (await app.container.make('mowAndTrimKeyGenerate')).generateKey(),
-            (await app.container.make('mowAndTrimKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Mow and Trim\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysCafeDash(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-            (await app.container.make('cafeDashKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Cafe Dash\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysGangsWars(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('gangsWarsKeyGenerate')).generateKey(),
-            (await app.container.make('gangsWarsKeyGenerate')).generateKey(),
-            (await app.container.make('gangsWarsKeyGenerate')).generateKey(),
-            (await app.container.make('gangsWarsKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Gangs Wars\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
-    }
-
-    public async getKeysZoopolis(ctx: Context): Promise<void> {
-        Promise.all([
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-            (await app.container.make('zoopolisKeyGenerate')).generateKey(),
-        ])
-            .then(async (codes) => {
-                await ctx.replyWithHTML(codes.map((code: string) => `<code>${code}</code>`).join('\n'));
-            })
-            .catch(async (error) => {
-                logger.error(error);
-
-                await ctx.replyWithHTML(
-                    'Не удалось сгенерировать ключи Zoopolis\n' + `<code>${error.message}</code>`,
-                );
-            });
-
-        await ctx.reply('Начинаю генерацию.\nЭто займёт от 2 до 15 минут...');
+            await ctx.replyWithHTML(messageLines.join('\n').trim());
+        });
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {

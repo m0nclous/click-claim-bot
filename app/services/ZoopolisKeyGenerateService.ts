@@ -1,8 +1,12 @@
 import { BaseKeyGenerateService } from '#services/BaseKeyGenerateService';
+import { ApplicationService, LoggerService } from '@adonisjs/core/types';
 
 export class ZoopolisKeyGenerateService extends BaseKeyGenerateService {
-    public constructor(protected clientId: string) {
-        super(clientId);
+    public constructor(
+        protected app: ApplicationService,
+        protected logger: LoggerService,
+    ) {
+        super(app, logger);
     }
 
     public getAppName(): string {

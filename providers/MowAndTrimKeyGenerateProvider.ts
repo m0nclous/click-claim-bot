@@ -14,11 +14,9 @@ export default class ClonesKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('mowAndTrimKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { MowAndTrimKeyGenerateService } = await import('#services/MowAndTrimKeyGenerateService');
 
-            return new MowAndTrimKeyGenerateService(clientId);
+            return new MowAndTrimKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

@@ -1,12 +1,16 @@
 import { BaseKeyGenerateService } from '#services/BaseKeyGenerateService';
+import type { ApplicationService, LoggerService } from '@adonisjs/core/types';
 
 export class CubeKeyGenerateService extends BaseKeyGenerateService {
-    public constructor(protected clientId: string) {
-        super(clientId);
+    public constructor(
+        protected app: ApplicationService,
+        protected logger: LoggerService,
+    ) {
+        super(app, logger);
     }
 
     public getAppName(): string {
-        return 'Chain Cube';
+        return 'Chain Cube 2048';
     }
 
     protected getAppToken(): string {

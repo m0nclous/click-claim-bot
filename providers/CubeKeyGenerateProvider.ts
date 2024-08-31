@@ -14,11 +14,9 @@ export default class ClonesKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('cubeKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { CubeKeyGenerateService } = await import('#services/CubeKeyGenerateService');
 
-            return new CubeKeyGenerateService(clientId);
+            return new CubeKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }

@@ -14,11 +14,9 @@ export default class TrainKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('trainKeyGenerate', async () => {
-            const clientId: string = crypto.randomUUID();
-
             const { TrainKeyGenerateService } = await import('#services/TrainKeyGenerateService');
 
-            return new TrainKeyGenerateService(clientId);
+            return new TrainKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
     }
 }
