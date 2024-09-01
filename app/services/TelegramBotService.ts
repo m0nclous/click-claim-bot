@@ -15,6 +15,7 @@ import type { ICallbackPromise } from '#helpers/promise';
 import type { BaseBotService } from '#services/BaseBotService';
 import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
+import NotEnoughKeysInBufferException from '#exceptions/NotEnoughKeysInBufferException';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -626,29 +627,62 @@ export class TelegramBotService {
     }
 
     public async getKeysHamsterCombat(ctx: Context): Promise<void> {
-        Promise.all(
-            [
-                'zoopolisKeyBuffer',
-                'gangsWarsKeyBuffer',
-                'cafeDashKeyBuffer',
-                'mowAndTrimKeyBuffer',
-                'cubeKeyBuffer',
-                'trainKeyBuffer',
-                'mergeKeyBuffer',
-                'twerkKeyBuffer',
-                'polysphereKeyBuffer',
-            ].map(async (serviceBinding) => {
-                const service: BaseKeyBufferService = await app.container.make(serviceBinding);
-                const keys = await service.getKeys(4);
-                const game = (await service.getKeyGenerateService()).getAppName();
+        const quantityKeys: number = 4;
+        const serviceBindings: string[] = [
+            'zoopolisKeyBuffer',
+            'gangsWarsKeyBuffer',
+            'cafeDashKeyBuffer',
+            'mowAndTrimKeyBuffer',
+            'cubeKeyBuffer',
+            'trainKeyBuffer',
+            'mergeKeyBuffer',
+            'twerkKeyBuffer',
+            'polysphereKeyBuffer',
+        ];
 
-                return { game, keys };
+        const services: BaseKeyBufferService[] = await Promise.all(
+            serviceBindings.map((serviceBinding) => app.container.make(serviceBinding)),
+        );
+
+        const haveRequiredNumberKeys: boolean = await Promise.all(
+            services.map(async (service: BaseKeyBufferService) => {
+                const countKeys = await service.countKeys();
+
+                if (countKeys < quantityKeys) {
+                    const appName = (await service.getKeyGenerateService()).getAppName();
+
+                    throw new NotEnoughKeysInBufferException(`В ${appName} буфере недостаточно ключей`);
+                }
+            }),
+        )
+            .then(() => {
+                return true;
+            })
+            .catch(async (error) => {
+                if (error instanceof NotEnoughKeysInBufferException) {
+                    return false;
+                }
+
+                throw error;
+            });
+
+        if (!haveRequiredNumberKeys) {
+            await ctx.reply('В буфере недостаточно ключей. Попробуйте позже');
+            return;
+        }
+
+        Promise.all(
+            services.map(async (service: BaseKeyBufferService) => {
+                const keys = await service.getKeys(quantityKeys);
+                const appName = (await service.getKeyGenerateService()).getAppName();
+
+                return { appName, keys };
             }),
         ).then(async (result) => {
             const messageLines = [];
 
             for (const generated of result) {
-                messageLines.push(`— ${generated.game} —`);
+                messageLines.push(`— ${generated.appName} —`);
                 messageLines.push(...generated.keys.map((key) => `<code>${key}</code>`));
                 messageLines.push('');
             }
