@@ -535,6 +535,10 @@ export default class CityHoldersGameService extends BaseGameService implements H
             'Websocket request',
         );
 
+        if (this.ws === null) {
+            await this.login();
+        }
+
         this.wsCallbackPromise = callbackPromise();
         this.ws!.send(RequestType.toBuffer(data));
         return this.wsCallbackPromise.promise;
