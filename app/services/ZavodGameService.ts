@@ -1,4 +1,6 @@
 import BaseGameService, { HasClaim } from '#services/BaseGameService';
+import { HTTPError } from 'ky';
+import logger from '@adonisjs/core/services/logger';
 
 export interface IUserProfile {
     telegramId: string;
@@ -113,6 +115,24 @@ export default class ZavodGameService extends BaseGameService implements HasClai
                         request.headers.set('telegram-init-data', await this.getInitDataKey());
                     },
                 ],
+
+                beforeRetry: [
+                    async ({ error }) => {
+                        if (error instanceof HTTPError) {
+                            if (error.response.status === 403) {
+                                this.webView = null;
+                                return;
+                            }
+                        }
+
+                        logger.error(error);
+                    },
+                ],
+            },
+
+            retry: {
+                limit: 2,
+                statusCodes: [403],
             },
         });
     }
