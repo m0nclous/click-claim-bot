@@ -8,7 +8,7 @@
 [![Docker][docker_img]][docker_url]
 [![License][repo_license_img]][repo_license_url]
 
-Deploy your **bot farm** for Telegram **Mini Apps**.
+Automate your **farming** in Telegram **Mini Apps**!
 
 </div>
 
