@@ -3,12 +3,16 @@
 [![Click Claim Bot][repo_logo_img]][repo_url]
 
 # Click Claim Bot
+Automate your **farming** in Telegram **Mini Apps**!
 
 [![Node version][node_version_img]][node_dev_url]
 [![Docker][docker_img]][docker_url]
 [![License][repo_license_img]][repo_license_url]
 
-Automate your **farming** in Telegram **Mini Apps**!
+### — Select Language —
+
+[![en](https://img.shields.io/badge/en-red.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.md)
+[![en](https://img.shields.io/badge/ru-blue.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.ru.md)
 
 </div>
 
@@ -45,19 +49,19 @@ Automate your **farming** in Telegram **Mini Apps**!
 
     
 ## 🏆️ Online bot without problems
-**TODO translate EN**  
-Используй готового онлайн бота для автоматизации своего фарма.
-1. Перейди в Telegram бота <a href="https://t.me/ClickClaimBot" target="_blank">@ClickClaimBot</a>
-2. Нажми кнопку `Старт` или введи команду `/start`
-3. Используй команду `/login` для привязки Telegram сессии
-4. Предоставь свой контакт боту  
-Это потребуется для входа в аккаунт
-5. Введи код, отправленный в Telegram для входа.  
-**Важно! Нужно разделить числа пробелами**
-6. Введи свой облачный пароль от Telegram  
-**Важно! После ввода пароль будет сразу удалён из чата!**  
-Пароли не сохраняются на сервере!
-7. Готово! После успешной привязки аккаунта бот сможет автоматизировать твой фарм в мини приложениях Telegram
+Use a ready-made online bot to automate your farm.
+
+1. Go to Telegram bot <a href="https://t.me/ClickClaimBot" target="_blank">@ClickClaimBot</a>
+2. Press the button `Старт` or enter the command `/start`
+3. Use the `/login` command to bind a Telegram session
+4. Provide your contact to the bot  
+   This will be required to log into your account
+5. Enter the code sent to Telegram to login  
+   **Important! Numbers need to be separated by spaces**
+6. Enter your cloud password from Telegram  
+   **Important! Once entered, the password will be immediately removed from the chat!**  
+   Passwords are not saved on the server!
+7. Ready! After successfully linking your account, the bot will be able to automate your farming in Telegram mini applications
 
 ## ⚡️ Quick start
 
@@ -118,7 +122,7 @@ Automate your **farming** in Telegram **Mini Apps**!
 
 You can support the author on [Boosty][boosty_url], both on a _permanent_ and on a _one-time_ basis.
 
-All proceeds from this way will go to **support** my OSS projects and will energize me to **create** new products and articles for the community.
+All proceeds from this way will go to **support** my projects and will energize me to **create** new products.
 
 <a href="https://boosty.to/koddr/donate" target="_blank"><img width="300" alt="support me on Boosty" src="https://raw.githubusercontent.com/koddr/.github/main/images/boosty-badge.svg"/></a>
 
