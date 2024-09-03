@@ -96,22 +96,22 @@ create the **most useful** tool for developers on the web today.
 
 ## ⚠️ License
 
-[`Click Claim Bot`][repo_url] is free and open-source software licensed under
-the [Node JS License][repo_license_url].
+[Click Claim Bot][repo_url] — is **free** and **open-source** software licensed under
+the [MIT License][repo_license_url].
 
-<!-- Go -->
+<!-- App -->
 
-[node_version_img]: https://img.shields.io/badge/Node_JS-20%2B-green?style=for-the-badge&logo=nodedotjs
+[node_version_img]: https://img.shields.io/badge/Node_JS-20.10.0-green?style=for-the-badge&logo=nodedotjs
 [docker_img]: https://img.shields.io/badge/Docker-blue?style=for-the-badge&logo=docker
 [docker_url]: https://hub.docker.com/r/m0nclous/click-claim-bot
-[node_dev_url]: https://nodejs.org/en
+[node_dev_url]: https://nodejs.org/en/blog/release/v20.10.0
 
 <!-- Repository -->
 
 [repo_url]: https://github.com/m0nclous/click-claim-bot
 [repo_logo_img]: assets/img/logo.png
 [repo_license_url]: https://github.com/m0nclous/click-claim-bot/blob/master/LICENSE
-[repo_license_img]: https://img.shields.io/badge/License-Node_JS-red?style=for-the-badge
+[repo_license_img]: https://img.shields.io/badge/License-MIT-red?style=for-the-badge
 [repo_issues_url]: https://github.com/m0nclous/click-claim-bot/issues
 [repo_pull_request_url]: https://github.com/m0nclous/click-claim-bot/pulls
 
