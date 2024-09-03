@@ -248,7 +248,7 @@ KEY_GENERATE_PROXY_PASSWORD=
 
 Все доходы от этого пойдут на **поддержку** моих проектов и вдохновят меня на **создание** новых продуктов.
 
-<a href="https://boosty.to/koddr/donate" target="_blank"><img width="300" alt="поддержи меня на Boosty" src="https://raw.githubusercontent.com/koddr/.github/main/images/boosty-badge.svg"/></a>
+<a href="https://boosty.to/m0nclous/donate" target="_blank"><img width="300" alt="support me on Boosty" src="assets/img/m0nclous-donate.svg"/></a>
 
 ## 🏆 Беспроигрышное сотрудничество
 
