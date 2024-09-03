@@ -65,6 +65,7 @@ Use a ready-made online bot to automate your farm.
 
 ## ⚡️ Quick start (self-hosted)
 
+### Telegram App
 Для получения сессии игр и отправки запросов нужно зарегистрировать Telegram приложение
 1. Перейди в личный кабинет Telegram [my.telegram.org](https://my.telegram.org)
 2. Войди по номеру телефона
@@ -72,6 +73,7 @@ Use a ready-made online bot to automate your farm.
 4. Создай новое приложение
 5. Тебе данные: `api_id`, `api_hash`, `Production configuration`
 
+### Telegram Bot
 Для управления приложением нужно создать чат-бота Telegram [t.me/BotFather](https://t.me/BotFather)  
 Тебе понадобится `Token HTTP API` и `username`
 
