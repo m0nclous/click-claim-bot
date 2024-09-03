@@ -109,8 +109,7 @@ the [Node JS License][repo_license_url].
 <!-- Repository -->
 
 [repo_url]: https://github.com/m0nclous/click-claim-bot
-[repo_logo_url]: https://github.com/create-go-app/cli/wiki/Logo
-[repo_logo_img]: ./assets/logo.png
+[repo_logo_img]: assets/img/logo.png
 [repo_license_url]: https://github.com/m0nclous/click-claim-bot/blob/master/LICENSE
 [repo_license_img]: https://img.shields.io/badge/License-Node_JS-red?style=for-the-badge
 [repo_issues_url]: https://github.com/m0nclous/click-claim-bot/issues
