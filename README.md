@@ -253,7 +253,7 @@ All proceeds from this way will go to **support** my projects and will energize 
 ## 🏆 A win-win cooperation
 
 And now, I invite you to participate in this project! Let's work **together** to
-create the **most useful** tool for developers on the web today.
+create the **most useful** bot on the web today.
 
 - [Issues][repo_issues_url]: ask questions and submit your features.
 - [Pull requests][repo_pull_request_url]: send your improvements to the current.
