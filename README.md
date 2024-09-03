@@ -248,9 +248,9 @@ KEY_GENERATE_PROXY_PASSWORD=
 
 You can support the author on [Boosty][boosty_url], both on a _permanent_ and on a _one-time_ basis.
 
-All proceeds from this way will go to **support** my projects and will energize me to **create** new products.
+All proceeds from this way will go to **support** my projects and will energize me to **create** new features.
 
-<a href="https://boosty.to/koddr/donate" target="_blank"><img width="300" alt="support me on Boosty" src="https://raw.githubusercontent.com/koddr/.github/main/images/boosty-badge.svg"/></a>
+<a href="https://boosty.to/m0nclous/donate" target="_blank"><img width="300" alt="support me on Boosty" src="assets/img/m0nclous-donate.svg"/></a>
 
 ## 🏆 A win-win cooperation
 
