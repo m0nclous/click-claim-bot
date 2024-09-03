@@ -63,9 +63,133 @@ Use a ready-made online bot to automate your farm.
    Passwords are not saved on the server!
 7. Ready! After successfully linking your account, the bot will be able to automate your farming in Telegram mini applications
 
-## ⚡️ Quick start
+## ⚡️ Quick start (self-hosted)
+
+Для получения сессии игр и отправки запросов нужно зарегистрировать Telegram приложение
+1. Перейди в личный кабинет Telegram [my.telegram.org](https://my.telegram.org)
+2. Войди по номеру телефона
+3. Перейди в раздел [API development tools](https://my.telegram.org/apps)
+4. Создай новое приложение
+5. Тебе данные: `api_id`, `api_hash`, `Production configuration`
+
+Для управления приложением нужно создать чат-бота Telegram [t.me/BotFather](https://t.me/BotFather)  
+Тебе понадобится `Token HTTP API` и `username`
 
 ### 🐳 Docker-way to quick start
+Install `docker` for you OS  
+You can find instructions on open sources
+
+Install `docker-compose`    
+You can find instructions on open sources
+
+Create new folder for click-claim-bot
+
+Create `docker-compose.yml`  
+```yaml
+services:
+    app:
+        image: m0nclous/click-claim-bot:v1.6.7
+        restart: unless-stopped
+        volumes:
+            - './storage/logs:/app/storage/logs'
+            - './proxy-list.txt:/app/proxy-list.txt'
+        environment:
+            APP_KEY: '${APP_KEY}'
+
+            TZ: '${TZ:-UTC}'
+            NODE_ENV: '${NODE_ENV:-production}'
+
+            REDIS_HOST: '${REDIS_HOST:-redis}'
+            REDIS_PORT: '${REDIS_PORT:-6379}'
+            REDIS_PASSWORD: '${REDIS_PASSWORD:-}'
+
+            TELEGRAM_API_ID: '${TELEGRAM_API_ID}'
+            TELEGRAM_API_HASH: '${TELEGRAM_API_HASH}'
+
+            TELEGRAM_BOT_TOKEN: '${TELEGRAM_BOT_TOKEN}'
+            TELEGRAM_BOT_NAME: '${TELEGRAM_BOT_NAME}'
+
+            LOG_LEVEL: '${LOG_LEVEL:-trace}'
+            LOGTAIL_SOURCE_TOKEN: '${LOGTAIL_SOURCE_TOKEN:-}'
+
+            KEY_GENERATE_USE_PROXY: '${KEY_GENERATE_USE_PROXY:-false}'
+            KEY_GENERATE_PROXY_USER: '${KEY_GENERATE_PROXY_USER:-}'
+            KEY_GENERATE_PROXY_PASSWORD: '${KEY_GENERATE_PROXY_PASSWORD:-}'
+
+        depends_on:
+            redis:
+                condition: service_healthy
+
+    redis:
+        image: 'redis:7.2.5-alpine'
+        restart: unless-stopped
+        command: ['redis-server', '--requirepass ${REDIS_PASSWORD}']
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - 'redis-data:/data'
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+
+volumes:
+    redis-data:
+```
+
+Create `.env`
+```dotenv
+### App
+HOST=127.0.0.1
+# Random UUID https://www.uuidgenerator.net
+APP_KEY=
+TZ=UTC
+
+### Telegram MTP https://my.telegram.org/apps
+# App api_id
+TELEGRAM_API_ID=
+# App api_hash
+TELEGRAM_API_HASH=
+# MTProto Production configuration
+TELEGRAM_DC_ID=2
+TELEGRAM_DC_IP=149.154.167.50
+TELEGRAM_DC_PORT=443
+
+### Telegram Bot https://t.me/BotFather
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_BOT_NAME=
+
+### Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+### Logs
+LOG_LEVEL=trace
+# BetterStack https://logs.betterstack.com
+LOGTAIL_SOURCE_TOKEN=
+
+### SOCKS5 Proxy
+KEY_GENERATE_USE_PROXY=false
+KEY_GENERATE_PROXY_USER=
+KEY_GENERATE_PROXY_PASSWORD=
+```
+
+Отредактируй `.env` и вставь актуальные данные:
+- APP_KEY - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+- TELEGRAM_API_ID - api_id ранее созданного Telegram приложения
+- TELEGRAM_API_HASH - api_hash ранее созданного Telegram приложения
+- TELEGRAM_DC_ID - DC ID из секции Available MTProto servers (Production configuration)
+- TELEGRAM_DC_IP - IP из секции Available MTProto servers (Production configuration)
+- TELEGRAM_DC_PORT - PORT из секции Available MTProto servers (Production configuration)
+- TELEGRAM_BOT_TOKEN - Token созданного бота в [@BotFather](https://t.me/BotFather)
+- TELEGRAM_BOT_NAME - Username созданного бота в [@BotFather](https://t.me/BotFather)
+- REDIS_PASSWORD - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+
+Вот и всё, бот готов к запуску: используй команду `docker-compose up -d`
 
 ## ⚙️ Telegram Bot Commands
 
