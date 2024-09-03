@@ -65,6 +65,7 @@ Use a ready-made online bot to automate your farm.
 
 ## ⚡️ Quick start (self-hosted)
 
+### Telegram App
 To receive session games and request requests, you must register the Telegram application.
 1. Go to your personal Telegram account [my.telegram.org](https://my.telegram.org)
 2. Login by phone number
@@ -72,6 +73,7 @@ To receive session games and request requests, you must register the Telegram ap
 4. Create a new application
 5. You will need data: `api_id`, `api_hash`, `Production configuration`
 
+### Telegram Bot
 To manage the application you need to create a Telegram chatbot [t.me/BotFather](https://t.me/BotFather)  
 You will need `Token HTTP API` и `username`
 
@@ -246,9 +248,9 @@ That's it, the bot is ready to launch: use the command `docker-compose up -d`
 
 You can support the author on [Boosty][boosty_url], both on a _permanent_ and on a _one-time_ basis.
 
-All proceeds from this way will go to **support** my projects and will energize me to **create** new products.
+All proceeds from this way will go to **support** my projects and will energize me to **create** new features.
 
-<a href="https://boosty.to/koddr/donate" target="_blank"><img width="300" alt="support me on Boosty" src="https://raw.githubusercontent.com/koddr/.github/main/images/boosty-badge.svg"/></a>
+<a href="https://boosty.to/m0nclous/donate" target="_blank"><img width="300" alt="support me on Boosty" src="assets/img/m0nclous-donate.svg"/></a>
 
 ## 🏆 A win-win cooperation
 
