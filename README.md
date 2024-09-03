@@ -65,15 +65,15 @@ Use a ready-made online bot to automate your farm.
 
 ## ⚡️ Quick start (self-hosted)
 
-Для получения сессии игр и отправки запросов нужно зарегистрировать Telegram приложение
-1. Перейди в личный кабинет Telegram [my.telegram.org](https://my.telegram.org)
-2. Войди по номеру телефона
-3. Перейди в раздел [API development tools](https://my.telegram.org/apps)
-4. Создай новое приложение
-5. Тебе данные: `api_id`, `api_hash`, `Production configuration`
+To receive session games and request requests, you must register the Telegram application.
+1. Go to your personal Telegram account [my.telegram.org](https://my.telegram.org)
+2. Login by phone number
+3. Go to section [API development tools](https://my.telegram.org/apps)
+4. Create a new application
+5. You will need data: `api_id`, `api_hash`, `Production configuration`
 
-Для управления приложением нужно создать чат-бота Telegram [t.me/BotFather](https://t.me/BotFather)  
-Тебе понадобится `Token HTTP API` и `username`
+To manage the application you need to create a Telegram chatbot [t.me/BotFather](https://t.me/BotFather)  
+You will need `Token HTTP API` и `username`
 
 ### 🐳 Docker-way to quick start
 Install `docker` for you OS  
@@ -178,18 +178,18 @@ KEY_GENERATE_PROXY_USER=
 KEY_GENERATE_PROXY_PASSWORD=
 ```
 
-Отредактируй `.env` и вставь актуальные данные:
-- APP_KEY - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
-- TELEGRAM_API_ID - api_id ранее созданного Telegram приложения
-- TELEGRAM_API_HASH - api_hash ранее созданного Telegram приложения
-- TELEGRAM_DC_ID - DC ID из секции Available MTProto servers (Production configuration)
-- TELEGRAM_DC_IP - IP из секции Available MTProto servers (Production configuration)
-- TELEGRAM_DC_PORT - PORT из секции Available MTProto servers (Production configuration)
-- TELEGRAM_BOT_TOKEN - Token созданного бота в [@BotFather](https://t.me/BotFather)
-- TELEGRAM_BOT_NAME - Username созданного бота в [@BotFather](https://t.me/BotFather)
-- REDIS_PASSWORD - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+Edit `.env` and insert the current data:
+- APP_KEY - random UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+- TELEGRAM_API_ID - api_id of a previously created Telegram application
+- TELEGRAM_API_HASH - api_hash of a previously created Telegram application
+- TELEGRAM_DC_ID - DC ID from the Available section MTProto servers (Production configuration)
+- TELEGRAM_DC_IP - IP from the Available section MTProto servers (Production configuration)
+- TELEGRAM_DC_PORT - PORT from the Available section MTProto servers (Production configuration)
+- TELEGRAM_BOT_TOKEN - Token of the created bot in [@BotFather](https://t.me/BotFather)
+- TELEGRAM_BOT_NAME - Username of the created bot in [@BotFather](https://t.me/BotFather)
+- REDIS_PASSWORD - random UUID [uuidgenerator.net](https://www.uuidgenerator.net)
 
-Вот и всё, бот готов к запуску: используй команду `docker-compose up -d`
+That's it, the bot is ready to launch: use the command `docker-compose up -d`
 
 ## ⚙️ Telegram Bot Commands
 
