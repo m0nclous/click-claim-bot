@@ -102,7 +102,7 @@
 ```yaml
 services:
     app:
-        image: m0nclous/click-claim-bot:v1.7.0
+        image: m0nclous/click-claim-bot:latest
         restart: unless-stopped
         volumes:
             - './storage/logs:/app/storage/logs'
