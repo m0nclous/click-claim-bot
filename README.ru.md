@@ -3,6 +3,7 @@
 [![Click Claim Bot][repo_logo_img]][repo_url]
 
 # Click Claim Bot
+
 Автоматизируй свой **фарм** в Telegram **Mini Apps**!
 
 [![Node version][node_version_img]][node_dev_url]
@@ -17,39 +18,49 @@
 </div>
 
 ## 🤖 Поддерживаемые Mini Apps
-- <a href="https://t.me/mtkbossbot/mtkmafia?startapp=ref1013774663" target="_blank"><img src="assets/img/mtk/mtk.jpg" width="20" alt="" style="vertical-align:middle"> $MTK Clicker Mafia</a>
-  - Кликер
-  - Сбор ежедневной награды
 
-- <a href="https://t.me/geMzcoin_bot/tap?startapp=16bh6F-UNKSBgh2bHroyVJuS" target="_blank"><img src="assets/img/gemz/logo.jpg" width="20" alt="" style="vertical-align:middle"> Gemz</a>
-  - Кликер
-  - Сбор ежедневной награды
+-   <a href="https://t.me/mtkbossbot/mtkmafia?startapp=ref1013774663" target="_blank"><img src="assets/img/mtk/mtk.jpg" width="20" alt="" style="vertical-align:middle"> $MTK Clicker Mafia</a>
 
-- <a href="https://t.me/memefi_coin_bot/main?startapp=r_61f7724676" target="_blank"><img src="assets/img/meme-fi/logo.jpg" width="20" alt="" style="vertical-align:middle"> MemeFi Coin</a>
-  - Кликер
+    -   Кликер
+    -   Сбор ежедневной награды
 
-- <a href="https://t.me/mine2mine_bot?start=MU0DupGZ" target="_blank"><img src="assets/img/mine2mine/logo.jpg" width="20" alt="" style="vertical-align:middle"> Mine2Mine</a>
-  - Кликер
+-   <a href="https://t.me/geMzcoin_bot/tap?startapp=16bh6F-UNKSBgh2bHroyVJuS" target="_blank"><img src="assets/img/gemz/logo.jpg" width="20" alt="" style="vertical-align:middle"> Gemz</a>
 
-- <a href="https://t.me/cityholder/game?startapp=1013774663" target="_blank"><img src="assets/img/city-holder/logo.jpg" width="20" alt="" style="vertical-align:middle"> City Holder</a>
-  - Кликер
+    -   Кликер
+    -   Сбор ежедневной награды
 
-- <a href="https://t.me/Mdaowalletbot?start=1013774663" target="_blank"><img src="assets/img/zavod/logo.jpg" width="20" alt="" style="vertical-align:middle"> ZAVOD Wallet</a>
-  - Сбор награды
-  - Создание деталей
+-   <a href="https://t.me/memefi_coin_bot/main?startapp=r_61f7724676" target="_blank"><img src="assets/img/meme-fi/logo.jpg" width="20" alt="" style="vertical-align:middle"> MemeFi Coin</a>
 
-- <a href="https://t.me/toon_nation_bot/toon_nation?startapp=1013774663" target="_blank"><img src="assets/img/toon/logo.jpg" width="20" alt="" style="vertical-align:middle"> ToON Nation</a>
-  - Сбор награды
+    -   Кликер
 
-- <a href="https://t.me/TimeFarmCryptoBot?start=1qo5WNP7jnLaAaLm4" target="_blank"><img src="assets/img/time-farm/logo.jpg" width="20" alt="" style="vertical-align:middle"> Time Farm</a>
-  - Сбор награды
+-   <a href="https://t.me/mine2mine_bot?start=MU0DupGZ" target="_blank"><img src="assets/img/mine2mine/logo.jpg" width="20" alt="" style="vertical-align:middle"> Mine2Mine</a>
 
-- <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
-  - Генерация ключей
+    -   Кликер
+
+-   <a href="https://t.me/cityholder/game?startapp=1013774663" target="_blank"><img src="assets/img/city-holder/logo.jpg" width="20" alt="" style="vertical-align:middle"> City Holder</a>
+
+    -   Кликер
+
+-   <a href="https://t.me/Mdaowalletbot?start=1013774663" target="_blank"><img src="assets/img/zavod/logo.jpg" width="20" alt="" style="vertical-align:middle"> ZAVOD Wallet</a>
+
+    -   Сбор награды
+    -   Создание деталей
+
+-   <a href="https://t.me/toon_nation_bot/toon_nation?startapp=1013774663" target="_blank"><img src="assets/img/toon/logo.jpg" width="20" alt="" style="vertical-align:middle"> ToON Nation</a>
+
+    -   Сбор награды
+
+-   <a href="https://t.me/TimeFarmCryptoBot?start=1qo5WNP7jnLaAaLm4" target="_blank"><img src="assets/img/time-farm/logo.jpg" width="20" alt="" style="vertical-align:middle"> Time Farm</a>
+
+    -   Сбор награды
+
+-   <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
+    -   Генерация ключей
 
 ## 🏆️ Онлайн Бот без проблем
 
 Используй готового онлайн бота для автоматизации своего фарма.
+
 1. Перейди в Telegram бота <a href="https://t.me/ClickClaimBot" target="_blank">@ClickClaimBot</a>
 2. Нажми кнопку `Старт` или введи команду `/start`
 3. Используй команду `/login` для начала привязки Telegram сессии
@@ -66,6 +77,7 @@
 ## ⚡️ Быстрый старт (self-hosted)
 
 Для получения сессии игр и отправки запросов нужно зарегистрировать Telegram приложение
+
 1. Перейди в личный кабинет Telegram [my.telegram.org](https://my.telegram.org)
 2. Войди по номеру телефона
 3. Перейди в раздел [API development tools](https://my.telegram.org/apps)
@@ -76,6 +88,7 @@
 Тебе понадобится `Token HTTP API` и `username`
 
 ### 🐳 Быстрый старт через Docker
+
 Установи `docker` на свою OS  
 Ты можешь найти инструкцию в открытых источниках
 
@@ -85,6 +98,7 @@
 Создай папку для click-claim-bot
 
 Создай файл `docker-compose.yml`
+
 ```yaml
 services:
     app:
@@ -141,6 +155,7 @@ volumes:
 ```
 
 Создай файл `.env`
+
 ```dotenv
 ### App
 HOST=127.0.0.1
@@ -179,68 +194,79 @@ KEY_GENERATE_PROXY_PASSWORD=
 ```
 
 Отредактируй `.env` и вставь актуальные данные:
-- APP_KEY - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
-- TELEGRAM_API_ID - api_id ранее созданного Telegram приложения
-- TELEGRAM_API_HASH - api_hash ранее созданного Telegram приложения
-- TELEGRAM_DC_ID - DC ID из секции Available MTProto servers (Production configuration)
-- TELEGRAM_DC_IP - IP из секции Available MTProto servers (Production configuration)
-- TELEGRAM_DC_PORT - PORT из секции Available MTProto servers (Production configuration)
-- TELEGRAM_BOT_TOKEN - Token созданного бота в [@BotFather](https://t.me/BotFather)
-- TELEGRAM_BOT_NAME - Username созданного бота в [@BotFather](https://t.me/BotFather)
-- REDIS_PASSWORD - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+
+-   APP_KEY - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
+-   TELEGRAM_API_ID - api_id ранее созданного Telegram приложения
+-   TELEGRAM_API_HASH - api_hash ранее созданного Telegram приложения
+-   TELEGRAM_DC_ID - DC ID из секции Available MTProto servers (Production configuration)
+-   TELEGRAM_DC_IP - IP из секции Available MTProto servers (Production configuration)
+-   TELEGRAM_DC_PORT - PORT из секции Available MTProto servers (Production configuration)
+-   TELEGRAM_BOT_TOKEN - Token созданного бота в [@BotFather](https://t.me/BotFather)
+-   TELEGRAM_BOT_NAME - Username созданного бота в [@BotFather](https://t.me/BotFather)
+-   REDIS_PASSWORD - случайный UUID [uuidgenerator.net](https://www.uuidgenerator.net)
 
 Вот и всё, бот готов к запуску: используй команду `docker-compose up -d`
 
 ## ⚙️ Команды Telegram Бота
 
 ### Base:
-- `/start` — Старт Бота
-- `/login` — Авторизация в Telegram
-- `/logout` — Разлогиниться из Telegram 
-- `/enable` — Активировать работу Telegram бота (deprecated)
-- `/disable` — Деактивировать работу Telegram бота (deprecated)
-- `/status` — Статус Бота
+
+-   `/start` — Старт Бота
+-   `/login` — Авторизация в Telegram
+-   `/logout` — Разлогиниться из Telegram
+-   `/enable` — Активировать работу Telegram бота (deprecated)
+-   `/disable` — Деактивировать работу Telegram бота (deprecated)
+-   `/status` — Статус Бота
 
 ### Gemz:
-- `/bot_gemz_click_start` — Запуск кликов Gemz
-- `/bot_gemz_click_stop` — Остановка кликов Gemz
-- `/bot_gemz_daily_start` — Запуск сбора ежедневной награды Gemz
-- `/bot_gemz_daily_stop` — Остановка сбора ежедневной награды Gemz
+
+-   `/bot_gemz_click_start` — Запуск кликов Gemz
+-   `/bot_gemz_click_stop` — Остановка кликов Gemz
+-   `/bot_gemz_daily_start` — Запуск сбора ежедневной награды Gemz
+-   `/bot_gemz_daily_stop` — Остановка сбора ежедневной награды Gemz
 
 ### MTK:
-- `/bot_mtk_click_start` — Запуск кликов MTK
-- `/bot_mtk_click_stop` — Остановка кликов MTK
-- `/bot_mtk_daily_start` — Запуск сбора ежедневной награды MTK
-- `/bot_mtk_daily_stop` — Остановка сбора ежедневной награды MTK
+
+-   `/bot_mtk_click_start` — Запуск кликов MTK
+-   `/bot_mtk_click_stop` — Остановка кликов MTK
+-   `/bot_mtk_daily_start` — Запуск сбора ежедневной награды MTK
+-   `/bot_mtk_daily_stop` — Остановка сбора ежедневной награды MTK
 
 ### MemeFI Coin:
-- `/bot_memefi_click_start` — Запуск кликов MemeFI
-- `/bot_memefi_click_stop` — Остановка кликов MemeFI
+
+-   `/bot_memefi_click_start` — Запуск кликов MemeFI
+-   `/bot_memefi_click_stop` — Остановка кликов MemeFI
 
 ### Mine 2 Mine:
-- `/bot_mine2mine_click_start` — Запуск кликов Mine2Mine
-- `/bot_mine2mine_click_stop` — Остановка кликов Mine2Mine
+
+-   `/bot_mine2mine_click_start` — Запуск кликов Mine2Mine
+-   `/bot_mine2mine_click_stop` — Остановка кликов Mine2Mine
 
 ### Citi Holders:
-- `/bot_city_holders_click_start` — Запуск кликов City Holders
-- `/bot_city_holders_click_stop` — Остановка кликов City Holders
+
+-   `/bot_city_holders_click_start` — Запуск кликов City Holders
+-   `/bot_city_holders_click_stop` — Остановка кликов City Holders
 
 ### Zavod:
-- `/bot_zavod_claim_start` — Запуск сбора награды Zavod
-- `/bot_zavod_claim_stop` — Остановка сбора награды Zavod
-- `/bot_zavod_craft_start` — Запуск создания деталей Zavod
-- `/bot_zavod_craft_stop` — Остановка создания деталей Zavod
+
+-   `/bot_zavod_claim_start` — Запуск сбора награды Zavod
+-   `/bot_zavod_claim_stop` — Остановка сбора награды Zavod
+-   `/bot_zavod_craft_start` — Запуск создания деталей Zavod
+-   `/bot_zavod_craft_stop` — Остановка создания деталей Zavod
 
 ### ToON:
-- `/bot_toon_claim_start` — Запуск сбора награды ToON
-- `/bot_toon_claim_stop` — Остановка сбора награды ToON
+
+-   `/bot_toon_claim_start` — Запуск сбора награды ToON
+-   `/bot_toon_claim_stop` — Остановка сбора награды ToON
 
 ### Time Farm
-- `/bot_time_farm_claim_start` — Запуск сбора награды Time Farm
-- `/bot_time_farm_claim_stop` — Остановка сбора награды Time Farm
+
+-   `/bot_time_farm_claim_start` — Запуск сбора награды Time Farm
+-   `/bot_time_farm_claim_stop` — Остановка сбора награды Time Farm
 
 ### Hamster Combat
-- `/get_keys_hamster_combat` — Получить все ключи от мини игр
+
+-   `/get_keys_hamster_combat` — Получить все ключи от мини игр
 
 ## ❗️ Поддержите автора
 
@@ -255,8 +281,8 @@ KEY_GENERATE_PROXY_PASSWORD=
 И теперь я приглашаю тебя принять участие в этом проекте! Давай работать **вместе**, чтобы
 создать **самого полезного** бота в вебе на сегодня.
 
-- [Issues][repo_issues_url]: задавайте вопросы и отправляйте свои предложения.
-- [Pull requests][repo_pull_request_url]: отправляйте свои улучшения.
+-   [Issues][repo_issues_url]: задавайте вопросы и отправляйте свои предложения.
+-   [Pull requests][repo_pull_request_url]: отправляйте свои улучшения.
 
 ## ⚠️ Лицензия
 
