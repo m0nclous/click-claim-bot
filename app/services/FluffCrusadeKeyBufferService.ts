@@ -1,9 +1,9 @@
 import type { ApplicationService } from '@adonisjs/core/types';
 import type { RedisService } from '@adonisjs/redis/types';
-import type { GangsWarsKeyGenerateService } from '#services/GangsWarsKeyGenerateService';
+import type { FluffCrusadeKeyGenerateService } from '#services/FluffCrusadeKeyGenerateService';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
 
-export class GangsWarsKeyBufferService extends BaseKeyBufferService {
+export class FluffCrusadeKeyBufferService extends BaseKeyBufferService {
     public constructor(
         protected app: ApplicationService,
         protected redis: RedisService,
@@ -11,11 +11,11 @@ export class GangsWarsKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    public async getKeyGenerateService(): Promise<GangsWarsKeyGenerateService> {
-        return this.app.container.make('gangsWarsKeyGenerate');
+    public async getKeyGenerateService(): Promise<FluffCrusadeKeyGenerateService> {
+        return this.app.container.make('fluffCrusadeKeyGenerate');
     }
 
     protected getRedisSlug(): string {
-        return 'gangs-wars';
+        return 'fluff-crusade';
     }
 }

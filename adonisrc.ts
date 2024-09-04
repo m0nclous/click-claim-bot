@@ -58,20 +58,20 @@ export default defineConfig({
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
-        () => import('#providers/CafeDashKeyGenerateProvider'),
-        () => import('#providers/GangsWarsKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
+        () => import('#providers/TileTrioGenerateProvider'),
+        () => import('#providers/FluffCrusadeKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
         () => import('#providers/TrainKeyBufferProvider'),
-        () => import('#providers/GangsWarsKeyBufferProvider'),
-        () => import('#providers/CafeDashKeyBufferProvider'),
         () => import('#providers/MowAndTrimKeyBufferProvider'),
         () => import('#providers/CubeKeyBufferProvider'),
         () => import('#providers/MergeKeyBufferProvider'),
         () => import('#providers/TwerkKeyBufferProvider'),
         () => import('#providers/PolysphereKeyBufferProvider'),
+        () => import('#providers/TileTrioKeyBufferProvider'),
+        () => import('#providers/FluffCrusadeKeyBufferProvider'),
     ],
 
     /*

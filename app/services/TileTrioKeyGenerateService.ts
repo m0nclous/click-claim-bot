@@ -1,7 +1,7 @@
 import { BaseKeyGenerateService } from '#services/BaseKeyGenerateService';
 import type { ApplicationService, LoggerService } from '@adonisjs/core/types';
 
-export class GangsWarsKeyGenerateService extends BaseKeyGenerateService {
+export class TileTrioKeyGenerateService extends BaseKeyGenerateService {
     public constructor(
         protected app: ApplicationService,
         protected logger: LoggerService,
@@ -10,15 +10,15 @@ export class GangsWarsKeyGenerateService extends BaseKeyGenerateService {
     }
 
     public getAppName(): string {
-        return 'Gangs Wars';
+        return 'Tile Trio';
     }
 
     protected getAppToken(): string {
-        return 'b6de60a0-e030-48bb-a551-548372493523';
+        return 'e68b39d2-4880-4a31-b3aa-0393e7df10c7';
     }
 
     protected getPromoId(): string {
-        return 'c7821fa7-6632-482c-9635-2bd5798585f9';
+        return 'e68b39d2-4880-4a31-b3aa-0393e7df10c7';
     }
     protected getEventType(): string {
         return '';

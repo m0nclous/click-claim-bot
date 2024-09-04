@@ -1,9 +1,9 @@
 import type { ApplicationService } from '@adonisjs/core/types';
 import type { RedisService } from '@adonisjs/redis/types';
-import type { CafeDashKeyGenerateService } from '#services/CafeDashKeyGenerateService';
+import type { TileTrioKeyGenerateService } from '#services/TileTrioKeyGenerateService';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
 
-export class CafeDashKeyBufferService extends BaseKeyBufferService {
+export class TileTrioKeyBufferService extends BaseKeyBufferService {
     public constructor(
         protected app: ApplicationService,
         protected redis: RedisService,
@@ -11,11 +11,11 @@ export class CafeDashKeyBufferService extends BaseKeyBufferService {
         super(app, redis);
     }
 
-    public async getKeyGenerateService(): Promise<CafeDashKeyGenerateService> {
-        return this.app.container.make('cafeDashKeyGenerate');
+    public async getKeyGenerateService(): Promise<TileTrioKeyGenerateService> {
+        return this.app.container.make('tileTrioKeyGenerate');
     }
 
     protected getRedisSlug(): string {
-        return 'cafe-dash';
+        return 'tile-trio';
     }
 }

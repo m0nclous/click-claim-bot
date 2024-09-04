@@ -1,7 +1,7 @@
 import { BaseKeyGenerateService } from '#services/BaseKeyGenerateService';
 import type { ApplicationService, LoggerService } from '@adonisjs/core/types';
 
-export class CafeDashKeyGenerateService extends BaseKeyGenerateService {
+export class FluffCrusadeKeyGenerateService extends BaseKeyGenerateService {
     public constructor(
         protected app: ApplicationService,
         protected logger: LoggerService,
@@ -10,16 +10,17 @@ export class CafeDashKeyGenerateService extends BaseKeyGenerateService {
     }
 
     public getAppName(): string {
-        return 'Cafe Dash';
+        return 'Fluff Crusade';
     }
 
     protected getAppToken(): string {
-        return 'bc0971b8-04df-4e72-8a3e-ec4dc663cd11';
+        return '112887b0-a8af-4eb2-ac63-d82df78283d9';
     }
 
     protected getPromoId(): string {
-        return 'bc0971b8-04df-4e72-8a3e-ec4dc663cd11';
+        return '112887b0-a8af-4eb2-ac63-d82df78283d9';
     }
+
     protected getEventType(): string {
         return '';
     }
