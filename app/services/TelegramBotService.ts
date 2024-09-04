@@ -631,14 +631,13 @@ export class TelegramBotService {
         const fluffCrusadeQuantityKeys: number = 8;
         const serviceBindings: string[] = [
             'zoopolisKeyBuffer',
-            'gangsWarsKeyBuffer',
-            'cafeDashKeyBuffer',
             'mowAndTrimKeyBuffer',
             'cubeKeyBuffer',
             'trainKeyBuffer',
             'mergeKeyBuffer',
             'twerkKeyBuffer',
             'polysphereKeyBuffer',
+            'tileTrioKeyBuffer',
             'fluffCrusadeKeyBuffer',
         ];
 

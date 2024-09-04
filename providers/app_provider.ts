@@ -56,13 +56,12 @@ export default class AppProvider {
             const keyBufferServicesToRun: KeyGenerateServiceBinding[] = [
                 'zoopolisKeyBuffer',
                 'trainKeyBuffer',
-                'gangsWarsKeyBuffer',
-                'cafeDashKeyBuffer',
                 'mowAndTrimKeyBuffer',
                 'cubeKeyBuffer',
                 'mergeKeyBuffer',
                 'twerkKeyBuffer',
                 'polysphereKeyBuffer',
+                'tileTrioKeyBuffer',
                 'fluffCrusadeKeyBuffer',
             ];
 
