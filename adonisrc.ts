@@ -58,13 +58,11 @@ export default defineConfig({
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
-        () => import('#providers/CafeDashKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
         () => import('#providers/TrainKeyBufferProvider'),
-        () => import('#providers/CafeDashKeyBufferProvider'),
         () => import('#providers/MowAndTrimKeyBufferProvider'),
         () => import('#providers/CubeKeyBufferProvider'),
         () => import('#providers/MergeKeyBufferProvider'),
