@@ -10,6 +10,8 @@
 [![Docker][docker_img]][docker_url]
 [![License][repo_license_img]][repo_license_url]
 
+[![Online Users][bot_online_users_img]][bot_url]
+
 ### — Select Language —
 
 [![en](https://img.shields.io/badge/en-blue.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.md)
@@ -294,6 +296,8 @@ KEY_GENERATE_PROXY_PASSWORD=
 [docker_img]: https://img.shields.io/badge/Docker-blue?style=for-the-badge&logo=docker
 [docker_url]: https://hub.docker.com/r/m0nclous/click-claim-bot
 [node_dev_url]: https://nodejs.org/en/blog/release/v20.10.0
+[bot_url]: https://t.me/ClickClaimBot
+[bot_online_users_img]: https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2F31.128.40.121%2Fstatistic%2Fonline-users&query=%24.data.onlineUsers&style=for-the-badge&label=Online%20Users&cacheSeconds=10
 
 <!-- Repository -->
 
