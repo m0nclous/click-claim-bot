@@ -628,6 +628,7 @@ export class TelegramBotService {
 
     public async getKeysHamsterCombat(ctx: Context): Promise<void> {
         const quantityKeys: number = 4;
+        const fluffCrusadeQuantityKeys: number = 8;
         const serviceBindings: string[] = [
             'zoopolisKeyBuffer',
             'mowAndTrimKeyBuffer',
@@ -637,6 +638,7 @@ export class TelegramBotService {
             'twerkKeyBuffer',
             'polysphereKeyBuffer',
             'tileTrioKeyBuffer',
+            'fluffCrusadeKeyBuffer',
         ];
 
         const services: BaseKeyBufferService[] = await Promise.all(
@@ -646,10 +648,9 @@ export class TelegramBotService {
         const haveRequiredNumberKeys: boolean = await Promise.all(
             services.map(async (service: BaseKeyBufferService) => {
                 const countKeys = await service.countKeys();
+                const appName = (await service.getKeyGenerateService()).getAppName();
 
-                if (countKeys < quantityKeys) {
-                    const appName = (await service.getKeyGenerateService()).getAppName();
-
+                if (countKeys < (appName === 'Fluff Crusade' ? fluffCrusadeQuantityKeys : quantityKeys)) {
                     throw new NotEnoughKeysInBufferException(`В ${appName} буфере недостаточно ключей`);
                 }
             }),
@@ -672,8 +673,10 @@ export class TelegramBotService {
 
         Promise.all(
             services.map(async (service: BaseKeyBufferService) => {
-                const keys = await service.getKeys(quantityKeys);
                 const appName = (await service.getKeyGenerateService()).getAppName();
+                const keys = await service.getKeys(
+                    appName === 'Fluff Crusade' ? fluffCrusadeQuantityKeys : quantityKeys,
+                );
 
                 return { appName, keys };
             }),

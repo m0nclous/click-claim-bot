@@ -60,6 +60,7 @@ export default defineConfig({
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
         () => import('#providers/TileTrioGenerateProvider'),
+        () => import('#providers/FluffCrusadeKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -70,6 +71,7 @@ export default defineConfig({
         () => import('#providers/TwerkKeyBufferProvider'),
         () => import('#providers/PolysphereKeyBufferProvider'),
         () => import('#providers/TileTrioKeyBufferProvider'),
+        () => import('#providers/FluffCrusadeKeyBufferProvider'),
     ],
 
     /*
