@@ -46,6 +46,15 @@ Automate your **farming** in Telegram **Mini Apps**!
 
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
   - Generate Game Keys
+    - Fluff Crusade
+    - Tile Trio
+    - Mow And Trim
+    - Train Miner
+    - Chain Cube 2048
+    - Merge Away
+    - Zoopolis
+    - Twerk Race
+    - Polysphere
 
 ## 🏆️ Online bot without problems
 Use a ready-made online bot to automate your farm.
