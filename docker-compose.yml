@@ -28,6 +28,9 @@ services:
             KEY_GENERATE_PROXY_USER: '${KEY_GENERATE_PROXY_USER:-}'
             KEY_GENERATE_PROXY_PASSWORD: '${KEY_GENERATE_PROXY_PASSWORD:-}'
 
+        ports:
+            - '${PORT:-80}:80'
+
         depends_on:
             redis:
                 condition: service_healthy
@@ -41,10 +44,7 @@ services:
         volumes:
             - 'redis-data:/data'
         healthcheck:
-            test:
-                - CMD
-                - redis-cli
-                - ping
+            test: ['CMD', 'redis-cli', 'ping']
             retries: 3
             timeout: 5s
 
