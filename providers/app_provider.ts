@@ -61,6 +61,7 @@ export default class AppProvider {
                 'mergeKeyBuffer',
                 'twerkKeyBuffer',
                 'polysphereKeyBuffer',
+                'tileTrioKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {
