@@ -5,9 +5,9 @@ const telegramConfig = defineConfig({
     id: env.get('TELEGRAM_API_ID'),
     hash: env.get('TELEGRAM_API_HASH'),
     dc: {
-        id: 2,
-        ip: '149.154.167.50',
-        port: 443,
+        id: env.get('TELEGRAM_DC_ID', 2),
+        ip: env.get('TELEGRAM_DC_IP', '149.154.167.50'),
+        port: env.get('TELEGRAM_DC_PORT', 443),
     },
 });
 
