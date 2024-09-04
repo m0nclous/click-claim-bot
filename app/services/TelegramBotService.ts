@@ -630,7 +630,6 @@ export class TelegramBotService {
         const quantityKeys: number = 4;
         const serviceBindings: string[] = [
             'zoopolisKeyBuffer',
-            'gangsWarsKeyBuffer',
             'mowAndTrimKeyBuffer',
             'cubeKeyBuffer',
             'trainKeyBuffer',

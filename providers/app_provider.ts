@@ -56,7 +56,6 @@ export default class AppProvider {
             const keyBufferServicesToRun: KeyGenerateServiceBinding[] = [
                 'zoopolisKeyBuffer',
                 'trainKeyBuffer',
-                'gangsWarsKeyBuffer',
                 'mowAndTrimKeyBuffer',
                 'cubeKeyBuffer',
                 'mergeKeyBuffer',
