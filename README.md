@@ -12,7 +12,7 @@ Automate your **farming** in Telegram **Mini Apps**!
 ### — Select Language —
 
 [![en](https://img.shields.io/badge/en-red.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.md)
-[![en](https://img.shields.io/badge/ru-blue.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.ru.md)
+[![ru](https://img.shields.io/badge/ru-blue.svg?style=for-the-badge)](https://github.com/m0nclous/click-claim-bot/blob/master/README.ru.md)
 
 </div>
 
@@ -47,13 +47,12 @@ Automate your **farming** in Telegram **Mini Apps**!
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
   - Generate Game Keys
 
-    
 ## 🏆️ Online bot without problems
 Use a ready-made online bot to automate your farm.
 
 1. Go to Telegram bot <a href="https://t.me/ClickClaimBot" target="_blank">@ClickClaimBot</a>
-2. Press the button `Старт` or enter the command `/start`
-3. Use the `/login` command to bind a Telegram session
+2. Press the `Start` button or type `/start`
+3. Use the `/login` command to start the Telegram session binding process
 4. Provide your contact to the bot  
    This will be required to log into your account
 5. Enter the code sent to Telegram to login  
@@ -61,12 +60,13 @@ Use a ready-made online bot to automate your farm.
 6. Enter your cloud password from Telegram  
    **Important! Once entered, the password will be immediately removed from the chat!**  
    Passwords are not saved on the server!
-7. Ready! After successfully linking your account, the bot will be able to automate your farming in Telegram mini applications
+7. Congratulations!  
+   After successfully linking your account, the bot will be able to automate your farming in Telegram Mini Apps
 
 ## ⚡️ Quick start (self-hosted)
 
 ### Telegram App
-To receive session games and request requests, you must register the Telegram application.
+To receive session games and make requests, you must register the Telegram application.
 1. Go to your personal Telegram account [my.telegram.org](https://my.telegram.org)
 2. Login by phone number
 3. Go to section [API development tools](https://my.telegram.org/apps)
@@ -74,14 +74,14 @@ To receive session games and request requests, you must register the Telegram ap
 5. You will need data: `api_id`, `api_hash`, `Production configuration`
 
 ### Telegram Bot
-To manage the application you need to create a Telegram chatbot [t.me/BotFather](https://t.me/BotFather)  
-You will need `Token HTTP API` и `username`
+To manage a click-claim-bot, you need to create a Telegram chatbot. [t.me/BotFather](https://t.me/BotFather)  
+You will need `Token HTTP API` and `username`
 
 ### 🐳 Docker-way to quick start
 Install `docker` for you OS  
 You can find instructions on open sources
 
-Install `docker-compose`    
+Install `docker-compose`  
 You can find instructions on open sources
 
 Create new folder for click-claim-bot
@@ -199,8 +199,8 @@ That's it, the bot is ready to launch: use the command `docker-compose up -d`
 - `/start` — Start Bot
 - `/login` — Login to Telegram
 - `/logout` — Logout from Telegram
-- `/enable` — Enable Telegram bot work
-- `/disable` — Disable Telegram bot work
+- `/enable` — Enable Telegram bot work (deprecated)
+- `/disable` — Disable Telegram bot work (deprecated)
 - `/status` — Bot status
 
 ### Gemz:
