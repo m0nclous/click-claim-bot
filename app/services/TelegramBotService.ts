@@ -631,7 +631,6 @@ export class TelegramBotService {
         const serviceBindings: string[] = [
             'zoopolisKeyBuffer',
             'gangsWarsKeyBuffer',
-            'cafeDashKeyBuffer',
             'mowAndTrimKeyBuffer',
             'cubeKeyBuffer',
             'trainKeyBuffer',

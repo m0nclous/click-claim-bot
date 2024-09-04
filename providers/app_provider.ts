@@ -57,7 +57,6 @@ export default class AppProvider {
                 'zoopolisKeyBuffer',
                 'trainKeyBuffer',
                 'gangsWarsKeyBuffer',
-                'cafeDashKeyBuffer',
                 'mowAndTrimKeyBuffer',
                 'cubeKeyBuffer',
                 'mergeKeyBuffer',

@@ -58,7 +58,6 @@ export default defineConfig({
         () => import('#providers/TwerkKeyGenerateProvider'),
         () => import('#providers/PolysphereKeyGenerateProvider'),
         () => import('#providers/MowAndTrimKeyGenerateProvider'),
-        () => import('#providers/CafeDashKeyGenerateProvider'),
         () => import('#providers/GangsWarsKeyGenerateProvider'),
         () => import('#providers/ZoopolisKeyGenerateProvider'),
 
@@ -66,7 +65,6 @@ export default defineConfig({
         () => import('#providers/ZoopolisKeyBufferProvider'),
         () => import('#providers/TrainKeyBufferProvider'),
         () => import('#providers/GangsWarsKeyBufferProvider'),
-        () => import('#providers/CafeDashKeyBufferProvider'),
         () => import('#providers/MowAndTrimKeyBufferProvider'),
         () => import('#providers/CubeKeyBufferProvider'),
         () => import('#providers/MergeKeyBufferProvider'),
