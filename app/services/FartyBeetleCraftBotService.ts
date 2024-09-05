@@ -53,6 +53,12 @@ export class FartyBeetleCraftBotService extends BaseBotService {
             await gameService.login();
 
             const bootData = await gameService.boot();
+
+            if (bootData.done_factories.length >= 20) {
+                logger.debug(bootData, 'Достигнут лимит в 20 произведённых жуков');
+                return;
+            }
+
             const factories = (await gameService.getFactories()).filter(
                 (factory) => !bootData.done_factories.includes(factory.id),
             );
