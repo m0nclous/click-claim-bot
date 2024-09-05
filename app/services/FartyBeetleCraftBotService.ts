@@ -52,10 +52,30 @@ export class FartyBeetleCraftBotService extends BaseBotService {
         try {
             await gameService.login();
 
-            const factories = await gameService.getFactories();
+            const bootData = await gameService.boot();
+            const factories = (await gameService.getFactories()).filter(
+                (factory) => !bootData.done_factories.includes(factory.id),
+            );
+
+            if (factories.length === 0) {
+                throw new Error('Нет доступных жуков для крафта');
+            }
+
             const factory = factories[getRandomInt(0, factories.length - 1)];
 
             const rewards = await gameService.clock(factory.id, factory.current_task);
+
+            if (rewards.length === 0) {
+                logger.error(
+                    {
+                        bootData,
+                        factory,
+                    },
+                    'Жук собран, но награды нет. Почему?',
+                );
+
+                return;
+            }
 
             await emitter.emit('bot:farty-beetle:craft:finish', {
                 self: gameService,
