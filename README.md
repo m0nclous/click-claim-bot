@@ -19,6 +19,9 @@ Automate your **farming** in Telegram **Mini Apps**!
 </div>
 
 ## 🤖 Supported Mini Apps
+- <a href="https://factory.fireheadz.games/api/share/2abf2107-de56-49af-9b14-1d543e6662dc?locale=en" target="_blank"><img src="assets/img/farty-beetle/logo.jpeg" width="20" alt="" style="vertical-align:middle"> Farty Beetle NFT</a> [NEW]
+  - Auto Craft Beetles [NEW]
+
 - <a href="https://t.me/mtkbossbot/mtkmafia?startapp=ref1013774663" target="_blank"><img src="assets/img/mtk/mtk.jpg" width="20" alt="" style="vertical-align:middle"> $MTK Clicker Mafia</a>
   - Auto Click
   - Auto Claim Daily
@@ -251,6 +254,10 @@ That's it, the bot is ready to launch: use the command `docker-compose up -d`
 ### Time Farm
 - `/bot_time_farm_claim_start` — Start Time Farm auto claim
 - `/bot_time_farm_claim_stop` — Stop Time Farm auto claim
+
+### Farty Beetle NFT
+- `/bot_farty_beetle_craft_start` — Start Farty Beetle NFT craft
+- `/bot_farty_beetle_craft_stop` — Stop Farty Beetle NFT craft
 
 ### Hamster Combat
 - `/get_keys_hamster_combat` — Get keys for all available games

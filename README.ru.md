@@ -20,6 +20,8 @@
 </div>
 
 ## 🤖 Поддерживаемые Mini Apps
+- <a href="https://factory.fireheadz.games/api/share/2abf2107-de56-49af-9b14-1d543e6662dc?locale=ru" target="_blank"><img src="assets/img/farty-beetle/logo.jpeg" width="20" alt="" style="vertical-align:middle"> Farty Beetle NFT</a> [NEW]
+  - Автоматический сбор жуков [NEW]
 
 - <a href="https://t.me/mtkbossbot/mtkmafia?startapp=ref1013774663" target="_blank"><img src="assets/img/mtk/mtk.jpg" width="20" alt="" style="vertical-align:middle"> $MTK Clicker Mafia</a>
   - Кликер
@@ -265,6 +267,10 @@ KEY_GENERATE_PROXY_PASSWORD=
 
 - `/bot_time_farm_claim_start` — Запуск сбора награды Time Farm
 - `/bot_time_farm_claim_stop` — Остановка сбора награды Time Farm
+
+### Farty Beetle NFT
+- `/bot_farty_beetle_craft_start` — Запуск создания жуков Farty Beetle NFT
+- `/bot_farty_beetle_craft_stop` — Остановка создания жуков Farty Beetle NFT
 
 ### Hamster Combat
 
