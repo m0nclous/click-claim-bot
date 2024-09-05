@@ -50,6 +50,7 @@ Automate your **farming** in Telegram **Mini Apps**!
   - Auto Claim
 
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
+  - Find best upgrade to buy (minimum value of price / profitDelta) [NEW]
   - Generate Game Keys
     - Fluff Crusade
     - Tile Trio
@@ -260,6 +261,7 @@ That's it, the bot is ready to launch: use the command `docker-compose up -d`
 - `/bot_farty_beetle_craft_stop` — Stop Farty Beetle NFT craft
 
 ### Hamster Combat
+- `/best_card_for_buy_hamster_combat` — Find best upgrade to buy
 - `/get_keys_hamster_combat` — Get keys for all available games
 
 ## ❗️ Support the author
