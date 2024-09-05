@@ -36,6 +36,7 @@ export default class AppProvider {
                 'toonClaimBotService',
                 'timeFarmClaimBotService',
                 'zavodCraftBotService',
+                'fartyBeetleCraftBotService',
             ];
 
             for (const gameBotServiceBinding of gameBotServicesToRun) {

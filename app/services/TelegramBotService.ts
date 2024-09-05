@@ -84,6 +84,9 @@ export class TelegramBotService {
         this.bot.command('bot_time_farm_claim_start', this.botTimeFarmClaimStart.bind(this));
         this.bot.command('bot_time_farm_claim_stop', this.botTimeFarmClaimStop.bind(this));
 
+        this.bot.command('bot_farty_beetle_craft_start', this.botFartyBeetleCraftStart.bind(this));
+        this.bot.command('bot_farty_beetle_craft_stop', this.botFartyBeetleCraftStop.bind(this));
+
         this.bot.command('get_keys_hamster_combat', this.getKeysHamsterCombat.bind(this));
 
         return this.bot.telegram.setMyCommands([
@@ -194,6 +197,14 @@ export class TelegramBotService {
             {
                 command: 'bot_time_farm_claim_stop',
                 description: 'Остановить сбор награды TimeFarm',
+            },
+            {
+                command: 'bot_farty_beetle_craft_start',
+                description: 'Запустить крафт жуков Farty Beetle NFT',
+            },
+            {
+                command: 'bot_farty_beetle_craft_stop',
+                description: 'Остановить крафт жуков Farty Beetle NFT',
             },
             {
                 command: 'get_keys_hamster_combat',
@@ -624,6 +635,14 @@ export class TelegramBotService {
 
     public async botTimeFarmClaimStop(ctx: Context): Promise<void> {
         await this.stopServiceByUserId(ctx, 'timeFarmClaimBotService');
+    }
+
+    public async botFartyBeetleCraftStart(ctx: Context): Promise<void> {
+        await this.enableServiceByUserId(ctx, 'fartyBeetleCraftBotService');
+    }
+
+    public async botFartyBeetleCraftStop(ctx: Context): Promise<void> {
+        await this.stopServiceByUserId(ctx, 'fartyBeetleCraftBotService');
     }
 
     public async getKeysHamsterCombat(ctx: Context): Promise<void> {
