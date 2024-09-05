@@ -61,6 +61,7 @@ export default defineConfig({
         () => import('#providers/ZoopolisKeyGenerateProvider'),
         () => import('#providers/TileTrioGenerateProvider'),
         () => import('#providers/FluffCrusadeKeyGenerateProvider'),
+        () => import('#providers/FartyBeetleGameProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
