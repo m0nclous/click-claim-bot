@@ -76,6 +76,7 @@ export default defineConfig({
         () => import('#providers/PolysphereKeyBufferProvider'),
         () => import('#providers/TileTrioKeyBufferProvider'),
         () => import('#providers/FluffCrusadeKeyBufferProvider'),
+        () => import('#providers/StoneAgeKeyBufferProvider'),
     ],
 
     /*
