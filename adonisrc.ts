@@ -63,6 +63,7 @@ export default defineConfig({
         () => import('#providers/FluffCrusadeKeyGenerateProvider'),
         () => import('#providers/FartyBeetleGameProvider'),
         () => import('#providers/FartyBeetleCraftBotServiceProvider'),
+        () => import('#providers/HamsterCombatGameProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),

@@ -51,6 +51,7 @@
   - Сбор награды
 
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
+  - Поиск лучшей карты для улучшения (минимальное значение стоимость / прирост дохода) [NEW]
   - Генерация ключей
     - Fluff Crusade
     - Tile Trio
@@ -273,7 +274,7 @@ KEY_GENERATE_PROXY_PASSWORD=
 - `/bot_farty_beetle_craft_stop` — Остановка создания жуков Farty Beetle NFT
 
 ### Hamster Combat
-
+- `/best_card_for_buy_hamster_combat` — Поиск лучшей карты для улучшения
 - `/get_keys_hamster_combat` — Получить все ключи для промо игр
 
 ## ❗️ Поддержите автора

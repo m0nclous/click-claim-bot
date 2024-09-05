@@ -87,6 +87,7 @@ export class TelegramBotService {
         this.bot.command('bot_farty_beetle_craft_start', this.botFartyBeetleCraftStart.bind(this));
         this.bot.command('bot_farty_beetle_craft_stop', this.botFartyBeetleCraftStop.bind(this));
 
+        this.bot.command('best_card_for_buy_hamster_combat', this.getBestCardForBuyHamsterCombat.bind(this));
         this.bot.command('get_keys_hamster_combat', this.getKeysHamsterCombat.bind(this));
 
         return this.bot.telegram.setMyCommands([
@@ -205,6 +206,10 @@ export class TelegramBotService {
             {
                 command: 'bot_farty_beetle_craft_stop',
                 description: 'Остановить крафт жуков Farty Beetle NFT',
+            },
+            {
+                command: 'best_card_for_buy_hamster_combat',
+                description: 'Получить лучшую карту для прокачки в Hamster Combat',
             },
             {
                 command: 'get_keys_hamster_combat',
@@ -710,6 +715,30 @@ export class TelegramBotService {
 
             await ctx.replyWithHTML(messageLines.join('\n').trim());
         });
+    }
+
+    public async getBestCardForBuyHamsterCombat(ctx: Context) {
+        if (ctx.from === undefined) {
+            logger.error(ctx, 'ctx.from is undefined');
+            await ctx.reply('Error: ctx.from is undefined');
+            return;
+        }
+
+        const service = await app.container.make('hamsterCombatGameService', [ctx.from.id]);
+        await service.login();
+
+        const upgrade = await service.getBestUpgradeForBuy();
+        const messageLines = [
+            '— Лучшая карта для покупки —',
+            `Название: <code>${upgrade.name}</code>`,
+            `Раздел: <code>${upgrade.section}</code>`,
+            `Уровень: ${upgrade.level}`,
+            `Прирост дохода: ${upgrade.profitPerHourDelta.toLocaleString()}`,
+            `Стоимость: ${upgrade.price.toLocaleString()}`,
+            `Стоимость за единицу прироста дохода: ${Math.floor(upgrade.price / upgrade.profitPerHourDelta).toLocaleString()}`,
+        ];
+
+        await ctx.replyWithHTML(messageLines.join('\n'));
     }
 
     private async enableServiceByUserId(ctx: Context, serviceName: string) {
