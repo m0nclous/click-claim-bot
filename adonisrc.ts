@@ -64,6 +64,7 @@ export default defineConfig({
         () => import('#providers/FartyBeetleGameProvider'),
         () => import('#providers/FartyBeetleCraftBotServiceProvider'),
         () => import('#providers/HamsterCombatGameProvider'),
+        () => import('#providers/StoneAgeKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -75,6 +76,7 @@ export default defineConfig({
         () => import('#providers/PolysphereKeyBufferProvider'),
         () => import('#providers/TileTrioKeyBufferProvider'),
         () => import('#providers/FluffCrusadeKeyBufferProvider'),
+        () => import('#providers/StoneAgeKeyBufferProvider'),
     ],
 
     /*
