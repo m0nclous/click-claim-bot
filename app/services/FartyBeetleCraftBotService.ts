@@ -41,7 +41,7 @@ export class FartyBeetleCraftBotService extends BaseBotService {
     }
 
     protected getIntervalDelay(): number {
-        return 1_000 * 5;
+        return 1_000 * 30;
     }
 
     public async execute(userId: string): Promise<void> {
