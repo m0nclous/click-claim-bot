@@ -663,6 +663,7 @@ export class TelegramBotService {
             'polysphereKeyBuffer',
             'tileTrioKeyBuffer',
             'fluffCrusadeKeyBuffer',
+            'stoneAgeKeyBuffer',
         ];
 
         const services: BaseKeyBufferService[] = await Promise.all(
