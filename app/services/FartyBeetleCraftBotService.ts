@@ -45,7 +45,9 @@ export class FartyBeetleCraftBotService extends BaseBotService {
     }
 
     public async execute(userId: string): Promise<void> {
-        const gameService: FartyBeetleGameService = (await this.getGameService([userId])) as FartyBeetleGameService;
+        const gameService: FartyBeetleGameService = (await this.getGameService([
+            userId,
+        ])) as FartyBeetleGameService;
 
         try {
             await gameService.login();
