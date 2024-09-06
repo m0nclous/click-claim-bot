@@ -91,7 +91,7 @@ export interface IBoot {
     next_time_slot: number;
     streak_rewards: number[];
     mandatory_channels: string[];
-    done_factories: string[];
+    completed_tasks: string[];
     priority_factories: string[];
     passes: IPass[];
     active_passes: IPass[];
