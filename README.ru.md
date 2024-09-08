@@ -220,8 +220,6 @@ KEY_GENERATE_PROXY_PASSWORD=
 - `/start` — Старт Бота
 - `/login` — Авторизация в Telegram
 - `/logout` — Разлогиниться из Telegram
-- `/enable` — Активировать работу Telegram бота (deprecated)
-- `/disable` — Деактивировать работу Telegram бота (deprecated)
 - `/status` — Статус Бота
 
 ### Gemz:

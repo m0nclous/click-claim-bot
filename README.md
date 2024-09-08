@@ -215,8 +215,6 @@ That's it, the bot is ready to launch: use the command `docker-compose up -d`
 - `/start` — Start Bot
 - `/login` — Login to Telegram
 - `/logout` — Logout from Telegram
-- `/enable` — Enable Telegram bot work (deprecated)
-- `/disable` — Disable Telegram bot work (deprecated)
 - `/status` — Bot status
 
 ### Gemz:
