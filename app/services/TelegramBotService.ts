@@ -47,8 +47,6 @@ export class TelegramBotService {
         this.bot.command('start', this.start.bind(this));
         this.bot.command('login', this.login.bind(this));
         this.bot.command('logout', this.logout.bind(this));
-        this.bot.command('enable', this.enable.bind(this));
-        this.bot.command('disable', this.disable.bind(this));
         this.bot.command('status', this.status.bind(this));
 
         this.bot.command('bot_mtk_click_start', this.botMtkClickStart.bind(this));
@@ -98,14 +96,6 @@ export class TelegramBotService {
             {
                 command: 'logout',
                 description: 'Отвязать Telegram аккаунт',
-            },
-            {
-                command: 'enable',
-                description: 'Включить бота',
-            },
-            {
-                command: 'disable',
-                description: 'Отключить бота',
             },
             {
                 command: 'status',
@@ -519,22 +509,6 @@ export class TelegramBotService {
         const telegram: TelegramService = await app.container.make('telegram', [ctx.message.from.id]);
 
         await telegram.forgetSession();
-    }
-
-    public async enable(ctx: Context): Promise<void> {
-        if (!(await this.checkUser(ctx))) return;
-
-        await this.redis.hset(`user:${ctx.from!.id}`, 'started', 1);
-        await this.redis.lpush('bot:started', ctx.from!.id);
-        await ctx.reply('Бот запущен');
-    }
-
-    public async disable(ctx: Context): Promise<void> {
-        if (!(await this.checkUser(ctx))) return;
-
-        await this.redis.hset(`user:${ctx.from!.id}`, 'started', 0);
-        await this.redis.lpop('bot:started', ctx.from!.id);
-        await ctx.reply('Бот остановлен');
     }
 
     public async status(ctx: Context): Promise<void> {
