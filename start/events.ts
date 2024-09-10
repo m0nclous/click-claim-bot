@@ -1,6 +1,6 @@
 import emitter from '@adonisjs/core/services/emitter';
 import app from '@adonisjs/core/services/app';
-import telegramBot, { TelegramBotService } from '#services/TelegramBotService';
+import telegramBot, { TelegramBotService } from '#services/TelegramBotService/index';
 import type {
     ISessionExpiredErrorEvent,
     ISessionExpiredEvent,

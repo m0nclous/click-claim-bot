@@ -1,6 +1,6 @@
 import { ApplicationService, LoggerService } from '@adonisjs/core/types';
 import { RedisService } from '@adonisjs/redis/types';
-import { TelegramBotConfig, TelegramBotService } from '#services/TelegramBotService';
+import { TelegramBotConfig, TelegramBotService } from '#services/TelegramBotService/index';
 
 declare module '@adonisjs/core/types' {
     // noinspection JSUnusedGlobalSymbols
@@ -15,7 +15,7 @@ export default class TelegramProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.singleton('telegramBot', async () => {
-            const { TelegramBotService } = await import('#services/TelegramBotService');
+            const { TelegramBotService } = await import('#services/TelegramBotService/index');
 
             const config: TelegramBotConfig = this.app.config.get<TelegramBotConfig>('telegram-bot');
             const logger: LoggerService = await this.app.container.make('logger');
