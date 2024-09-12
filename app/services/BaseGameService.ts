@@ -190,7 +190,7 @@ export default abstract class BaseGameService {
         const telegram: TelegramService = await app.container.make('telegram', [this.userId]);
 
         if (!(await telegram.hasAuthKey())) {
-            throw new UnauthenticatedException('Сессия Telegram недоступна');
+            throw new UnauthenticatedException(`Сессия Telegram недоступна: ${this.userId}`);
         }
 
         const client: TelegramClient = await telegram.getClient();
