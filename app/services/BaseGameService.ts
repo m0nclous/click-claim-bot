@@ -190,7 +190,7 @@ export default abstract class BaseGameService {
         const telegram: TelegramService = await app.container.make('telegram', [this.userId]);
 
         if (!(await telegram.hasAuthKey())) {
-            throw new UnauthenticatedException('Сессия Telegram недоступна');
+            throw new UnauthenticatedException(`Сессия Telegram недоступна: ${this.userId}`);
         }
 
         const client: TelegramClient = await telegram.getClient();
@@ -223,7 +223,7 @@ export default abstract class BaseGameService {
                     const rpcError: RPCError = error;
 
                     if (rpcError.code === 401) {
-                        throw new UnauthenticatedException('Сессия Telegram недоступна', rpcError);
+                        throw new UnauthenticatedException(`Сессия Telegram недоступна ${this.userId}`, rpcError);
                     }
                 }
 
