@@ -65,6 +65,7 @@ export default class AppProvider {
                 'tileTrioKeyBuffer',
                 'fluffCrusadeKeyBuffer',
                 'stoneAgeKeyBuffer',
+                'bouncemastersKeyBuffer',
             ];
 
             for (const keyBufferServiceBinding of keyBufferServicesToRun) {
