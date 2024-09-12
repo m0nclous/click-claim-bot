@@ -14,7 +14,9 @@ export default class BouncemastersGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('bouncemastersKeyGenerate', async () => {
-            const { BouncemastersKeyGenerateService } = await import('#services/BouncemastersKeyGenerateService');
+            const { BouncemastersKeyGenerateService } = await import(
+                '#services/BouncemastersKeyGenerateService'
+            );
 
             return new BouncemastersKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
