@@ -72,7 +72,7 @@ export abstract class BaseKeyGenerateService {
             },
 
             retry: {
-                limit: 15,
+                limit: 10,
                 methods: ['get', 'post'],
                 statusCodes: [429, 400, 500],
             },
