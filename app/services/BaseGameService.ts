@@ -223,7 +223,10 @@ export default abstract class BaseGameService {
                     const rpcError: RPCError = error;
 
                     if (rpcError.code === 401) {
-                        throw new UnauthenticatedException(`Сессия Telegram недоступна ${this.userId}`, rpcError);
+                        throw new UnauthenticatedException(
+                            `Сессия Telegram недоступна ${this.userId}`,
+                            rpcError,
+                        );
                     }
                 }
 
