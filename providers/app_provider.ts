@@ -2,6 +2,7 @@ import type { ApplicationService, ContainerBindings, LoggerService } from '@adon
 import type { TelegramBotService } from '#services/TelegramBotService';
 import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import { sleep } from '#helpers/timer';
+import env from '#start/env';
 
 type GameBotServiceBinding = keyof ContainerBindings;
 type KeyGenerateServiceBinding = keyof ContainerBindings;
@@ -54,43 +55,45 @@ export default class AppProvider {
 
             // Key generate
 
-            const keyBufferServicesToRun: KeyGenerateServiceBinding[] = [
-                'zoopolisKeyBuffer',
-                'trainKeyBuffer',
-                'mowAndTrimKeyBuffer',
-                'cubeKeyBuffer',
-                'mergeKeyBuffer',
-                'twerkKeyBuffer',
-                'polysphereKeyBuffer',
-                'tileTrioKeyBuffer',
-                'fluffCrusadeKeyBuffer',
-                'stoneAgeKeyBuffer',
-                'bouncemastersKeyBuffer',
-            ];
+            if (env.get('KEY_GENERATE_ENABLE', false)) {
+                const keyBufferServicesToRun: KeyGenerateServiceBinding[] = [
+                    'zoopolisKeyBuffer',
+                    'trainKeyBuffer',
+                    'mowAndTrimKeyBuffer',
+                    'cubeKeyBuffer',
+                    'mergeKeyBuffer',
+                    'twerkKeyBuffer',
+                    'polysphereKeyBuffer',
+                    'tileTrioKeyBuffer',
+                    'fluffCrusadeKeyBuffer',
+                    'stoneAgeKeyBuffer',
+                    'bouncemastersKeyBuffer',
+                ];
 
-            for (const keyBufferServiceBinding of keyBufferServicesToRun) {
-                const service: ContainerBindings[keyof ContainerBindings] =
-                    await this.app.container.make(keyBufferServiceBinding);
+                for (const keyBufferServiceBinding of keyBufferServicesToRun) {
+                    const service: ContainerBindings[keyof ContainerBindings] =
+                        await this.app.container.make(keyBufferServiceBinding);
 
-                if (!('countKeys' in service)) {
-                    throw new Error('countKeys method is not implemented');
-                }
-
-                if (!('topUpKeys' in service)) {
-                    throw new Error('topUpKeys method is not implemented');
-                }
-
-                (async () => {
-                    // eslint-disable-next-line no-constant-condition
-                    while (true) {
-                        if ((await service.countKeys()) >= 40) {
-                            await sleep(60_000);
-                            continue;
-                        }
-
-                        await service.topUpKeys();
+                    if (!('countKeys' in service)) {
+                        throw new Error('countKeys method is not implemented');
                     }
-                })().then();
+
+                    if (!('topUpKeys' in service)) {
+                        throw new Error('topUpKeys method is not implemented');
+                    }
+
+                    (async () => {
+                        // eslint-disable-next-line no-constant-condition
+                        while (true) {
+                            if ((await service.countKeys()) >= 40) {
+                                await sleep(60_000);
+                                continue;
+                            }
+
+                            await service.topUpKeys();
+                        }
+                    })().then();
+                }
             }
         }
     }

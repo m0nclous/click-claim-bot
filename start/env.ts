@@ -32,6 +32,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
     LOGTAIL_SOURCE_TOKEN: Env.schema.string.optional(),
 
+    KEY_GENERATE_ENABLE: Env.schema.boolean.optional(),
     KEY_GENERATE_USE_PROXY: Env.schema.boolean.optional(),
     KEY_GENERATE_PROXY_USER: Env.schema.string.optional(),
     KEY_GENERATE_PROXY_PASSWORD: Env.schema.string.optional(),
