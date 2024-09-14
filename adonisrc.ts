@@ -66,6 +66,7 @@ export default defineConfig({
         () => import('#providers/HamsterCombatGameProvider'),
         () => import('#providers/StoneAgeKeyGenerateProvider'),
         () => import('#providers/BouncemastersGenerateProvider'),
+        () => import('#providers/HideBallKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -79,6 +80,7 @@ export default defineConfig({
         () => import('#providers/FluffCrusadeKeyBufferProvider'),
         () => import('#providers/StoneAgeKeyBufferProvider'),
         () => import('#providers/BouncemastersKeyBufferProvider'),
+        () => import('#providers/HideBallKeyBufferProvider'),
     ],
 
     /*
