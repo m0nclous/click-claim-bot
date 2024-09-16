@@ -1,21 +1,21 @@
-import app from '@adonisjs/core/services/app';
-import { Markup, Scenes, session, Telegraf } from 'telegraf';
-import { parseBoolean, parseNumbers } from '#helpers/parse';
-import { callbackPromise } from '#helpers/promise';
-import { HTTPError } from 'ky';
-import logger from '@adonisjs/core/services/logger';
-
-import type { Logger } from '@adonisjs/core/logger';
+import { Composer, type Context, Markup, Scenes, session, Telegraf } from 'telegraf';
 import type { RedisService } from '@adonisjs/redis/types';
-import type { Context } from 'telegraf';
+import type { Logger } from '@adonisjs/core/logger';
 import type { UserFromGetMe } from '@telegraf/types/manage.js';
-import type { TelegramClient } from 'telegram';
+import Commands from '../commands.js';
+import { LoginWizardContext } from '../wizardScene/login/context.js';
+import loginSteps from '../wizardScene/login/steps.js';
+import { parseBoolean } from '#helpers/parse';
 import type { TelegramService } from '#services/TelegramService';
-import type { ICallbackPromise } from '#helpers/promise';
-import type { BaseBotService } from '#services/BaseBotService';
-import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import app from '@adonisjs/core/services/app';
+import type { TelegramClient } from 'telegram';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
 import NotEnoughKeysInBufferException from '#exceptions/NotEnoughKeysInBufferException';
+import logger from '@adonisjs/core/services/logger';
+import type { BaseBotService } from '#services/BaseBotService';
+import { HTTPError } from 'ky';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import type { ICallbackPromise } from '#helpers/promise';
 import TelegramProvider from '#providers/telegram_provider';
 
 export class TelegramBotService {
@@ -89,353 +89,36 @@ export class TelegramBotService {
         this.bot.command('best_card_for_buy_hamster_combat', this.getBestCardForBuyHamsterCombat.bind(this));
         this.bot.command('get_keys_hamster_combat', this.getKeysHamsterCombat.bind(this));
 
-        return this.bot.telegram.setMyCommands([
-            {
-                command: 'login',
-                description: 'Привязать Telegram аккаунт',
-            },
-            {
-                command: 'logout',
-                description: 'Отвязать Telegram аккаунт',
-            },
-            {
-                command: 'status',
-                description: 'Статус бота',
-            },
-            {
-                command: 'bot_mtk_click_start',
-                description: 'Запустить кликер MTK',
-            },
-            {
-                command: 'bot_mtk_click_stop',
-                description: 'Остановить кликер MTK',
-            },
-            {
-                command: 'bot_gemz_click_start',
-                description: 'Запустить кликер Gemz',
-            },
-            {
-                command: 'bot_gemz_click_stop',
-                description: 'Остановить кликер Gemz',
-            },
-            {
-                command: 'bot_memefi_click_start',
-                description: 'Запустить кликер MemeFi',
-            },
-            {
-                command: 'bot_memefi_click_stop',
-                description: 'Остановить кликер MemeFi',
-            },
-            {
-                command: 'bot_mine2mine_click_start',
-                description: 'Запустить кликер Mine2Mine',
-            },
-            {
-                command: 'bot_mine2mine_click_stop',
-                description: 'Остановить кликер Mine2Mine',
-            },
-            {
-                command: 'bot_city_holders_click_start',
-                description: 'Запустить кликер CityHolders',
-            },
-            {
-                command: 'bot_city_holders_click_stop',
-                description: 'Остановить кликер CityHolders',
-            },
-            {
-                command: 'bot_mtk_daily_start',
-                description: 'Запустить сбор ежедневной награды MTK',
-            },
-            {
-                command: 'bot_mtk_daily_stop',
-                description: 'Остановить сбор ежедневной награды MTK',
-            },
-            {
-                command: 'bot_gemz_daily_start',
-                description: 'Запустить сбор ежедневной награды Gemz',
-            },
-            {
-                command: 'bot_gemz_daily_stop',
-                description: 'Остановить сбор ежедневной награды Gemz',
-            },
-            {
-                command: 'bot_zavod_claim_start',
-                description: 'Запустить сбор награды Zavod',
-            },
-            {
-                command: 'bot_zavod_claim_stop',
-                description: 'Остановить сбор награды Zavod',
-            },
-            {
-                command: 'bot_zavod_craft_start',
-                description: 'Запустить сбор деталей Zavod',
-            },
-            {
-                command: 'bot_zavod_craft_stop',
-                description: 'Остановить сбор деталей Zavod',
-            },
-            {
-                command: 'bot_toon_claim_start',
-                description: 'Запустить сбор награды ToON',
-            },
-            {
-                command: 'bot_toon_claim_stop',
-                description: 'Остановить сбор награды ToON',
-            },
-            {
-                command: 'bot_time_farm_claim_start',
-                description: 'Запустить сбор награды TimeFarm',
-            },
-            {
-                command: 'bot_time_farm_claim_stop',
-                description: 'Остановить сбор награды TimeFarm',
-            },
-            {
-                command: 'bot_farty_beetle_craft_start',
-                description: 'Запустить крафт жуков Farty Beetle NFT',
-            },
-            {
-                command: 'bot_farty_beetle_craft_stop',
-                description: 'Остановить крафт жуков Farty Beetle NFT',
-            },
-            {
-                command: 'best_card_for_buy_hamster_combat',
-                description: 'Получить лучшую карту для прокачки в Hamster Combat',
-            },
-            {
-                command: 'get_keys_hamster_combat',
-                description: 'Получить все ключи для игры Hamster Combat',
-            },
-        ]);
+        return this.bot.telegram.setMyCommands(Commands);
     }
 
     protected async setupLoginWizard() {
+        const passwordStepHandler = new Composer<LoginWizardContext>();
+
+        passwordStepHandler.action('without_pass', async (ctx) => {
+            ctx.scene.session.without_pass = true;
+            ctx.wizard.next();
+
+            if (typeof ctx.wizard.step === 'function') {
+                return ctx.wizard.step(ctx, () => Promise.resolve());
+            }
+        });
+
+        passwordStepHandler.on('message', async (ctx) => {
+            ctx.wizard.next();
+
+            if (typeof ctx.wizard.step === 'function') {
+                return ctx.wizard.step(ctx, () => Promise.resolve());
+            }
+        });
+
         const loginWizard = new Scenes.WizardScene(
             'login',
-
-            async (ctx) => {
-                if (ctx.message === undefined) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 1,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message is undefined',
-                    );
-
-                    return;
-                }
-
-                const state: ILoginState = ctx.wizard.state;
-
-                state.telegram = await app.container.make('telegram', [ctx.message.from.id]);
-                state.client = await state.telegram.getClient();
-
-                await state.client.connect();
-
-                if (await state.client.isUserAuthorized()) {
-                    await ctx.reply('Telegram аккаунт уже привязан\nИспользуйте /logout для выхода');
-                    return ctx.scene.leave();
-                }
-
-                const message: string = 'Нажмите кнопку "Отправить номер телефона"';
-                const keyboard = Markup.keyboard([
-                    [
-                        {
-                            text: '📲 Отправить номер телефона',
-                            request_contact: true,
-                        },
-                    ],
-                ]).oneTime(true);
-
-                await ctx.reply(message, keyboard);
-
-                return ctx.wizard.next();
-            },
-
-            async (ctx) => {
-                const state: ILoginState = ctx.wizard.state;
-
-                if (ctx.message === undefined) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 2,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message is undefined',
-                    );
-
-                    return;
-                }
-
-                if (!('contact' in ctx.message)) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 2,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message.contact is undefined',
-                    );
-
-                    return;
-                }
-
-                state.phoneNumber = ctx.message.contact.phone_number;
-                state.codeCallback = callbackPromise<string>();
-                state.passwordCallback = callbackPromise();
-                state.onLoginCallback = callbackPromise();
-
-                const codePromise: Promise<string> = state.codeCallback.promise;
-                const passwordPromise: Promise<string> = state.passwordCallback.promise;
-                const onLoginResolve = state.onLoginCallback.resolve;
-
-                if (state.client === undefined) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 2,
-                            ctxUpdate: ctx.update,
-                        },
-                        'state.client is undefined',
-                    );
-
-                    return;
-                }
-
-                state.client
-                    .start({
-                        phoneNumber: state.phoneNumber,
-                        phoneCode: async () => codePromise,
-                        password: async () => passwordPromise,
-                        onError: async (err: Error) => {
-                            throw err;
-                        },
-                    })
-                    .then(() => {
-                        onLoginResolve(true);
-                    })
-                    .catch(async (error: Error) => {
-                        this.logger.error(
-                            {
-                                step: 2,
-                                ctxUpdate: ctx.update,
-                                error,
-                            },
-                            'Ошибка входа в Telegram',
-                        );
-
-                        await ctx.sendMessage('Не удалось войти в Telegram. Попробуйте еще раз.');
-                        await ctx.scene.leave();
-                    });
-
-                const message: string =
-                    'Введите код для входа в <a href="https://t.me/+42777">Telegram</a>' +
-                    '\n\n❗️ Внимание!' +
-                    '\nРаздели код пробелами, например <code>1 2 3 4 5 6</code>\n' +
-                    'Иначе код будет недействительным!';
-
-                await ctx.replyWithHTML(
-                    message,
-                    Markup.inlineKeyboard([
-                        [
-                            {
-                                text: 'Посмотреть код',
-                                url: 'https://t.me/+42777',
-                            },
-                        ],
-                    ]),
-                );
-
-                return ctx.wizard.next();
-            },
-
-            async (ctx) => {
-                if (ctx.message === undefined) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 3,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message is undefined',
-                    );
-
-                    return;
-                }
-
-                if (!('text' in ctx.message)) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 3,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message.text is undefined',
-                    );
-
-                    return;
-                }
-
-                const state: ILoginState = ctx.wizard.state;
-                const phoneCode: string = parseNumbers(ctx.message.text);
-
-                state.codeCallback?.resolve(phoneCode);
-
-                await ctx.reply('Введите облачный пароль Telegram');
-
-                return ctx.wizard.next();
-            },
-
-            async (ctx) => {
-                if (ctx.message === undefined) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 4,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message is undefined',
-                    );
-
-                    return;
-                }
-
-                if (!('text' in ctx.message)) {
-                    this.logger.error(
-                        {
-                            event: 'TELEGRAM_LOGIN_WIZARD',
-                            step: 4,
-                            ctxUpdate: ctx.update,
-                        },
-                        'ctx.message.text is undefined',
-                    );
-
-                    return;
-                }
-
-                const state: ILoginState = ctx.wizard.state;
-
-                const password: string = ctx.message.text;
-                await ctx.deleteMessage(ctx.message.message_id);
-
-                state.passwordCallback?.resolve(password);
-                await state.onLoginCallback?.promise;
-
-                await state.telegram?.saveSession();
-                await ctx.reply('Telegram аккаунт успешно привязан');
-
-                this.logger.info(
-                    {
-                        userId: ctx.message.from.id,
-                    },
-                    'Успешный вход в Telegram',
-                );
-
-                return await ctx.scene.leave();
-            },
+            loginSteps.firstStep(this.logger),
+            loginSteps.secondStep(this.logger),
+            loginSteps.thirdStep(this.logger),
+            passwordStepHandler,
+            loginSteps.lastStep(this.logger),
         );
 
         loginWizard.use(async (ctx, next) => {
@@ -511,6 +194,8 @@ export class TelegramBotService {
 
         await telegram.forgetSession();
         TelegramProvider.destroy(ctx.message.from.id);
+
+        await ctx.reply('Вы успешно вышли');
     }
 
     public async status(ctx: Context): Promise<void> {
