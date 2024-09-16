@@ -64,6 +64,8 @@ export default defineConfig({
         () => import('#providers/FartyBeetleCraftBotServiceProvider'),
         () => import('#providers/HamsterCombatGameProvider'),
         () => import('#providers/StoneAgeKeyGenerateProvider'),
+        () => import('#providers/BouncemastersGenerateProvider'),
+        () => import('#providers/HideBallKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -76,6 +78,8 @@ export default defineConfig({
         () => import('#providers/TileTrioKeyBufferProvider'),
         () => import('#providers/FluffCrusadeKeyBufferProvider'),
         () => import('#providers/StoneAgeKeyBufferProvider'),
+        () => import('#providers/BouncemastersKeyBufferProvider'),
+        () => import('#providers/HideBallKeyBufferProvider'),
 
         // Modules
         () => import('#modules/telegramBot/providers/TelegramBotProvider'),

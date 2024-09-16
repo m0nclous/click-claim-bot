@@ -16,6 +16,7 @@ import type { BaseBotService } from '#services/BaseBotService';
 import { HTTPError } from 'ky';
 import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 import type { ICallbackPromise } from '#helpers/promise';
+import TelegramProvider from '#providers/telegram_provider';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -192,6 +193,8 @@ export class TelegramBotService {
         const telegram: TelegramService = await app.container.make('telegram', [ctx.message.from.id]);
 
         await telegram.forgetSession();
+        TelegramProvider.destroy(ctx.message.from.id);
+
         await ctx.reply('Вы успешно вышли');
     }
 
@@ -322,6 +325,8 @@ export class TelegramBotService {
             'tileTrioKeyBuffer',
             'fluffCrusadeKeyBuffer',
             'stoneAgeKeyBuffer',
+            'bouncemastersKeyBuffer',
+            'hideBallKeyBuffer',
         ];
 
         const services: BaseKeyBufferService[] = await Promise.all(

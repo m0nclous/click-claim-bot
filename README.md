@@ -52,6 +52,8 @@ Automate your **farming** in Telegram **Mini Apps**!
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
   - Find best upgrade to buy (minimum value of price / profitDelta) [NEW]
   - Generate Game Keys
+    - Hide Ball
+    - Bouncemasters
     - Stone Age
     - Fluff Crusade
     - Tile Trio
@@ -130,6 +132,7 @@ services:
             LOG_LEVEL: '${LOG_LEVEL:-trace}'
             LOGTAIL_SOURCE_TOKEN: '${LOGTAIL_SOURCE_TOKEN:-}'
 
+            KEY_GENERATE_ENABLE: '${KEY_GENERATE_ENABLE:-false}'
             KEY_GENERATE_USE_PROXY: '${KEY_GENERATE_USE_PROXY:-false}'
             KEY_GENERATE_PROXY_USER: '${KEY_GENERATE_PROXY_USER:-}'
             KEY_GENERATE_PROXY_PASSWORD: '${KEY_GENERATE_PROXY_PASSWORD:-}'
@@ -190,7 +193,8 @@ LOG_LEVEL=trace
 # BetterStack https://logs.betterstack.com
 LOGTAIL_SOURCE_TOKEN=
 
-### SOCKS5 Proxy
+### Key Generate Buffer
+KEY_GENERATE_ENABLE=false
 KEY_GENERATE_USE_PROXY=false
 KEY_GENERATE_PROXY_USER=
 KEY_GENERATE_PROXY_PASSWORD=
