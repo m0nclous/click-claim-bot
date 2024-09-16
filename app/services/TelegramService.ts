@@ -54,6 +54,11 @@ export class TelegramService {
 
     public async forgetSession(): Promise<void> {
         const client: TelegramClient = await this.getClient();
+
+        if (!client.connected) {
+            await client.connect();
+        }
+
         await client.invoke(new Api.auth.LogOut());
 
         await this.redis.hdel(`user:${this.userId}`, 'auth-key');
