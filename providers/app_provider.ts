@@ -1,5 +1,5 @@
 import type { ApplicationService, ContainerBindings, LoggerService } from '@adonisjs/core/types';
-import type { TelegramBotService } from '#services/TelegramBotService/index';
+import type { TelegramBotService } from '#modules/telegramBot/services/TelegramBotService';
 import type { UserFromGetMe } from '@telegraf/types/manage.js';
 import { sleep } from '#helpers/timer';
 

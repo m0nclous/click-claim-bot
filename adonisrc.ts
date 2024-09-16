@@ -31,7 +31,6 @@ export default defineConfig({
         },
         () => import('@adonisjs/redis/redis_provider'),
         () => import('#providers/telegram_provider'),
-        () => import('#providers/telegram_bot_provider'),
         () => import('#providers/app_provider'),
         () => import('#providers/MtkGameProvider'),
         () => import('#providers/GemzGameProvider'),
@@ -77,6 +76,9 @@ export default defineConfig({
         () => import('#providers/TileTrioKeyBufferProvider'),
         () => import('#providers/FluffCrusadeKeyBufferProvider'),
         () => import('#providers/StoneAgeKeyBufferProvider'),
+
+        // Modules
+        () => import('#modules/telegramBot/providers/TelegramBotProvider'),
     ],
 
     /*

@@ -1,26 +1,21 @@
-import app from '@adonisjs/core/services/app';
-import { Composer, Markup, Scenes, session, Telegraf } from 'telegraf';
-import { parseBoolean } from '#helpers/parse';
-import { HTTPError } from 'ky';
-import logger from '@adonisjs/core/services/logger';
-
-import type { Logger } from '@adonisjs/core/logger';
+import { Composer, type Context, Markup, Scenes, session, Telegraf } from 'telegraf';
 import type { RedisService } from '@adonisjs/redis/types';
-import type { Context } from 'telegraf';
+import type { Logger } from '@adonisjs/core/logger';
 import type { UserFromGetMe } from '@telegraf/types/manage.js';
-import type { TelegramClient } from 'telegram';
+import Commands from '../commands.js';
+import { LoginWizardContext } from '../wizardScene/login/context.js';
+import loginSteps from '../wizardScene/login/steps.js';
+import { parseBoolean } from '#helpers/parse';
 import type { TelegramService } from '#services/TelegramService';
-import type { ICallbackPromise } from '#helpers/promise';
-import type { BaseBotService } from '#services/BaseBotService';
-import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import app from '@adonisjs/core/services/app';
+import type { TelegramClient } from 'telegram';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
 import NotEnoughKeysInBufferException from '#exceptions/NotEnoughKeysInBufferException';
-
-import Commands from './commands.js';
-
-import { LoginWizardContext } from './wizardScene/login/context.js';
-
-import loginSteps from './wizardScene/login/steps.js';
+import logger from '@adonisjs/core/services/logger';
+import type { BaseBotService } from '#services/BaseBotService';
+import { HTTPError } from 'ky';
+import UnauthenticatedException from '#exceptions/UnauthenticatedException';
+import type { ICallbackPromise } from '#helpers/promise';
 
 export class TelegramBotService {
     public bot: Telegraf;

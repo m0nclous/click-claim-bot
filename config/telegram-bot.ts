@@ -1,5 +1,5 @@
 import env from '#start/env';
-import { defineConfig } from '#services/TelegramBotService/index';
+import { defineConfig } from '#modules/telegramBot/services/TelegramBotService';
 
 const telegramBotConfig = defineConfig({
     token: env.get('TELEGRAM_BOT_TOKEN'),

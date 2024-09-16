@@ -1,6 +1,6 @@
 import { callbackPromise } from '#helpers/promise';
 import { Markup } from 'telegraf';
-import { ILoginState } from '#services/TelegramBotService/index';
+import { ILoginState } from '../../services/TelegramBotService.js';
 import { LoginWizardContext } from './context.js';
 import type { Logger } from '@adonisjs/core/logger';
 
