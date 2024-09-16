@@ -16,6 +16,7 @@ import type { BaseBotService } from '#services/BaseBotService';
 import UnauthenticatedException from '#exceptions/UnauthenticatedException';
 import BaseKeyBufferService from '#services/BaseKeyBufferService';
 import NotEnoughKeysInBufferException from '#exceptions/NotEnoughKeysInBufferException';
+import TelegramProvider from '#providers/telegram_provider';
 
 export class TelegramBotService {
     public bot: Telegraf;
@@ -509,6 +510,7 @@ export class TelegramBotService {
         const telegram: TelegramService = await app.container.make('telegram', [ctx.message.from.id]);
 
         await telegram.forgetSession();
+        TelegramProvider.destroy(ctx.message.from.id);
     }
 
     public async status(ctx: Context): Promise<void> {

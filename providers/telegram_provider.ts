@@ -9,7 +9,7 @@ declare module '@adonisjs/core/types' {
     }
 }
 
-const singletonById: Map<string, TelegramService> = new Map();
+const singletonById: Map<number, TelegramService> = new Map();
 
 export default class TelegramProvider {
     constructor(protected app: ApplicationService) {}
@@ -34,5 +34,9 @@ export default class TelegramProvider {
 
             return singletonById.get(userId) as TelegramService;
         });
+    }
+
+    public static destroy(userId: number): void {
+        singletonById.delete(userId);
     }
 }
