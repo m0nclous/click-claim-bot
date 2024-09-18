@@ -84,6 +84,7 @@ export default defineConfig({
         () => import('#providers/BouncemastersKeyBufferProvider'),
         () => import('#providers/HideBallKeyBufferProvider'),
         () => import('#providers/CountMastersKeyBufferProvider'),
+        () => import('#providers/PinOutMastersKeyBufferProvider'),
     ],
 
     /*
