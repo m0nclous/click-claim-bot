@@ -70,6 +70,7 @@ export default class AppProvider {
                     'bouncemastersKeyBuffer',
                     'hideBallKeyBuffer',
                     'countMastersKeyBuffer',
+                    'pinOutMastersKeyBuffer',
                 ];
 
                 for (const keyBufferServiceBinding of keyBufferServicesToRun) {
