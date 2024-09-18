@@ -69,6 +69,7 @@ export default class AppProvider {
                     'stoneAgeKeyBuffer',
                     'bouncemastersKeyBuffer',
                     'hideBallKeyBuffer',
+                    'countMastersKeyBuffer',
                 ];
 
                 for (const keyBufferServiceBinding of keyBufferServicesToRun) {
