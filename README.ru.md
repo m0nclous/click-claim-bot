@@ -53,6 +53,7 @@
 - <a href="https://t.me/hamster_kombaT_bot/start?startapp=kentId1013774663" target="_blank"><img src="assets/img/hamster-combat/logo.jpg" width="20" alt="" style="vertical-align:middle"> Hamster Kombat</a>
   - Поиск лучшей карты для улучшения (минимальное значение стоимость / прирост дохода) [NEW]
   - Генерация ключей
+    - Pin Out Masters
     - Count Masters
     - Hide Ball
     - Bouncemasters
