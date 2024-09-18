@@ -67,6 +67,7 @@ export default defineConfig({
         () => import('#providers/StoneAgeKeyGenerateProvider'),
         () => import('#providers/BouncemastersGenerateProvider'),
         () => import('#providers/HideBallKeyGenerateProvider'),
+        () => import('#providers/CountMastersGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
