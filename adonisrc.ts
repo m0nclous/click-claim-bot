@@ -82,6 +82,7 @@ export default defineConfig({
         () => import('#providers/StoneAgeKeyBufferProvider'),
         () => import('#providers/BouncemastersKeyBufferProvider'),
         () => import('#providers/HideBallKeyBufferProvider'),
+        () => import('#providers/CountMastersKeyBufferProvider'),
     ],
 
     /*
