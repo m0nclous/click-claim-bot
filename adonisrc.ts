@@ -68,6 +68,7 @@ export default defineConfig({
         () => import('#providers/BouncemastersGenerateProvider'),
         () => import('#providers/HideBallKeyGenerateProvider'),
         () => import('#providers/CountMastersGenerateProvider'),
+        () => import('#providers/PinOutMastersGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
