@@ -71,6 +71,7 @@ export default class AppProvider {
                     'hideBallKeyBuffer',
                     'countMastersKeyBuffer',
                     'pinOutMastersKeyBuffer',
+                    'factoryWorldKeyBuffer',
                 ];
 
                 for (const keyBufferServiceBinding of keyBufferServicesToRun) {
