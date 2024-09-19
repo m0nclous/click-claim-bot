@@ -86,6 +86,7 @@ export default defineConfig({
         () => import('#providers/HideBallKeyBufferProvider'),
         () => import('#providers/CountMastersKeyBufferProvider'),
         () => import('#providers/PinOutMastersKeyBufferProvider'),
+        () => import('#providers/FactoryWorldKeyBufferProvider'),
     ],
 
     /*
