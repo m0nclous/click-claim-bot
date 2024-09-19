@@ -14,7 +14,9 @@ export default class InfectedFrontierKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('infectedFrontierKeyGenerate', async () => {
-            const { InfectedFrontierKeyGenerateService } = await import('#services/InfectedFrontierKeyGenerateService');
+            const { InfectedFrontierKeyGenerateService } = await import(
+                '#services/InfectedFrontierKeyGenerateService'
+            );
 
             return new InfectedFrontierKeyGenerateService(this.app, await this.app.container.make('logger'));
         });

@@ -14,7 +14,9 @@ export default class InfectedFrontierKeyBufferProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('infectedFrontierKeyBuffer', async () => {
-            const { InfectedFrontierKeyBufferService } = await import('#services/InfectedFrontierKeyBufferService');
+            const { InfectedFrontierKeyBufferService } = await import(
+                '#services/InfectedFrontierKeyBufferService'
+            );
 
             return new InfectedFrontierKeyBufferService(this.app, await this.app.container.make('redis'));
         });
