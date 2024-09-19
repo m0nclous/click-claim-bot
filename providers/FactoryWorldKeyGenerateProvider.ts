@@ -14,7 +14,9 @@ export default class FactoryWorldKeyGenerateProvider {
     // noinspection JSUnusedGlobalSymbols
     public async register(): Promise<void> {
         this.app.container.bind('factoryWorldKeyGenerate', async () => {
-            const { FactoryWorldKeyGenerateService } = await import('#services/FactoryWorldKeyGenerateService');
+            const { FactoryWorldKeyGenerateService } = await import(
+                '#services/FactoryWorldKeyGenerateService'
+            );
 
             return new FactoryWorldKeyGenerateService(this.app, await this.app.container.make('logger'));
         });
