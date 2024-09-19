@@ -70,6 +70,7 @@ export default defineConfig({
         () => import('#providers/CountMastersGenerateProvider'),
         () => import('#providers/PinOutMastersGenerateProvider'),
         () => import('#providers/FactoryWorldKeyGenerateProvider'),
+        () => import('#providers/AmongWaterKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
