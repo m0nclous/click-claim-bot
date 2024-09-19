@@ -645,6 +645,7 @@ export class TelegramBotService {
             'countMastersKeyBuffer',
             'pinOutMastersKeyBuffer',
             'factoryWorldKeyBuffer',
+            'amongWaterKeyBuffer',
         ];
 
         const services: BaseKeyBufferService[] = await Promise.all(
