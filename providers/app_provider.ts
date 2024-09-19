@@ -73,6 +73,7 @@ export default class AppProvider {
                     'pinOutMastersKeyBuffer',
                     'factoryWorldKeyBuffer',
                     'amongWaterKeyBuffer',
+                    'infectedFrontierKeyBuffer',
                 ];
 
                 for (const keyBufferServiceBinding of keyBufferServicesToRun) {

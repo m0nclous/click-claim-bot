@@ -71,6 +71,7 @@ export default defineConfig({
         () => import('#providers/PinOutMastersGenerateProvider'),
         () => import('#providers/FactoryWorldKeyGenerateProvider'),
         () => import('#providers/AmongWaterKeyGenerateProvider'),
+        () => import('#providers/InfectedFrontierKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -89,6 +90,7 @@ export default defineConfig({
         () => import('#providers/PinOutMastersKeyBufferProvider'),
         () => import('#providers/FactoryWorldKeyBufferProvider'),
         () => import('#providers/AmongWaterKeyBufferProvider'),
+        () => import('#providers/InfectedFrontierKeyBufferProvider'),
     ],
 
     /*
