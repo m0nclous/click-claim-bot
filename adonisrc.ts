@@ -69,6 +69,7 @@ export default defineConfig({
         () => import('#providers/HideBallKeyGenerateProvider'),
         () => import('#providers/CountMastersGenerateProvider'),
         () => import('#providers/PinOutMastersGenerateProvider'),
+        () => import('#providers/FactoryWorldKeyGenerateProvider'),
 
         // Key Generate Buffer
         () => import('#providers/ZoopolisKeyBufferProvider'),
@@ -85,6 +86,7 @@ export default defineConfig({
         () => import('#providers/HideBallKeyBufferProvider'),
         () => import('#providers/CountMastersKeyBufferProvider'),
         () => import('#providers/PinOutMastersKeyBufferProvider'),
+        () => import('#providers/FactoryWorldKeyBufferProvider'),
     ],
 
     /*
