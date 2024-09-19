@@ -88,6 +88,7 @@ export default defineConfig({
         () => import('#providers/CountMastersKeyBufferProvider'),
         () => import('#providers/PinOutMastersKeyBufferProvider'),
         () => import('#providers/FactoryWorldKeyBufferProvider'),
+        () => import('#providers/AmongWaterKeyBufferProvider'),
     ],
 
     /*
