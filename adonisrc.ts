@@ -90,6 +90,7 @@ export default defineConfig({
         () => import('#providers/PinOutMastersKeyBufferProvider'),
         () => import('#providers/FactoryWorldKeyBufferProvider'),
         () => import('#providers/AmongWaterKeyBufferProvider'),
+        () => import('#providers/InfectedFrontierKeyBufferProvider'),
     ],
 
     /*
