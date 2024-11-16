@@ -551,7 +551,7 @@ export class TelegramBotService {
     }
 
     public async botMemeFiClickStop(ctx: Context): Promise<void> {
-        await this.stopServiceByUserId(ctx, 'mine2MineClickBotService');
+        await this.stopServiceByUserId(ctx, 'memeFiClickBotService');
     }
 
     public async botMine2MineClickStart(ctx: Context): Promise<void> {
@@ -559,7 +559,7 @@ export class TelegramBotService {
     }
 
     public async botMine2MineClickStop(ctx: Context): Promise<void> {
-        await this.stopServiceByUserId(ctx, 'memeFiClickBotService');
+        await this.stopServiceByUserId(ctx, 'mine2MineClickBotService');
     }
 
     public async botCityHoldersClickStart(ctx: Context): Promise<void> {
